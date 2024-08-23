@@ -9,6 +9,9 @@
     "lint": "next lint",
     "fmt": "prettier --write \"{app,server,components,docs,lib,store}/**/*.{tsx,ts,jsx,js}\""
   },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
   "dependencies": {
     "@clerk/nextjs": "^5.3.1",
     "@hookform/resolvers": "^3.9.0",
@@ -56,6 +59,7 @@
     "eslint-config-next": "14.1.4",
     "postcss": "^8",
     "tailwindcss": "^3.3.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }
