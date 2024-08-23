@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { run } from "@/lib/utils";
-import { parse } from "date-fns";
+import { parse, isValid } from "date-fns";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 
@@ -76,6 +76,32 @@ users.get("/:user_id/entries", async (ctx) => {
         date: value.date.toJSON(),
         amount: value.amount.toNumber(),
     }));
+    return ctx.json(modifiedData, { status: 200 });
+});
+
+users.get("/:user_id/entries/_datapoints", async (ctx) => {
+    const { user_id } = ctx.req.param();
+    const from = run<string, Date>(ctx.req.query("from"), (date) =>
+        parse(date, "yyyy-MM-dd", new Date())
+    );
+    const to = run<string, Date>(ctx.req.query("to"), (date) =>
+        parse(date, "yyyy-MM-dd", new Date())
+    );
+    if (!isValid(from) || !isValid(to)) throw new HTTPException(422);
+    const result = await prisma.entry.groupBy({
+        by: ["date"],
+        where: {
+            user_id,
+            date: {
+                gte: from,
+                lte: to,
+            }
+        },
+        _sum: {
+            amount: true
+        }
+    });
+    const modifiedData = result.map((value) => ({ date: value.date, amount: (value._sum.amount !== null) ? value._sum.amount.toNumber() : 0 }))
     return ctx.json(modifiedData, { status: 200 });
 });
 
