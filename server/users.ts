@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { run } from "@/lib/utils";
-import { parse, isValid } from "date-fns";
+import { isValid, parse, format, isSameDay } from "date-fns";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 
@@ -88,7 +88,19 @@ users.get("/:user_id/entries/_datapoints", async (ctx) => {
         parse(date, "yyyy-MM-dd", new Date())
     );
     if (!isValid(from) || !isValid(to)) throw new HTTPException(422);
-    const result = await prisma.entry.groupBy({
+
+    const agg = prisma.entry.aggregate({
+        _avg: { amount: true },
+        _sum: { amount: true },
+        where: {
+            user_id,
+            date: {
+                gte: from,
+                lte: to
+            }
+        }
+    });
+    const amount = prisma.entry.groupBy({
         by: ["date"],
         where: {
             user_id,
@@ -97,12 +109,68 @@ users.get("/:user_id/entries/_datapoints", async (ctx) => {
                 lte: to,
             }
         },
+        orderBy: {
+            date: "desc"
+        },
         _sum: {
             amount: true
         }
     });
-    const modifiedData = result.map((value) => ({ date: value.date, amount: (value._sum.amount !== null) ? value._sum.amount.toNumber() : 0 }))
-    return ctx.json(modifiedData, { status: 200 });
+
+    const income = prisma.entry.groupBy({
+        by: ["date"],
+        where: {
+            user_id,
+            date: {
+                gte: from,
+                lte: to,
+            },
+            amount: { gte: 0 }
+        },
+        _sum: {
+            amount: true
+        }
+    });
+
+    const expense = prisma.entry.groupBy({
+        by: ["date"],
+        where: {
+            user_id,
+            date: {
+                gte: from,
+                lte: to,
+            },
+            amount: { lte: 0 }
+        },
+        _sum: {
+            amount: true
+        }
+    });
+
+    const entries = await Promise.all([agg, amount, income, expense])
+
+    let incindex = 0; let expindex = 0;
+    const points = entries[1].map((amount) => {
+        const point = { amount: Number(amount._sum.amount), income: 0, expense: 0 }
+        if (incindex < 0 || incindex >= entries[2].length) { return point }
+        if (expindex < 0 || expindex >= entries[3].length) { return point }
+        if (isSameDay(amount.date, entries[2][incindex].date)) {
+            point.income = Number(entries[2][incindex]._sum.amount);
+            incindex++;
+        }
+        if (isSameDay(amount.date, entries[3][expindex].date)) {
+            point.expense = Number(entries[3][expindex]._sum.amount);
+            expindex++;
+        }
+        return point
+    })
+
+    const data = {
+        points,
+        sum: Number(entries[0]._sum.amount),
+        avg: Number(entries[0]._avg.amount)
+    }
+    return ctx.json(data, { status: 200 });
 });
 
 users.get("/:user_id/categories", async (ctx) => {

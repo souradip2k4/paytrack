@@ -1,4 +1,4 @@
-import { MonthlyAreaChart } from "@/components/charts";
+import Dashboard from "@/components/dashboard";
 import { QueryCategories } from "@/lib/api";
 import { entriesQueryFn } from "@/lib/query";
 import { currentUser } from "@clerk/nextjs/server";
@@ -29,9 +29,7 @@ export default async function Page() {
 
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
-            <div className="px-8 pt-8">
-                <MonthlyAreaChart />
-            </div>
+            <Dashboard />
         </HydrationBoundary>
     );
 }
