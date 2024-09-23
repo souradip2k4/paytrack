@@ -1,14 +1,15 @@
+import prisma from "@/lib/prisma";
+import { redis } from "@/lib/redis";
+import { apiKeys as apiKeysRouter } from "@/server/api-keys";
+import { categories as categoriesRouter } from "@/server/categories";
+import { entries as entriesRouter } from "@/server/entries";
+import { tags as tagsRouter } from "@/server/tags";
+import { users as usersRouter } from "@/server/users";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { Hono } from "hono";
 import { createMiddleware } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
 import { handle } from "hono/vercel";
-import { Hono } from "hono";
-import prisma from "@/lib/prisma";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { entries as entriesRouter } from "@/server/entries";
-import { users as usersRouter } from "@/server/users";
-import { tags as tagsRouter } from "@/server/tags";
-import { categories as categoriesRouter } from "@/server/categories";
-import { apiKeys as apiKeysRouter } from "@/server/api-keys";
 
 export const runtime = "nodejs";
 
@@ -31,7 +32,36 @@ const apiAuthMiddleware = createMiddleware(async (ctx, next) => {
     throw new HTTPException(422, { message: "Unauthorized" });
 });
 
-app.use("*", apiAuthMiddleware);
+const cacheMiddleware = createMiddleware(async (ctx, next) => {
+    const ignored = ["/ping"]
+    const isignored = ignored.some(x => x == ctx.req.path)
+    const shouldcache = !isignored && ctx.req.method === "GET"
+    const shouldinvalidate = !isignored && ctx.req.method !== "GET"
+
+    const key = `__api_${ctx.req.path}`
+
+    if (shouldinvalidate) redis.del(key);
+
+    if (!shouldcache) return next();
+
+    if (await redis.exists(key) === 0) {
+        const oldjsonfn = ctx.json;
+        ctx.json = ((obj, arg, headers) => {
+            redis.set(key, JSON.stringify(obj), "EX", 30, (err) => {
+                if (!err) console.log(`[api] cache hit ${key}`)
+                else console.log(err)
+            });
+            return oldjsonfn(obj, arg, headers)
+        }) as typeof oldjsonfn
+        return next();
+    }
+
+    const obj = redis.get(key)
+    return ctx.json(obj, { status: 200 });
+});
+
+//app.use("*", apiAuthMiddleware);
+app.use("*", cacheMiddleware);
 
 app.get("/ping", (ctx) => ctx.json({ success: true }));
 

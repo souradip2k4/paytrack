@@ -1,5 +1,6 @@
 "use client";
 
+
 import {
     AlertDialog,
     AlertDialogAction,
@@ -13,7 +14,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
     Dialog,
     DialogClose,
@@ -365,7 +365,7 @@ const TagsCell = ({ row }: { row: Row<Entry> }) => {
 };
 
 export const columns: ColumnDef<Entry>[] = [
-    {
+    /*{
         id: "select",
         header: ({ table }) => (
             <Checkbox
@@ -386,7 +386,7 @@ export const columns: ColumnDef<Entry>[] = [
         ),
         enableSorting: false,
         enableHiding: false,
-    },
+    }, */
     {
         accessorKey: "amount",
         header: () => <div className="text-right">Amount</div>,
@@ -444,5 +444,5 @@ export const columns: ColumnDef<Entry>[] = [
         accessorKey: "actions",
         header: "",
         cell: ActionsCell,
-    },
+    }
 ];

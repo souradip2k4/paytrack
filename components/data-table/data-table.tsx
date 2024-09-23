@@ -1,5 +1,12 @@
 "use client";
 
+
+import {
+    ContextMenu,
+    ContextMenuContent,
+    ContextMenuItem,
+    ContextMenuTrigger,
+} from "@/components/ui/context-menu"
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
