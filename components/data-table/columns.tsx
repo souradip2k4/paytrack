@@ -1,6 +1,5 @@
 "use client";
 
-
 import {
     AlertDialog,
     AlertDialogAction,
@@ -53,8 +52,7 @@ import axios from "axios";
 import { format } from "date-fns";
 import React, { useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
-import { FiEdit3 } from "react-icons/fi";
-import { IoTrashOutline } from "react-icons/io5";
+import { Ellipsis, Pencil, Trash2 } from "lucide-react";
 import { useRecoilValue } from "recoil";
 import { z } from "zod";
 import { Badge } from "../ui/badge";
@@ -136,8 +134,15 @@ const ActionsCell = ({ row }: { row: Row<Entry> }) => {
         <div className="w-fit space-x-2">
             <Dialog>
                 <DialogTrigger asChild>
+                    <Button variant="link" size="icon" className="text-primary-foreground">
+                        <Ellipsis className="size-4" />
+                    </Button>
+                </DialogTrigger>
+            </Dialog>
+            {/*<Dialog>
+                <DialogTrigger asChild>
                     <Button variant="outline" size="icon">
-                        <FiEdit3 />
+                        <Pencil />
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
@@ -252,7 +257,7 @@ const ActionsCell = ({ row }: { row: Row<Entry> }) => {
             <AlertDialog>
                 <AlertDialogTrigger asChild>
                     <Button variant="outline" size="icon">
-                        <IoTrashOutline />
+                        <Trash2 />
                     </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -272,7 +277,7 @@ const ActionsCell = ({ row }: { row: Row<Entry> }) => {
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
-            </AlertDialog>
+            </AlertDialog>*/}
         </div>
     );
 };

@@ -56,8 +56,9 @@ const cacheMiddleware = createMiddleware(async (ctx, next) => {
         return next();
     }
 
-    const obj = redis.get(key)
-    return ctx.json(obj, { status: 200 });
+    const obj = await redis.get(key)
+    if (obj == null) return next();
+    return ctx.json(JSON.parse(obj), { status: 200 });
 });
 
 //app.use("*", apiAuthMiddleware);

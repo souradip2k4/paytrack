@@ -12,7 +12,7 @@ import { ApiKeysResoponse } from "@/lib/api";
 import { useUser } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { IoClipboardOutline, IoTrashOutline } from "react-icons/io5";
+import { Copy, Trash2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { H3 } from "./ui/typography";
 
@@ -68,10 +68,10 @@ export default function ApiKeysList() {
                                 <TableCell>
                                     <div className="flex gap-2">
                                         <Button size="icon" variant="outline">
-                                            <IoClipboardOutline />
+                                            <Copy className="size-4" />
                                         </Button>
                                         <Button size="icon" variant="outline">
-                                            <IoTrashOutline />
+                                            <Trash2 className="size-4" />
                                         </Button>
                                     </div>
                                 </TableCell>

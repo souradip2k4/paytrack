@@ -1,0 +1,56 @@
+import ApiKeysList from "@/components/api-keys-list";
+import { ApiKeysResoponse } from "@/lib/api";
+import { currentUser } from "@clerk/nextjs/server";
+import {
+    HydrationBoundary,
+    QueryClient,
+    dehydrate,
+} from "@tanstack/react-query";
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+
+import axios from "axios";
+
+export default async function Page() {
+    const queryClient = new QueryClient();
+    const user = await currentUser();
+
+    await queryClient.prefetchQuery({
+        queryKey: ["api-keys", user?.id],
+        queryFn: async () => {
+            if (!user?.id) return null;
+            const res = await axios.get(`/api/users/${user?.id}/api-keys`);
+            return res.data as ApiKeysResoponse;
+        },
+    });
+
+    return (
+        <HydrationBoundary state={dehydrate(queryClient)}>
+            <div className="px-8 pt-8">
+                <Breadcrumb className="pb-8">
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbLink href="/components">Components</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
+
+                <ApiKeysList />
+            </div>
+        </HydrationBoundary>
+    );
+}

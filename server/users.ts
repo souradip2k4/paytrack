@@ -110,7 +110,7 @@ users.get("/:user_id/entries/_datapoints", async (ctx) => {
             }
         },
         orderBy: {
-            date: "desc"
+            date: "asc"
         },
         _sum: {
             amount: true
@@ -127,6 +127,7 @@ users.get("/:user_id/entries/_datapoints", async (ctx) => {
             },
             amount: { gte: 0 }
         },
+        orderBy: { date: "asc" },
         _sum: {
             amount: true
         }
@@ -142,6 +143,7 @@ users.get("/:user_id/entries/_datapoints", async (ctx) => {
             },
             amount: { lte: 0 }
         },
+        orderBy: { date: "asc" },
         _sum: {
             amount: true
         }
@@ -151,15 +153,13 @@ users.get("/:user_id/entries/_datapoints", async (ctx) => {
 
     let incindex = 0; let expindex = 0;
     const points = entries[1].map((amount) => {
-        const point = { amount: Number(amount._sum.amount), income: 0, expense: 0 }
-        if (incindex < 0 || incindex >= entries[2].length) { return point }
-        if (expindex < 0 || expindex >= entries[3].length) { return point }
-        if (isSameDay(amount.date, entries[2][incindex].date)) {
+        const point = { date: format(amount.date, "yyyy-MM-dd"), amount: Number(amount._sum.amount), income: 0, expense: 0 }
+        if (incindex >= 0 && incindex < entries[2].length && isSameDay(amount.date, entries[2][incindex].date)) {
             point.income = Number(entries[2][incindex]._sum.amount);
             incindex++;
         }
-        if (isSameDay(amount.date, entries[3][expindex].date)) {
-            point.expense = Number(entries[3][expindex]._sum.amount);
+        if (expindex >= 0 && expindex < entries[3].length && isSameDay(amount.date, entries[3][expindex].date)) {
+            point.expense = Math.abs(Number(entries[3][expindex]._sum.amount));
             expindex++;
         }
         return point

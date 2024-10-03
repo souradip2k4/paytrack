@@ -5,6 +5,7 @@ import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { DataTable, columns } from "./data-table";
+import LoadingSection from "@/components/loading-section";
 
 export function EntryTable() {
     const { user } = useUser();
@@ -16,9 +17,9 @@ export function EntryTable() {
         },
     });
 
-    if (query.isLoading) return <p>Loading...</p>;
-    else if (query.isError) return <></>;
-    else if (query.data === undefined) return <></>;
+    if (query.isLoading) return <LoadingSection />;
+    else if (query.isError) throw new Error(query.error);
+    else if (query.data === undefined) return <LoadingSection />;
 
     return (
         <div>

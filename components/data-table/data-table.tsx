@@ -1,12 +1,20 @@
 "use client";
 
-
 import {
     ContextMenu,
+    ContextMenuCheckboxItem,
     ContextMenuContent,
     ContextMenuItem,
+    ContextMenuLabel,
+    ContextMenuRadioGroup,
+    ContextMenuRadioItem,
+    ContextMenuSeparator,
+    ContextMenuShortcut,
+    ContextMenuSub,
+    ContextMenuSubContent,
+    ContextMenuSubTrigger,
     ContextMenuTrigger,
-} from "@/components/ui/context-menu"
+} from "@/components/ui/context-menu";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -42,8 +50,7 @@ import {
 } from "@tanstack/react-table";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { FaRegEyeSlash } from "react-icons/fa";
-import { IoTrashOutline } from "react-icons/io5";
+import { Trash2, EyeOff } from "lucide-react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { CreateEntryDialog } from "../create-entry-dialog";
 import { Button } from "../ui/button";
@@ -135,7 +142,7 @@ export function DataTable<TData, TValue>({
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="outline" className="ml-auto">
-                                <FaRegEyeSlash className="h-4 w-4 mr-2" /> Hide
+                                <EyeOff className="h-4 w-4 mr-2" /> Hide
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -166,7 +173,7 @@ export function DataTable<TData, TValue>({
                         className=""
                         onClick={deleteColumns}
                     >
-                        <IoTrashOutline className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4" />
                     </Button>
                 )}
                 <Button
@@ -178,7 +185,7 @@ export function DataTable<TData, TValue>({
                 </Button>
                 <CreateEntryDialog />
             </div>
-            <div className="rounded-md border">
+            <div className="rounded-md border border-input">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -200,21 +207,71 @@ export function DataTable<TData, TValue>({
                     </TableHeader>
                     <TableBody>
                         {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={row.getIsSelected() && "selected"}
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext(),
-                                            )}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            ))
+                            table.getRowModel().rows.map((row) => {
+                                console.log(row.getValue("message"));
+                                return (
+                                    <ContextMenu>
+                                        <ContextMenuTrigger asChild>
+                                            <TableRow
+                                                key={row.id}
+                                                data-state={row.getIsSelected() && "selected"}
+                                            >
+                                                {row.getVisibleCells().map((cell) => (
+                                                    <TableCell key={cell.id}>
+                                                        {flexRender(
+                                                            cell.column.columnDef.cell,
+                                                            cell.getContext(),
+                                                        )}
+                                                    </TableCell>
+                                                ))}
+                                            </TableRow>
+                                        </ContextMenuTrigger>
+                                        <ContextMenuContent className="w-64">
+                                            <ContextMenuItem inset>
+                                                Back
+                                                <ContextMenuShortcut>⌘[</ContextMenuShortcut>
+                                            </ContextMenuItem>
+                                            <ContextMenuItem inset disabled>
+                                                Forward
+                                                <ContextMenuShortcut>⌘]</ContextMenuShortcut>
+                                            </ContextMenuItem>
+                                            <ContextMenuItem inset>
+                                                Reload
+                                                <ContextMenuShortcut>⌘R</ContextMenuShortcut>
+                                            </ContextMenuItem>
+                                            <ContextMenuSub>
+                                                <ContextMenuSubTrigger inset>More Tools</ContextMenuSubTrigger>
+                                                <ContextMenuSubContent className="w-48">
+                                                    <ContextMenuItem>
+                                                        Save Page As...
+                                                        <ContextMenuShortcut>⇧⌘S</ContextMenuShortcut>
+                                                    </ContextMenuItem>
+                                                    <ContextMenuItem>Create Shortcut...</ContextMenuItem>
+                                                    <ContextMenuItem>Name Window...</ContextMenuItem>
+                                                    <ContextMenuSeparator />
+                                                    <ContextMenuItem>Developer Tools</ContextMenuItem>
+                                                </ContextMenuSubContent>
+                                            </ContextMenuSub>
+                                            <ContextMenuSeparator />
+                                            <ContextMenuCheckboxItem checked>
+                                                Show Bookmarks Bar
+                                                <ContextMenuShortcut>⌘⇧B</ContextMenuShortcut>
+                                            </ContextMenuCheckboxItem>
+                                            <ContextMenuCheckboxItem>Show Full URLs</ContextMenuCheckboxItem>
+                                            <ContextMenuSeparator />
+                                            <ContextMenuRadioGroup value="pedro">
+                                                <ContextMenuLabel inset>People</ContextMenuLabel>
+                                                <ContextMenuSeparator />
+                                                <ContextMenuRadioItem value="pedro">
+                                                    Pedro Duarte
+                                                </ContextMenuRadioItem>
+                                                <ContextMenuRadioItem value="colm">Colm Tuite</ContextMenuRadioItem>
+                                            </ContextMenuRadioGroup>
+                                        </ContextMenuContent>
+                                    </ContextMenu>
+                                )
+                            }
+                            )
                         ) : (
                             <TableRow>
                                 <TableCell
