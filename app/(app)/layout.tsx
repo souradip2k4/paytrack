@@ -1,5 +1,4 @@
 import { H1 } from "@/components/ui/typography";
-import { SignedIn, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import React from "react";
 import {

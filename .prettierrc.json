@@ -1,0 +1,10 @@
+{
+    "$schema": "https://raw.githubusercontent.com/SchemaStore/schemastore/refs/heads/master/src/schemas/json/prettierrc.json",
+    "useTabs": true,
+    "tabWidth": 4,
+    "trailingComma": "all",
+    "semi": true,
+    "arrowParens": "avoid",
+    "bracketSameLine": true,
+    "experimentalTernaries": true
+}

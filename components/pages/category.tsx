@@ -17,8 +17,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import React from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import { FiEdit3 } from "react-icons/fi";
-import { IoClose } from "react-icons/io5";
+import { Pencil, X } from "lucide-react"
 import { H3 } from "../ui/typography";
 
 export default function Category() {
@@ -112,7 +111,7 @@ export default function Category() {
                                     <Dialog>
                                         <DialogTrigger asChild>
                                             <Button variant="outline" className="size-6 p-0">
-                                                <FiEdit3 className="" />
+                                                <Pencil className="h-4 w-4" />
                                             </Button>
                                         </DialogTrigger>
                                         <DialogContent className="sm:max-w-[425px]">
@@ -143,7 +142,7 @@ export default function Category() {
                                             deleteCategoriesMutation.mutate({ id: value.id });
                                         }}
                                     >
-                                        <IoClose className="" />
+                                        <X className="h-4 w-4" />
                                     </Button>
                                 </div>
                             </React.Fragment>

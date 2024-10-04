@@ -1,6 +1,15 @@
 "use client";
 
 import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import {
     Table,
     TableBody,
     TableCell,
@@ -15,6 +24,8 @@ import axios from "axios";
 import { Copy, Trash2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { H3 } from "./ui/typography";
+import { Input } from "./ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function ApiKeysList() {
     const { user } = useUser();
@@ -80,6 +91,22 @@ export default function ApiKeysList() {
                     </TableBody>
                 </Table>
             </div>
+
+            <Dialog>
+                <DialogTrigger>
+                    <Button>New API Key</Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Create New API Key.</DialogTitle>
+                    </DialogHeader>
+                    <Input placeholder="Name" />
+                    <DialogFooter>
+                        <Button>Create</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
             <Button
                 onClick={() => {
                     apiKeysMutation.mutate();

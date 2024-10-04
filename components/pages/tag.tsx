@@ -17,9 +17,18 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import React from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import { FiEdit3 } from "react-icons/fi";
-import { IoClose } from "react-icons/io5";
+import { Pencil, X } from "lucide-react";
 import { H3 } from "../ui/typography";
+import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableFooter,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
 
 export default function Tag() {
     const { user } = useUser();
@@ -96,6 +105,26 @@ export default function Tag() {
             <div className="space-y-4">
                 <H3 className="mt-0">Tags</H3>
                 {tagsQuery.isLoading && <p>Loading</p>}
+
+                {!tagsQuery.isLoading && <Table>
+                    <TableCaption>A list of your recent invoices.</TableCaption>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[100px]">Name</TableHead>
+                            <TableHead>Entries</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {tagsQuery.data?.data.map((tag) => (
+                            <TableRow key={tag.id}>
+                                <TableCell className="font-medium">{tag.name}</TableCell>
+                                <TableCell>{tag._count.entries}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                }
+
                 {!tagsQuery.isLoading && (
                     <div className="flex gap-4">
                         {tagsQuery.data?.data.map((value) => (
@@ -108,7 +137,7 @@ export default function Tag() {
                                     <Dialog>
                                         <DialogTrigger asChild>
                                             <Button variant="outline" className="size-6 p-0">
-                                                <FiEdit3 className="" />
+                                                <Pencil className="h-4 w-4" />
                                             </Button>
                                         </DialogTrigger>
                                         <DialogContent className="sm:max-w-[425px]">
@@ -119,17 +148,6 @@ export default function Tag() {
                                                     you&apos;re done.
                                                 </DialogDescription>
                                             </DialogHeader>
-                                            {/** TODO: EDIT THIS */}
-                                            {/* <form onSubmit={handleSubmit(onSubmit)}>
-                                                <Label htmlFor="name" className="text-right">
-                                                    Name
-                                                </Label>
-                                                <Input
-                                                    placeholder="category"
-                                                    {...register("name", { required: true })}
-                                                />
-                                                <Button type="submit">Create</Button>
-                                            </form> */}
                                         </DialogContent>
                                     </Dialog>
                                     <Button
@@ -139,7 +157,7 @@ export default function Tag() {
                                             deleteTagMutation.mutate({ id: value.id });
                                         }}
                                     >
-                                        <IoClose className="" />
+                                        <X className="h-4 w-4" />
                                     </Button>
                                 </div>
                             </React.Fragment>

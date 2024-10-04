@@ -210,10 +210,9 @@ export function DataTable<TData, TValue>({
                             table.getRowModel().rows.map((row) => {
                                 console.log(row.getValue("message"));
                                 return (
-                                    <ContextMenu>
+                                    <ContextMenu key={row.id}>
                                         <ContextMenuTrigger asChild>
                                             <TableRow
-                                                key={row.id}
                                                 data-state={row.getIsSelected() && "selected"}
                                             >
                                                 {row.getVisibleCells().map((cell) => (

@@ -444,10 +444,5 @@ export const columns: ColumnDef<Entry>[] = [
         accessorKey: "tags",
         header: "Tags",
         cell: TagsCell,
-    },
-    {
-        accessorKey: "actions",
-        header: "",
-        cell: ActionsCell,
     }
 ];

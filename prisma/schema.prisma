@@ -13,7 +13,7 @@ model User {
     first_name String?
     last_name  String?
     username   String     @unique
-    create_at  DateTime   @default(now())
+    created_at DateTime   @default(now())
     updated_at DateTime   @updatedAt
     entries    Entry[]
     tags       Tag[]
@@ -25,6 +25,8 @@ model Entry {
     id          String    @id @default(cuid())
     amount      Decimal
     date        DateTime  @db.Date
+    created_at  DateTime  @default(now())
+    updated_at  DateTime  @updatedAt
     message     String?
     user_id     String
     user        User      @relation(fields: [user_id], references: [id])
@@ -36,7 +38,7 @@ model Entry {
 model Category {
     id         String   @id @default(cuid())
     name       String
-    create_at  DateTime @default(now())
+    created_at DateTime @default(now())
     updated_at DateTime @updatedAt
     entries    Entry[]
     user_id    String
@@ -46,11 +48,13 @@ model Category {
 }
 
 model Tag {
-    id      String  @id @default(cuid())
-    name    String
-    user_id String
-    user    User    @relation(fields: [user_id], references: [id])
-    entries Entry[]
+    id         String   @id @default(cuid())
+    name       String
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+    user_id    String
+    user       User     @relation(fields: [user_id], references: [id])
+    entries    Entry[]
 }
 
 enum ApiAccessPermission {
@@ -67,7 +71,7 @@ model ApiKey {
     id           String                @id @default(cuid())
     key          String                @unique @default(uuid())
     user_id      String
-    create_at    DateTime              @default(now())
+    created_at   DateTime              @default(now())
     expire_at    DateTime
     user         User                  @relation(fields: [user_id], references: [id])
     perimissions ApiAccessPermission[] @default([READONLY])
