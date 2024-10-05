@@ -21,6 +21,9 @@ export default async function Page() {
     await queryClient.prefetchQuery({
         queryKey: ["entries", user?.id],
         queryFn: async () => {
+            if (!user) {
+                return []
+            }
             const res = await axios.get(`/api/users/${user?.id}/entries`);
             return res.data;
         },
