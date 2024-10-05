@@ -32,7 +32,7 @@ import {
 import { QueryCategories } from "@/lib/api";
 import { deleteEntriesMutationFn } from "@/lib/query";
 import { cn } from "@/lib/utils";
-import { categoriesAtom, isEditingAtom } from "@/store/atoms";
+import { categoriesAtom } from "@/store/atoms";
 import { useUser } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -66,13 +66,6 @@ export function DataTable<TData, TValue>({
     data,
 }: DataTableProps<TData, TValue>) {
     const { user } = useUser();
-    const [isEditing, setEditing] = useRecoilState(isEditingAtom);
-    const toggleEditingMode = () => {
-        setEditing((x) => !x);
-        setColumnVisibility((value) => {
-            return { ...value, select: !isEditing };
-        });
-    };
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -138,51 +131,32 @@ export function DataTable<TData, TValue>({
                     }
                     className="max-w-sm"
                 />
-                {isEditing && (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="ml-auto">
-                                <EyeOff className="h-4 w-4 mr-2" /> Hide
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            {table
-                                .getAllColumns()
-                                .filter((column) => column.getCanHide())
-                                .map((column) => {
-                                    return (
-                                        <DropdownMenuCheckboxItem
-                                            key={column.id}
-                                            className="capitalize"
-                                            checked={column.getIsVisible()}
-                                            onCheckedChange={(value) =>
-                                                column.toggleVisibility(!!value)
-                                            }
-                                        >
-                                            {column.id}
-                                        </DropdownMenuCheckboxItem>
-                                    );
-                                })}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                )}
-                {isEditing && (
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className=""
-                        onClick={deleteColumns}
-                    >
-                        <Trash2 className="h-4 w-4" />
-                    </Button>
-                )}
-                <Button
-                    variant="outline"
-                    className={cn(!isEditing ? "ml-auto" : "")}
-                    onClick={toggleEditingMode}
-                >
-                    {isEditing ? "View" : "Edit"}
-                </Button>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="ml-auto">
+                            <EyeOff className="h-4 w-4 mr-2" /> Hide
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        {table
+                            .getAllColumns()
+                            .filter((column) => column.getCanHide())
+                            .map((column) => {
+                                return (
+                                    <DropdownMenuCheckboxItem
+                                        key={column.id}
+                                        className="capitalize"
+                                        checked={column.getIsVisible()}
+                                        onCheckedChange={(value) =>
+                                            column.toggleVisibility(!!value)
+                                        }
+                                    >
+                                        {column.id}
+                                    </DropdownMenuCheckboxItem>
+                                );
+                            })}
+                    </DropdownMenuContent>
+                </DropdownMenu>
                 <CreateEntryDialog />
             </div>
             <div className="rounded-md border border-input">

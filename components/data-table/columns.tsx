@@ -42,7 +42,7 @@ import { editEntryMutationFn } from "@/lib/actions";
 import { QueryCategories, QueryEntry } from "@/lib/api";
 import { deleteEntryMutationFn } from "@/lib/query";
 import { castUndefined, cn } from "@/lib/utils";
-import { categoriesAtom, isEditingAtom } from "@/store/atoms";
+import { categoriesAtom } from "@/store/atoms";
 import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IconArrowDown, IconArrowUp } from "@tabler/icons-react";
@@ -283,16 +283,12 @@ const ActionsCell = ({ row }: { row: Row<Entry> }) => {
 };
 
 const MessageCell = ({ row }: { row: Row<Entry> }) => {
-    const isEditing = useRecoilValue(isEditingAtom);
     const message = row.getValue("message") as string;
-
-    if (isEditing) return <Input className="w-fit" defaultValue={message} />;
     return <p>{message}</p>;
 };
 
 const CategoryCell = ({ row }: { row: Row<Entry> }) => {
     const { user } = useUser();
-    const isEditing = useRecoilValue(isEditingAtom);
     const categoryQuery = useQuery<unknown, unknown, QueryCategories>({
         queryKey: ["category"],
         queryFn: async () => {
@@ -312,47 +308,15 @@ const CategoryCell = ({ row }: { row: Row<Entry> }) => {
 
     return (
         <React.Fragment>
-            {!isEditing && category && (
-                <Badge variant="outline" key={category.id}>
-                    {category.name}
-                </Badge>
-            )}
-            {isEditing && (
-                <Select>
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-
-                    <SelectContent defaultValue={category_id}>
-                        <Input
-                            value={categoryInputState}
-                            onChange={(e) => setCategoryInputState(e.target.value)}
-                            placeholder="Search"
-                        />
-                        <SelectGroup>
-                            {categoryQuery.isLoading && <p>Loading...</p>}
-                            {categoryQuery.data?.map((value) => (
-                                <SelectItem value={value.id} key={value.id}>
-                                    {value.name}
-                                </SelectItem>
-                            ))}
-                            {categoryInputState && (
-                                <Button
-                                    variant="secondary"
-                                    className="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                                >{`Create "${categoryInputState}"`}</Button>
-                            )}
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
-            )}
+            <Badge variant="outline" key={category?.id}>
+                {category?.name}
+            </Badge>
         </React.Fragment>
     );
 };
 
 const TagsCell = ({ row }: { row: Row<Entry> }) => {
     const { user } = useUser();
-    const isEditing = useRecoilValue(isEditingAtom);
     return (
         <div className="w-fit space-x-2">
             {row.original.tags.map((value) => (
@@ -360,11 +324,6 @@ const TagsCell = ({ row }: { row: Row<Entry> }) => {
                     {value.name}
                 </Badge>
             ))}
-            {isEditing && (
-                <Button variant="link" className="px-2 text-xs">
-                    + add
-                </Button>
-            )}
         </div>
     );
 };

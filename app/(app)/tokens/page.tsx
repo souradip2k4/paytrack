@@ -33,22 +33,6 @@ export default async function Page() {
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
             <div className="px-8 pt-8">
-                <Breadcrumb className="pb-8">
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbLink href="/components">Components</BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
-
                 <ApiKeysList />
             </div>
         </HydrationBoundary>
