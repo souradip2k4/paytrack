@@ -123,7 +123,7 @@ async function seed() {
 
 	const tags = await gentags(user);
 	const categories = await gencategories(user);
-	await genentries(10_000, user, categories, tags);
+	await genentries(5, user, categories, tags);
 }
 
 seed()

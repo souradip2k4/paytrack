@@ -25,6 +25,17 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import {
+    Drawer,
+    DrawerClose,
+    DrawerContent,
+    DrawerDescription,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+} from "@/components/ui/drawer"
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { entriesMutationFn } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 import { entryAtom } from "@/store/atoms";
@@ -33,9 +44,11 @@ import { Prisma } from "@prisma/client";
 import { IconCalendarPlus, IconX } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addDays, format } from "date-fns";
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useImperativeHandle, useLayoutEffect, useRef, useState } from "react";
 import { Control, FieldValues, useController, useForm } from "react-hook-form";
 import { useRecoilState, useRecoilValue } from "recoil";
+import { nanoid } from "nanoid"
+import { Separator } from "@/components/ui/separator";
 
 export function DatePicker({
     index,
@@ -57,7 +70,7 @@ export function DatePicker({
                 <Button
                     variant={"outline"}
                     className={cn(
-                        "w-[224px] justify-start text-left font-normal",
+                        "justify-start text-left font-normal",
                         !dateField.value && "text-muted-foreground",
                     )}
                 >
@@ -114,10 +127,10 @@ function Entry({ index, control }: { index: number; control: Control }) {
     });
 
     return (
-        <React.Fragment>
-            <Input placeholder="Amount" type="number" {...amountField} />
+        <div className="flex flex-wrap gap-2">
+            <Input placeholder="Amount" type="number" className="w-fit max-sm:w-[96px]" {...amountField} />
             <DatePicker index={index} control={control} />
-            <Input placeholder="Message" type="text" {...messageField} />
+            <Input placeholder="Message" className="w-fit" type="text" {...messageField} />
             <Button
                 type="button"
                 variant="ghost"
@@ -126,12 +139,15 @@ function Entry({ index, control }: { index: number; control: Control }) {
             >
                 <IconX stroke={2} size={16} />
             </Button>
-        </React.Fragment>
+        </div>
     );
 }
 
-export function CreateEntryDialog() {
+type EntryFormRef = { submit: () => void }
+
+function EntryForm({ formRef }: { formRef: React.Ref<EntryFormRef | null> }) {
     const { user } = useUser();
+
     const queryClient = useQueryClient();
     const entryMutation = useMutation({
         mutationFn: entriesMutationFn,
@@ -140,13 +156,16 @@ export function CreateEntryDialog() {
             queryClient.refetchQueries({ queryKey: ["entries"] });
         },
     });
+
     const [entries, setEntry] = useRecoilState(entryAtom);
     const { control, handleSubmit } = useForm();
     const onSubmit = (e: FieldValues) => {
         let data: any[] = [];
         entries.forEach((entry) => data.push(e[entry]));
 
-        if (!user) return;
+        if (!user) {
+            return;
+        }
 
         const entriesData: Prisma.EntryCreateManyInput[] = data.map((value) => ({
             amount: Number(value.amount),
@@ -155,50 +174,69 @@ export function CreateEntryDialog() {
             user_id: user.id,
         }));
         entryMutation.mutate(entriesData);
-        closeBtn.current.click();
+
+        alert("done")
+        //closeBtn.current.click();
     };
-    const closeBtn = useRef<HTMLButtonElement>(null!);
+
     useLayoutEffect(() => {
-        setEntry(() => [crypto.randomUUID()]);
+        setEntry(() => [nanoid()]);
     }, []);
 
-    return (
-        <Dialog>
-            <DialogTrigger asChild>
-                <Button>Create new</Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-[720px]">
-                <DialogHeader>
-                    <DialogTitle>Create new entry</DialogTitle>
-                    <DialogDescription>
-                        Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                    </DialogDescription>
-                </DialogHeader>
 
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <div className="space-y-4">
-                        <div className="space-y-2">
-                            <div className="grid grid-cols-[100px_224px_1fr_auto] gap-4 px-1">
-                                <p className="text-sm font-medium leading-none">Amount</p>
-                                <p className="text-sm font-medium leading-none">Date</p>
-                                <p className="text-sm font-medium leading-none">Message</p>
-                            </div>
-                            <div className="grid grid-cols-[100px_auto_1fr_auto] gap-4">
-                                {entries.map((_, index) => (
-                                    <Entry key={index} index={index} control={control} />
-                                ))}
-                            </div>
-                        </div>
-                        <Button
-                            variant="secondary"
-                            type="button"
-                            onClick={() =>
-                                setEntry((value) => [...value, crypto.randomUUID()])
-                            }
-                        >
-                            + Add More
-                        </Button>
-                    </div>
+    useImperativeHandle(formRef, () => ({
+        submit() {
+            console.log("submit--form");
+            handleSubmit(onSubmit)();
+        }
+    }))
+
+    return (
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full px-4">
+            <div className="space-y-4">
+                <div className="flex flex-col gap-4">
+                    {entries.map((_, index) => (
+                        <React.Fragment key={index}>
+                            <Entry index={index} control={control} />
+                            <Separator orientation="horizontal" className="bg-input/50" />
+                        </React.Fragment>
+                    ))}
+                </div>
+                <Button
+                    variant="secondary"
+                    type="button"
+                    onClick={() =>
+                        setEntry((value) => [...value, nanoid()])
+                    }
+                >
+                    + Add More
+                </Button>
+            </div>
+        </form>
+    )
+}
+
+export function CreateEntryDialog() {
+    const closeBtn = useRef<HTMLButtonElement>(null!);
+
+    const [open, setOpen] = useState(false)
+    const isDesktop = useMediaQuery("(min-width: 768px)")
+
+    const entryFormRef = useRef<EntryFormRef>(null);
+
+    if (isDesktop) {
+        return (
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogTrigger asChild>
+                    <Button>Create new</Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-[72%] min-w-auto">
+                    <DialogHeader>
+                        <DialogTitle>Create new entry</DialogTitle>
+                        <DialogDescription>You can add mutliple entries at once.</DialogDescription>
+                    </DialogHeader>
+
+                    <EntryForm formRef={entryFormRef} />
 
                     <DialogFooter>
                         <DialogClose ref={closeBtn} asChild>
@@ -206,12 +244,46 @@ export function CreateEntryDialog() {
                                 Cancel
                             </Button>
                         </DialogClose>
-                        <Button onClick={() => handleSubmit(onSubmit)} type="submit">
+                        <Button onClick={() => {
+                            entryFormRef?.current?.submit()
+                            setOpen(false)
+                        }} type="submit">
                             Create
                         </Button>
                     </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
-    );
+                </DialogContent>
+            </Dialog>
+        )
+    }
+
+    return (
+        <Drawer open={open} onOpenChange={setOpen}>
+            <DrawerTrigger asChild>
+                <Button>Create new</Button>
+            </DrawerTrigger>
+            <DrawerContent>
+                <DrawerHeader className="text-left">
+                    <DrawerTitle>Create new entry</DrawerTitle>
+                    <DrawerDescription>You can add mutliple entries at once.</DrawerDescription>
+                </DrawerHeader>
+
+                <EntryForm formRef={entryFormRef} />
+
+                <DrawerFooter>
+                    <DrawerClose ref={closeBtn} asChild>
+                        <Button type="button" variant="secondary">
+                            Cancel
+                        </Button>
+                    </DrawerClose>
+                    <Button onClick={() => {
+                        entryFormRef?.current?.submit()
+                        setOpen(false)
+                    }} type="submit">
+                        Create
+                    </Button>
+                </DrawerFooter>
+            </DrawerContent>
+        </Drawer>)
+
+
 }
