@@ -215,7 +215,7 @@ export function DataTable<TData, TValue>({
                                             </ContextMenuItem>
 
                                             <ContextMenuItem asChild>
-                                                <DeleteButton row={row.original as Row<QueryEntry>} />
+                                                <DeleteButton row={row as Row<QueryEntry>} />
                                             </ContextMenuItem>
                                         </ContextMenuContent>
                                     </ContextMenu>

@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0.4
+- Fixed bug where delete entry button was not working.
+
 ## v1.0.3
 - Create modals for mobile view (for new entry and edit entry dialogs).
 - Fixed overflow issues of lines in entry editor.

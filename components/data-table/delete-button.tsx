@@ -13,6 +13,7 @@ export function DeleteButton({ row }: { row: Row<QueryEntry> }) {
             queryClient.refetchQueries({ queryKey: ["entries"] });
         },
     });
+
     return (
         <Button
             size="sm"
