@@ -239,6 +239,7 @@ export function CreateEntryDialog() {
                         <DialogDescription>
                             You can add mutliple entries at once.
                         </DialogDescription>
+                    </DialogHeader>
                     <EntryForm formRef={entryFormRef} />
 
                     <DialogFooter>
