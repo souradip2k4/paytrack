@@ -108,7 +108,6 @@ export function DataTable<TData, TValue>({
         queryFn: async () => {
             if (!user?.id) return [] as QueryCategories;
             const res = await axios.get(`/api/users/${user?.id}/categories`);
-            console.log(res.data);
             return res.data as QueryCategories;
         },
     });
@@ -118,7 +117,7 @@ export function DataTable<TData, TValue>({
 
     return (
         <div>
-            <div className="flex items-center gap-4 pb-4">
+            <div className="flex max-sm:flex-wrap items-center gap-4 pb-4">
                 <Input
                     placeholder="Filter messages..."
                     value={

@@ -99,7 +99,6 @@ function EditForm({ row, formRef }: { row: Row<QueryEntry>, formRef: React.Ref<E
         resolver: zodResolver(entrySchema),
     });
     const onSubmit = (e: FieldValues) => {
-        console.log(e);
         const data = entrySchema.safeParse(e);
         if (!entry.id || !data.success) return;
 
