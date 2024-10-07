@@ -2,17 +2,8 @@
 
 import {
     ContextMenu,
-    ContextMenuCheckboxItem,
     ContextMenuContent,
     ContextMenuItem,
-    ContextMenuLabel,
-    ContextMenuRadioGroup,
-    ContextMenuRadioItem,
-    ContextMenuSeparator,
-    ContextMenuShortcut,
-    ContextMenuSub,
-    ContextMenuSubContent,
-    ContextMenuSubTrigger,
     ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import {
@@ -31,13 +22,13 @@ import {
 } from "@/components/ui/table";
 import { QueryCategories } from "@/lib/api";
 import { deleteEntriesMutationFn } from "@/lib/query";
-import { cn } from "@/lib/utils";
 import { categoriesAtom } from "@/store/atoms";
 import { useUser } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     ColumnDef,
     ColumnFiltersState,
+    Row,
     RowSelectionState,
     SortingState,
     VisibilityState,
@@ -50,11 +41,14 @@ import {
 } from "@tanstack/react-table";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Trash2, EyeOff } from "lucide-react";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { EyeOff } from "lucide-react";
+import { useSetRecoilState } from "recoil";
 import { CreateEntryDialog } from "../create-entry-dialog";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { QueryEntry } from "@/lib/api";
+import { DeleteButton } from "./delete-button";
+import { EditButton } from "./edit-button";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -69,7 +63,9 @@ export function DataTable<TData, TValue>({
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+        {},
+    );
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
     const table = useReactTable({
         data,
@@ -112,22 +108,28 @@ export function DataTable<TData, TValue>({
         queryFn: async () => {
             if (!user?.id) return [] as QueryCategories;
             const res = await axios.get(`/api/users/${user?.id}/categories`);
-            console.log(res.data)
+            console.log(res.data);
             return res.data as QueryCategories;
         },
     });
 
     const setCategories = useSetRecoilState(categoriesAtom);
-    useEffect(() => setCategories(categoriesQuery.data))
+    useEffect(() => setCategories(categoriesQuery.data));
 
     return (
         <div>
             <div className="flex items-center gap-4 pb-4">
                 <Input
                     placeholder="Filter messages..."
-                    value={(table.getColumn("message")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) =>
-                        table.getColumn("message")?.setFilterValue(event.target.value)
+                    value={
+                        (table
+                            .getColumn("message")
+                            ?.getFilterValue() as string) ?? ""
+                    }
+                    onChange={event =>
+                        table
+                            .getColumn("message")
+                            ?.setFilterValue(event.target.value)
                     }
                     className="max-w-sm"
                 />
@@ -140,17 +142,16 @@ export function DataTable<TData, TValue>({
                     <DropdownMenuContent align="end">
                         {table
                             .getAllColumns()
-                            .filter((column) => column.getCanHide())
-                            .map((column) => {
+                            .filter(column => column.getCanHide())
+                            .map(column => {
                                 return (
                                     <DropdownMenuCheckboxItem
                                         key={column.id}
                                         className="capitalize"
                                         checked={column.getIsVisible()}
-                                        onCheckedChange={(value) =>
+                                        onCheckedChange={value =>
                                             column.toggleVisibility(!!value)
-                                        }
-                                    >
+                                        }>
                                         {column.id}
                                     </DropdownMenuCheckboxItem>
                                 );
@@ -162,17 +163,18 @@ export function DataTable<TData, TValue>({
             <div className="rounded-md border border-input">
                 <Table>
                     <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
+                        {table.getHeaderGroups().map(headerGroup => (
                             <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
+                                {headerGroup.headers.map(header => {
                                     return (
                                         <TableHead key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                    header.column.columnDef.header,
+                                            {header.isPlaceholder ? null : (
+                                                flexRender(
+                                                    header.column.columnDef
+                                                        .header,
                                                     header.getContext(),
-                                                )}
+                                                )
+                                            )}
                                         </TableHead>
                                     );
                                 })}
@@ -180,81 +182,53 @@ export function DataTable<TData, TValue>({
                         ))}
                     </TableHeader>
                     <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => {
-                                console.log(row.getValue("message"));
+                        {table.getRowModel().rows?.length ?
+                            table.getRowModel().rows.map(row => {
                                 return (
                                     <ContextMenu key={row.id}>
                                         <ContextMenuTrigger asChild>
                                             <TableRow
-                                                data-state={row.getIsSelected() && "selected"}
-                                            >
-                                                {row.getVisibleCells().map((cell) => (
-                                                    <TableCell key={cell.id}>
-                                                        {flexRender(
-                                                            cell.column.columnDef.cell,
-                                                            cell.getContext(),
-                                                        )}
-                                                    </TableCell>
-                                                ))}
+                                                data-state={
+                                                    row.getIsSelected() &&
+                                                    "selected"
+                                                }>
+                                                {row
+                                                    .getVisibleCells()
+                                                    .map(cell => (
+                                                        <TableCell
+                                                            key={cell.id}>
+                                                            {flexRender(
+                                                                cell.column
+                                                                    .columnDef
+                                                                    .cell,
+                                                                cell.getContext(),
+                                                            )}
+                                                        </TableCell>
+                                                    ))}
                                             </TableRow>
                                         </ContextMenuTrigger>
-                                        <ContextMenuContent className="w-64">
-                                            <ContextMenuItem inset>
-                                                Back
-                                                <ContextMenuShortcut>⌘[</ContextMenuShortcut>
+                                        <ContextMenuContent>
+                                            <ContextMenuItem asChild>
+                                                <EditButton
+                                                    row={row as Row<QueryEntry>}
+                                                />
                                             </ContextMenuItem>
-                                            <ContextMenuItem inset disabled>
-                                                Forward
-                                                <ContextMenuShortcut>⌘]</ContextMenuShortcut>
+
+                                            <ContextMenuItem asChild>
+                                                <DeleteButton row={row.original as Row<QueryEntry>} />
                                             </ContextMenuItem>
-                                            <ContextMenuItem inset>
-                                                Reload
-                                                <ContextMenuShortcut>⌘R</ContextMenuShortcut>
-                                            </ContextMenuItem>
-                                            <ContextMenuSub>
-                                                <ContextMenuSubTrigger inset>More Tools</ContextMenuSubTrigger>
-                                                <ContextMenuSubContent className="w-48">
-                                                    <ContextMenuItem>
-                                                        Save Page As...
-                                                        <ContextMenuShortcut>⇧⌘S</ContextMenuShortcut>
-                                                    </ContextMenuItem>
-                                                    <ContextMenuItem>Create Shortcut...</ContextMenuItem>
-                                                    <ContextMenuItem>Name Window...</ContextMenuItem>
-                                                    <ContextMenuSeparator />
-                                                    <ContextMenuItem>Developer Tools</ContextMenuItem>
-                                                </ContextMenuSubContent>
-                                            </ContextMenuSub>
-                                            <ContextMenuSeparator />
-                                            <ContextMenuCheckboxItem checked>
-                                                Show Bookmarks Bar
-                                                <ContextMenuShortcut>⌘⇧B</ContextMenuShortcut>
-                                            </ContextMenuCheckboxItem>
-                                            <ContextMenuCheckboxItem>Show Full URLs</ContextMenuCheckboxItem>
-                                            <ContextMenuSeparator />
-                                            <ContextMenuRadioGroup value="pedro">
-                                                <ContextMenuLabel inset>People</ContextMenuLabel>
-                                                <ContextMenuSeparator />
-                                                <ContextMenuRadioItem value="pedro">
-                                                    Pedro Duarte
-                                                </ContextMenuRadioItem>
-                                                <ContextMenuRadioItem value="colm">Colm Tuite</ContextMenuRadioItem>
-                                            </ContextMenuRadioGroup>
                                         </ContextMenuContent>
                                     </ContextMenu>
-                                )
-                            }
-                            )
-                        ) : (
-                            <TableRow>
+                                );
+                            })
+                            : <TableRow>
                                 <TableCell
                                     colSpan={columns.length}
-                                    className="h-24 text-center"
-                                >
+                                    className="h-24 text-center">
                                     No results.
                                 </TableCell>
                             </TableRow>
-                        )}
+                        }
                     </TableBody>
                 </Table>
             </div>
@@ -263,16 +237,14 @@ export function DataTable<TData, TValue>({
                     variant="outline"
                     size="sm"
                     onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
-                >
+                    disabled={!table.getCanPreviousPage()}>
                     Previous
                 </Button>
                 <Button
                     variant="outline"
                     size="sm"
                     onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
-                >
+                    disabled={!table.getCanNextPage()}>
                     Next
                 </Button>
             </div>

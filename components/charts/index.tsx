@@ -1,1 +1,1 @@
-export * from "./monthly-chart"
+export * from "./monthly-chart";

@@ -34,7 +34,7 @@ import {
     DrawerHeader,
     DrawerTitle,
     DrawerTrigger,
-} from "@/components/ui/drawer"
+} from "@/components/ui/drawer";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { entriesMutationFn } from "@/lib/actions";
 import { cn } from "@/lib/utils";
@@ -44,10 +44,15 @@ import { Prisma } from "@prisma/client";
 import { IconCalendarPlus, IconX } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addDays, format } from "date-fns";
-import React, { useImperativeHandle, useLayoutEffect, useRef, useState } from "react";
+import React, {
+    useImperativeHandle,
+    useLayoutEffect,
+    useRef,
+    useState,
+} from "react";
 import { Control, FieldValues, useController, useForm } from "react-hook-form";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { nanoid } from "nanoid"
+import { nanoid } from "nanoid";
 import { Separator } from "@/components/ui/separator";
 
 export function DatePicker({
@@ -72,22 +77,18 @@ export function DatePicker({
                     className={cn(
                         "justify-start text-left font-normal",
                         !dateField.value && "text-muted-foreground",
-                    )}
-                >
+                    )}>
                     <IconCalendarPlus className="mr-2 h-4 w-4" />
-                    {dateField.value ? (
+                    {dateField.value ?
                         format(dateField.value, "PPP")
-                    ) : (
-                        <span>Pick a date</span>
-                    )}
+                        : <span>Pick a date</span>}
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="flex w-auto flex-col space-y-2 p-2">
                 <Select
-                    onValueChange={(value) =>
+                    onValueChange={value =>
                         dateField.onChange(addDays(new Date(), parseInt(value)))
-                    }
-                >
+                    }>
                     <SelectTrigger>
                         <SelectValue placeholder="Select" />
                     </SelectTrigger>
@@ -112,7 +113,7 @@ export function DatePicker({
 function Entry({ index, control }: { index: number; control: Control }) {
     const [entries, setEntry] = useRecoilState(entryAtom);
     const removeEntry = (index: number) => {
-        setEntry((entry) => entry.toSpliced(index, 1));
+        setEntry(entry => entry.toSpliced(index, 1));
     };
     const uuid = entries[index];
     const { field: amountField } = useController({
@@ -128,22 +129,31 @@ function Entry({ index, control }: { index: number; control: Control }) {
 
     return (
         <div className="flex flex-wrap gap-2">
-            <Input placeholder="Amount" type="number" className="w-fit max-sm:w-[96px]" {...amountField} />
+            <Input
+                placeholder="Amount"
+                type="number"
+                className="w-fit max-sm:w-[96px]"
+                {...amountField}
+            />
             <DatePicker index={index} control={control} />
-            <Input placeholder="Message" className="w-fit" type="text" {...messageField} />
+            <Input
+                placeholder="Message"
+                className="w-fit"
+                type="text"
+                {...messageField}
+            />
             <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                onClick={() => removeEntry(index)}
-            >
+                onClick={() => removeEntry(index)}>
                 <IconX stroke={2} size={16} />
             </Button>
         </div>
     );
 }
 
-type EntryFormRef = { submit: () => void }
+type EntryFormRef = { submit: () => void };
 
 function EntryForm({ formRef }: { formRef: React.Ref<EntryFormRef | null> }) {
     const { user } = useUser();
@@ -161,35 +171,30 @@ function EntryForm({ formRef }: { formRef: React.Ref<EntryFormRef | null> }) {
     const { control, handleSubmit } = useForm();
     const onSubmit = (e: FieldValues) => {
         let data: any[] = [];
-        entries.forEach((entry) => data.push(e[entry]));
+        entries.forEach(entry => data.push(e[entry]));
 
         if (!user) {
             return;
         }
 
-        const entriesData: Prisma.EntryCreateManyInput[] = data.map((value) => ({
+        const entriesData: Prisma.EntryCreateManyInput[] = data.map(value => ({
             amount: Number(value.amount),
             date: value.date,
             message: value.message,
             user_id: user.id,
         }));
         entryMutation.mutate(entriesData);
-
-        alert("done")
-        //closeBtn.current.click();
     };
 
     useLayoutEffect(() => {
         setEntry(() => [nanoid()]);
     }, []);
 
-
     useImperativeHandle(formRef, () => ({
         submit() {
-            console.log("submit--form");
             handleSubmit(onSubmit)();
-        }
-    }))
+        },
+    }));
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="w-full px-4">
@@ -198,29 +203,27 @@ function EntryForm({ formRef }: { formRef: React.Ref<EntryFormRef | null> }) {
                     {entries.map((_, index) => (
                         <React.Fragment key={index}>
                             <Entry index={index} control={control} />
-                            <Separator orientation="horizontal" className="bg-input/50" />
+                            <Separator
+                                orientation="horizontal"
+                                className="bg-input/50"
+                            />
                         </React.Fragment>
                     ))}
                 </div>
                 <Button
                     variant="secondary"
                     type="button"
-                    onClick={() =>
-                        setEntry((value) => [...value, nanoid()])
-                    }
-                >
+                    onClick={() => setEntry(value => [...value, nanoid()])}>
                     + Add More
                 </Button>
             </div>
         </form>
-    )
+    );
 }
 
 export function CreateEntryDialog() {
-    const closeBtn = useRef<HTMLButtonElement>(null!);
-
-    const [open, setOpen] = useState(false)
-    const isDesktop = useMediaQuery("(min-width: 768px)")
+    const [open, setOpen] = useState(false);
+    const isDesktop = useMediaQuery("(min-width: 768px)");
 
     const entryFormRef = useRef<EntryFormRef>(null);
 
@@ -233,27 +236,29 @@ export function CreateEntryDialog() {
                 <DialogContent className="max-w-[72%] min-w-auto">
                     <DialogHeader>
                         <DialogTitle>Create new entry</DialogTitle>
-                        <DialogDescription>You can add mutliple entries at once.</DialogDescription>
-                    </DialogHeader>
-
+                        <DialogDescription>
+                            You can add mutliple entries at once.
+                        </DialogDescription>
                     <EntryForm formRef={entryFormRef} />
 
                     <DialogFooter>
-                        <DialogClose ref={closeBtn} asChild>
+                        <DialogClose asChild>
                             <Button type="button" variant="ghost">
                                 Cancel
                             </Button>
                         </DialogClose>
-                        <Button onClick={() => {
-                            entryFormRef?.current?.submit()
-                            setOpen(false)
-                        }} type="submit">
+                        <Button
+                            onClick={() => {
+                                entryFormRef?.current?.submit();
+                                setOpen(false);
+                            }}
+                            type="submit">
                             Create
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        )
+        );
     }
 
     return (
@@ -264,26 +269,29 @@ export function CreateEntryDialog() {
             <DrawerContent>
                 <DrawerHeader className="text-left">
                     <DrawerTitle>Create new entry</DrawerTitle>
-                    <DrawerDescription>You can add mutliple entries at once.</DrawerDescription>
+                    <DrawerDescription>
+                        You can add mutliple entries at once.
+                    </DrawerDescription>
                 </DrawerHeader>
 
                 <EntryForm formRef={entryFormRef} />
 
                 <DrawerFooter>
-                    <DrawerClose ref={closeBtn} asChild>
+                    <DrawerClose asChild>
                         <Button type="button" variant="secondary">
                             Cancel
                         </Button>
                     </DrawerClose>
-                    <Button onClick={() => {
-                        entryFormRef?.current?.submit()
-                        setOpen(false)
-                    }} type="submit">
+                    <Button
+                        onClick={() => {
+                            entryFormRef?.current?.submit();
+                            setOpen(false);
+                        }}
+                        type="submit">
                         Create
                     </Button>
                 </DrawerFooter>
             </DrawerContent>
-        </Drawer>)
-
-
+        </Drawer>
+    );
 }

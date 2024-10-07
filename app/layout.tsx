@@ -8,23 +8,23 @@ import { cn } from "@/lib/utils";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Budgetbee - Expense Tracker",
-    description: "Simple but effective personal expense tracker.",
+	title: "Budgetbee - Expense Tracker",
+	description: "Simple but effective personal expense tracker.",
 };
 
 export default function RootLayout({
-    children,
+	children,
 }: Readonly<{
-    children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-    return (
-        <html lang="en" className="antialiased">
-            <body className={cn(`${inter.className}`)}>
-                <Providers>
-                    {children}
-                    <Toaster />
-                </Providers>
-            </body>
-        </html>
-    );
+	return (
+		<html lang="en" className="antialiased">
+			<body className={cn(`${inter.className}`)}>
+				<Providers>
+					{children}
+					<Toaster />
+				</Providers>
+			</body>
+		</html>
+	);
 }
