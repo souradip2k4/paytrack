@@ -15,9 +15,9 @@ import { QueryCategories } from "@/lib/api";
 import { useUser } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
+import { Pencil, X } from "lucide-react";
 import React from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import { Pencil, X } from "lucide-react";
 import { H3 } from "../ui/typography";
 
 export default function Category() {
@@ -106,9 +106,9 @@ export default function Category() {
 					<div className="flex gap-4">
 						{categoriesQuery.data?.map(value => (
 							<React.Fragment key={value.id}>
-								<div className="gap-2 h-9 px-4 py-2 border border-input bg-background shadow-sm inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+								<div className="inline-flex h-9 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
 									<p>{value.name}</p>
-									<p className="text-muted-foreground text-xs">
+									<p className="text-xs text-muted-foreground">
 										{"(100 entries)"}
 									</p>
 									<Dialog>

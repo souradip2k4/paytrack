@@ -1,12 +1,13 @@
-import { H3, P } from "@/components/ui/typography";
+import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
-	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
 	Select,
 	SelectContent,
@@ -14,10 +15,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import React from "react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { H3 } from "@/components/ui/typography";
 
 export default function Page() {
 	return (
@@ -133,7 +131,7 @@ export default function Page() {
 					</CardContent>
 				</Card>
 
-				<div className="w-full flex items-center justify-end">
+				<div className="flex w-full items-center justify-end">
 					<Button>Save changes</Button>
 				</div>
 			</div>

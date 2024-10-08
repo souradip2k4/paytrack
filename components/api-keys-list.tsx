@@ -3,7 +3,6 @@
 import {
 	Dialog,
 	DialogContent,
-	DialogDescription,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
@@ -23,9 +22,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { Copy, Trash2 } from "lucide-react";
 import { Button } from "./ui/button";
-import { H3 } from "./ui/typography";
 import { Input } from "./ui/input";
-import { Label } from "@/components/ui/label";
+import { H3 } from "./ui/typography";
 
 export default function ApiKeysList() {
 	const { user } = useUser();

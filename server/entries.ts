@@ -3,6 +3,7 @@
  * documentation: docs/api/entries
  */
 import prisma from "@/lib/prisma";
+import { run } from "@/lib/utils";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import {
@@ -10,7 +11,6 @@ import {
 	deleteEntrySchema,
 	editEntrySchema,
 } from "./schema";
-import { run } from "@/lib/utils";
 
 export const entries = new Hono();
 

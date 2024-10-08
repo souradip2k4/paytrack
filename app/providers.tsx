@@ -3,11 +3,11 @@
 
 // We can not useState or useRef in a server component, which is why we are
 // extracting this part out into it's own file with 'use client' on top
-import React from "react";
+import { ThemeProvider } from "@/components/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React from "react";
 import { RecoilRoot } from "recoil";
-import { ThemeProvider } from "@/components/theme-provider";
 
 function makeQueryClient() {
 	return new QueryClient({

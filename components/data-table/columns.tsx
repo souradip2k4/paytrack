@@ -1,58 +1,59 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { QueryCategories, QueryEntry } from "@/lib/api";
-import { cn } from "@/lib/utils";
-import { useUser } from "@clerk/nextjs";
-import { IconArrowDown, IconArrowUp } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
-import { ColumnDef, Row } from "@tanstack/react-table";
-import axios from "axios";
-import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { QueryEntry } from "@/lib/api";
+import { cn } from "@/lib/utils";
+import { IconArrowDown, IconArrowUp } from "@tabler/icons-react";
+import { ColumnDef, Row } from "@tanstack/react-table";
+import React from "react";
 
 export type Entry = QueryEntry;
 
 const MessageCell = ({ row }: { row: Row<Entry> }) => {
-    const message = row.getValue("message") as string;
-    return (
-        <div className="min-w-[200px]">
-            <p className="line-clamp-2 text-ellipsis">{message}</p>
-        </div>
-    )
+	const message = row.getValue("message") as string;
+	return (
+		<div className="min-w-[200px]">
+			<p className="line-clamp-2 text-ellipsis">{message}</p>
+		</div>
+	);
 };
 
 const CategoryCell = ({ row }: { row: Row<Entry> }) => {
-    const category = row.original.category;
-    return (
-        <React.Fragment>
-            {category && <Badge variant="outline" key={category?.id}>
-                {category?.name}
-            </Badge>}
-        </React.Fragment>
-    );
+	const category = row.original.category;
+	return (
+		<React.Fragment>
+			{category && (
+				<Badge variant="outline" key={category?.id}>
+					{category?.name}
+				</Badge>
+			)}
+		</React.Fragment>
+	);
 };
 
 const TagsCell = ({ row }: { row: Row<Entry> }) => {
-    const tagc = 2; // no of tags to display
-    return (
-        <div className="flex flex-wrap gap-1">
-            {row.original.tags.map((value, index) => {
-                if (index + 1 <= tagc) {
-                    return (
-                        <Badge variant="outline" key={value.id}>
-                            {value.name}
-                        </Badge>
-                    )
-                }
-            })}
-            {row.original.tags.length > tagc && <p className="text-xs">+{row.original.tags.length - tagc}</p>}
-        </div>
-    );
+	const tagc = 2; // no of tags to display
+	return (
+		<div className="flex flex-wrap gap-1">
+			{row.original.tags.map((value, index) => {
+				if (index + 1 <= tagc) {
+					return (
+						<Badge variant="outline" key={value.id}>
+							{value.name}
+						</Badge>
+					);
+				}
+			})}
+			{row.original.tags.length > tagc && (
+				<p className="text-xs">+{row.original.tags.length - tagc}</p>
+			)}
+		</div>
+	);
 };
 
 export const columns: ColumnDef<Entry>[] = [
-    /*{
+	/*{
         id: "select",
         header: ({ table }) => (
             <Checkbox
@@ -74,60 +75,60 @@ export const columns: ColumnDef<Entry>[] = [
         enableSorting: false,
         enableHiding: false,
     }, */
-    {
-        accessorKey: "amount",
-        header: () => <div className="text-right">Amount</div>,
-        cell: ({ row }) => {
-            const amount = parseFloat(row.getValue("amount"));
-            const formatted = new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "INR",
-            }).format(amount);
-            const color =
-                amount > 0 ? "text-green-600"
-                    : amount < 0 ? "text-red-600"
-                        : "";
-            return (
-                <div className={cn("text-right font-medium", color)}>
-                    <p className="whitespace-nowrap">{formatted}</p>
-                </div>
-            );
-        },
-    },
-    {
-        accessorKey: "message",
-        header: "Message",
-        cell: MessageCell,
-    },
-    {
-        accessorKey: "date",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() =>
-                        column.toggleSorting(column.getIsSorted() === "asc")
-                    }>
-                    Date
-                    {column.getIsSorted() === "asc" ?
-                        <IconArrowUp className="ml-2 h-4 w-4" />
-                        : <IconArrowDown className="ml-2 h-4 w-4" />}
-                </Button>
-            );
-        },
-        cell: ({ row }) => {
-            const date = new Date(row.getValue("date"));
-            return <div>{date.toDateString()}</div>;
-        },
-    },
-    {
-        accessorKey: "category",
-        header: "Category",
-        cell: CategoryCell,
-    },
-    {
-        accessorKey: "tags",
-        header: "Tags",
-        cell: TagsCell,
-    },
+	{
+		accessorKey: "amount",
+		header: () => <div className="text-right">Amount</div>,
+		cell: ({ row }) => {
+			const amount = parseFloat(row.getValue("amount"));
+			const formatted = new Intl.NumberFormat("en-US", {
+				style: "currency",
+				currency: "INR",
+			}).format(amount);
+			const color =
+				amount > 0 ? "text-green-600"
+				: amount < 0 ? "text-red-600"
+				: "";
+			return (
+				<div className={cn("text-right font-medium", color)}>
+					<p className="whitespace-nowrap">{formatted}</p>
+				</div>
+			);
+		},
+	},
+	{
+		accessorKey: "message",
+		header: "Message",
+		cell: MessageCell,
+	},
+	{
+		accessorKey: "date",
+		header: ({ column }) => {
+			return (
+				<Button
+					variant="ghost"
+					onClick={() =>
+						column.toggleSorting(column.getIsSorted() === "asc")
+					}>
+					Date
+					{column.getIsSorted() === "asc" ?
+						<IconArrowUp className="ml-2 h-4 w-4" />
+					:	<IconArrowDown className="ml-2 h-4 w-4" />}
+				</Button>
+			);
+		},
+		cell: ({ row }) => {
+			const date = new Date(row.getValue("date"));
+			return <div>{date.toDateString()}</div>;
+		},
+	},
+	{
+		accessorKey: "category",
+		header: "Category",
+		cell: CategoryCell,
+	},
+	{
+		accessorKey: "tags",
+		header: "Tags",
+		cell: TagsCell,
+	},
 ];

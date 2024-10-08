@@ -1,7 +1,7 @@
 "use server";
 
-import prisma from "./prisma";
 import { Prisma } from "@prisma/client";
+import prisma from "./prisma";
 
 export const entriesMutationFn = async (
 	data: Prisma.EntryCreateManyInput[],

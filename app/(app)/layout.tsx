@@ -1,16 +1,14 @@
-import React from "react";
 import { SidebarLayout } from "@/components/sidebar";
+import React from "react";
 
 export default function Layout({
-    children,
+	children,
 }: Readonly<{
-    children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-    return (
-        <React.Fragment>
-            <SidebarLayout>
-                {children}
-            </SidebarLayout>
-        </React.Fragment>
-    );
+	return (
+		<React.Fragment>
+			<SidebarLayout>{children}</SidebarLayout>
+		</React.Fragment>
+	);
 }

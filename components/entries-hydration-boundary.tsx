@@ -1,11 +1,11 @@
-import React from "react";
 import { entriesQueryFn } from "@/lib/query";
+import { currentUser } from "@clerk/nextjs/server";
 import {
 	HydrationBoundary,
 	QueryClient,
 	dehydrate,
 } from "@tanstack/react-query";
-import { currentUser } from "@clerk/nextjs/server";
+import React from "react";
 
 export default async function EntriesHydrationBoundary({
 	children,

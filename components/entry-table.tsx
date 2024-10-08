@@ -1,11 +1,11 @@
 "use client";
 
+import LoadingSection from "@/components/loading-section";
 import { QueryEntries } from "@/lib/api";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { DataTable, columns } from "./data-table";
-import LoadingSection from "@/components/loading-section";
 
 export function EntryTable() {
 	const { user } = useUser();

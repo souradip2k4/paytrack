@@ -1,5 +1,5 @@
 import LoadingSpinner from "@/components/loading-spinner";
-import { SignIn, ClerkLoading, ClerkLoaded } from "@clerk/nextjs";
+import { ClerkLoaded, ClerkLoading, SignIn } from "@clerk/nextjs";
 import React from "react";
 
 const theme = {

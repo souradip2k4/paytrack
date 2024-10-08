@@ -6,5 +6,9 @@
     "semi": true,
     "arrowParens": "avoid",
     "bracketSameLine": true,
-    "experimentalTernaries": true
+    "experimentalTernaries": true,
+    "plugins": [
+        "prettier-plugin-organize-imports",
+        "prettier-plugin-tailwindcss"
+    ]
 }

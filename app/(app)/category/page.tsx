@@ -33,7 +33,7 @@ export default async function Page() {
 
 	return (
 		<HydrationBoundary state={dehydrate(queryClient)}>
-			<div className="px-8 py-8 space-y-8">
+			<div className="space-y-8 px-8 py-8">
 				<Category />
 				<Tag />
 			</div>

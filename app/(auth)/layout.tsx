@@ -6,7 +6,7 @@ export default function LayoutAuth({
 	children: React.ReactNode;
 }) {
 	return (
-		<div className="w-full h-full min-h-screen flex items-center justify-center">
+		<div className="flex h-full min-h-screen w-full items-center justify-center">
 			{children}
 		</div>
 	);
