@@ -1,6 +1,12 @@
+import { padDates } from "@/lib/date-utils";
 import prisma from "@/lib/prisma";
-import { run } from "@/lib/utils";
-import { format, isSameDay, isValid, parse } from "date-fns";
+import { catchInvalid, run } from "@/lib/utils";
+import {
+	getDatapointsByCategory,
+	getDatapointsByDate,
+	getSum,
+} from "@prisma/client/sql";
+import { differenceInDays, isValid, parse } from "date-fns";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 
@@ -88,101 +94,51 @@ users.get("/:user_id/entries/_datapoints", async ctx => {
 		parse(date, "yyyy-MM-dd", new Date()),
 	);
 	if (!isValid(from) || !isValid(to)) throw new HTTPException(422);
+	if (typeof from === "undefined" || typeof to === "undefined")
+		throw new HTTPException(422);
 
-	const agg = prisma.entry.aggregate({
-		_avg: { amount: true },
-		_sum: { amount: true },
-		where: {
-			user_id,
-			date: {
-				gte: from,
-				lte: to,
-			},
-		},
-	});
-	const amount = prisma.entry.groupBy({
-		by: ["date"],
-		where: {
-			user_id,
-			date: {
-				gte: from,
-				lte: to,
-			},
-		},
-		orderBy: {
-			date: "asc",
-		},
-		_sum: {
-			amount: true,
-		},
-	});
+	const sum = await prisma.$queryRawTyped(getSum(user_id, from, to));
 
-	const income = prisma.entry.groupBy({
-		by: ["date"],
-		where: {
-			user_id,
-			date: {
-				gte: from,
-				lte: to,
-			},
-			amount: { gte: 0 },
-		},
-		orderBy: { date: "asc" },
-		_sum: {
-			amount: true,
-		},
-	});
+	const date = await prisma.$queryRawTyped(
+		getDatapointsByDate(user_id, from, to),
+	);
 
-	const expense = prisma.entry.groupBy({
-		by: ["date"],
-		where: {
-			user_id,
-			date: {
-				gte: from,
-				lte: to,
-			},
-			amount: { lte: 0 },
-		},
-		orderBy: { date: "asc" },
-		_sum: {
-			amount: true,
-		},
-	});
+	const category = await prisma.$queryRawTyped(
+		getDatapointsByCategory(user_id, from, to),
+	);
 
-	const entries = await Promise.all([agg, amount, income, expense]);
-
-	let incindex = 0;
-	let expindex = 0;
-	const points = entries[1].map(amount => {
-		const point = {
-			date: format(amount.date, "yyyy-MM-dd"),
-			amount: Number(amount._sum.amount),
-			income: 0,
-			expense: 0,
-		};
-		if (
-			incindex >= 0 &&
-			incindex < entries[2].length &&
-			isSameDay(amount.date, entries[2][incindex].date)
-		) {
-			point.income = Number(entries[2][incindex]._sum.amount);
-			incindex++;
-		}
-		if (
-			expindex >= 0 &&
-			expindex < entries[3].length &&
-			isSameDay(amount.date, entries[3][expindex].date)
-		) {
-			point.expense = Math.abs(Number(entries[3][expindex]._sum.amount));
-			expindex++;
-		}
-		return point;
-	});
+	const count = differenceInDays(from, to) + 1;
 
 	const data = {
-		points,
-		sum: Number(entries[0]._sum.amount),
-		avg: Number(entries[0]._avg.amount),
+		sum: {
+			total: sum[0].total?.toNumber() ?? 0,
+			income: sum[0].income?.toNumber() ?? 0,
+			expense: sum[0].expense?.toNumber() ?? 0,
+		},
+		avg: {
+			total:
+				catchInvalid(
+					run(sum[0].total, x => x.toNumber()),
+					0,
+				) / count,
+			income:
+				catchInvalid(
+					run(sum[0].income, x => x.toNumber()),
+					0,
+				) / count,
+			expense:
+				catchInvalid(
+					run(sum[0].expense, x => x.toNumber()),
+					0,
+				) / count,
+		},
+		date: padDates(date, from, to),
+		category: category.map(x => ({
+			...x,
+			total: x.total?.toNumber() ?? 0,
+			income: x.income?.toNumber() ?? 0,
+			expense: x.expense?.toNumber() ?? 0,
+		})),
 	};
 	return ctx.json(data, { status: 200 });
 });

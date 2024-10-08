@@ -1,7 +1,6 @@
 import axios, { AxiosError } from "axios";
-import { describe, it, expect } from "vitest";
-import { _devonly_cleardb } from "@/prisma/seedutils";
 import { beforeEach } from "node:test";
+import { describe, expect, it } from "vitest";
 import { _testonly_clearcache } from "./testutils";
 
 const url = (path: string) => {
@@ -22,8 +21,6 @@ describe("health check /ping", () => {
 });
 
 describe("testing /users route", () => {
-	beforeEach(() => _devonly_cleardb());
-
 	it("unauthenticated clients cannot create new users", async () => {
 		await expect(async () => {
 			await axios.post(apiUrl("/users"), {});

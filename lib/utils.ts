@@ -30,3 +30,8 @@ export function castUndefined<T>(x: T | undefined | null): T | undefined {
 	if (x === null) return undefined;
 	return x;
 }
+
+export function catchInvalid<T>(x: T | undefined | null, def: T): T {
+	if (x === null || x == undefined) return def;
+	return x;
+}

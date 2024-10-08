@@ -77,7 +77,6 @@ export default function Category() {
 				);
 				return res.data;
 			} catch (error) {
-				console.log(error);
 				if (error instanceof AxiosError) {
 				}
 			}

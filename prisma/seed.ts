@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
+import { PrismaClient } from "@prisma/client";
 
 if (!process.env._DEV_PRISMA_SEED_CLERK_USER_ID)
 	throw new Error(
@@ -123,7 +123,7 @@ async function seed() {
 
 	const tags = await gentags(user);
 	const categories = await gencategories(user);
-	await genentries(5, user, categories, tags);
+	await genentries(10, user, categories, tags);
 }
 
 seed()

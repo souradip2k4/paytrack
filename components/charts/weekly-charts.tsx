@@ -19,27 +19,21 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
-const chartData = [
-	{ month: "January", desktop: 186, mobile: 80 },
-	{ month: "February", desktop: 305, mobile: 200 },
-	{ month: "March", desktop: 237, mobile: 120 },
-	{ month: "April", desktop: 73, mobile: 190 },
-	{ month: "May", desktop: 209, mobile: 130 },
-	{ month: "June", desktop: 214, mobile: 140 },
-];
+
+type ChartData = { name: string; income: number; expense: number };
 
 const chartConfig = {
-	desktop: {
-		label: "Desktop",
+	income: {
+		label: "Income",
 		color: "hsl(var(--chart-1))",
 	},
-	mobile: {
-		label: "Mobile",
+	expense: {
+		label: "Expense",
 		color: "hsl(var(--chart-2))",
 	},
 } satisfies ChartConfig;
 
-export function WeeklyBarChart() {
+export function WeeklyBarChart({ chartData }: { chartData: ChartData[] }) {
 	return (
 		<Card>
 			<CardHeader>
@@ -51,26 +45,26 @@ export function WeeklyBarChart() {
 					<BarChart accessibilityLayer data={chartData}>
 						<CartesianGrid vertical={false} />
 						<XAxis
-							dataKey="month"
+							dataKey="name"
 							tickLine={false}
 							tickMargin={10}
 							axisLine={false}
-							tickFormatter={value => value.slice(0, 3)}
+							tickFormatter={value => value.slice(0, 10)}
 						/>
 						<ChartTooltip
 							content={<ChartTooltipContent hideLabel />}
 						/>
 						<ChartLegend content={<ChartLegendContent />} />
 						<Bar
-							dataKey="desktop"
+							dataKey="income"
 							stackId="a"
-							fill="var(--color-desktop)"
+							fill="var(--color-income)"
 							radius={[0, 0, 4, 4]}
 						/>
 						<Bar
-							dataKey="mobile"
+							dataKey="expense"
 							stackId="a"
-							fill="var(--color-mobile)"
+							fill="var(--color-expense)"
 							radius={[4, 4, 0, 0]}
 						/>
 					</BarChart>

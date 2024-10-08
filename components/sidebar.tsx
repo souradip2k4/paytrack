@@ -92,7 +92,7 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
 					</div>
 				</ResizablePanel>
 				<ResizableHandle />
-				<ResizablePanel>{children}</ResizablePanel>
+				<ResizablePanel className="p-8">{children}</ResizablePanel>
 			</ResizablePanelGroup>
 		);
 	}
@@ -115,7 +115,7 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
 				<H1 className="text-md md:text-lg">BudgetBee.</H1>
 			</div>
 
-			{children}
+			<div className="px-4 py-8">{children}</div>
 		</div>
 	);
 }

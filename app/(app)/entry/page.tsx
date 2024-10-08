@@ -23,9 +23,7 @@ export default async function Page() {
 
 	return (
 		<HydrationBoundary state={dehydrate(queryClient)}>
-			<div className="px-8 pt-8 max-sm:px-4">
-				<EntryTable />
-			</div>
+			<EntryTable />
 		</HydrationBoundary>
 	);
 }

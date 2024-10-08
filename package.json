@@ -4,13 +4,14 @@
     "private": true,
     "scripts": {
         "dev": "next dev",
-        "build": "prisma generate && next build",
+        "build": "prisma generate --sql && next build",
         "start": "next start",
         "lint": "next lint",
-        "fmt": "prettier --write \"{app,server,components,docs,lib,store}/**/*.{tsx,ts,jsx,js}\""
+        "fmt": "prettier --write \"{app,server,components,docs,lib,store}/**/*.{tsx,ts,jsx,js}\"",
+        "seed": "prisma db seed > logs/seed_$(date +%Y-%m-%d_%H-%M-%S).log"
     },
     "prisma": {
-        "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+        "seed": "tsx prisma/seed.ts"
     },
     "dependencies": {
         "@clerk/nextjs": "^5.3.1",
@@ -84,7 +85,7 @@
         "prettier-plugin-organize-imports": "^4.1.0",
         "prettier-plugin-tailwindcss": "^0.6.8",
         "tailwindcss": "^3.3.0",
-        "ts-node": "^10.9.2",
+        "tsx": "^4.19.1",
         "typescript": "^5",
         "vitest": "^2.1.2"
     }
