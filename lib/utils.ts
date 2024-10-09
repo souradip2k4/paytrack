@@ -35,3 +35,6 @@ export function catchInvalid<T>(x: T | undefined | null, def: T): T {
 	if (x === null || x == undefined) return def;
 	return x;
 }
+
+export function url(path: string) {}
+export function apiUrl(path: string) {}
