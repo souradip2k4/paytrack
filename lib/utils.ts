@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import path from "path";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -36,5 +37,19 @@ export function catchInvalid<T>(x: T | undefined | null, def: T): T {
 	return x;
 }
 
-export function url(path: string) {}
-export function apiUrl(path: string) {}
+export function url(route: string) {
+	const root = new URL(
+		process.env.NODE_ENV === "production" ?
+			"https://budgetbee.site"
+		:	"http://localhost:3000",
+	);
+	return new URL(route, root);
+}
+export function apiUrl(route: string) {
+	const root = new URL(
+		process.env.NODE_ENV === "production" ?
+			"https://budgetbee.site"
+		:	"http://localhost:3000",
+	);
+	return new URL(path.join("api", route), root);
+}

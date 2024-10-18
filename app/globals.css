@@ -67,6 +67,59 @@
   }
 }
 
+/** TYPOGRAPGY */
+h1 {
+}
+
+/** CUSTOM STYPES + ANIMATIONS */
+.text-slider {
+  position: relative;
+  height: 1em;
+  width: 480px;
+  overflow: hidden;
+  margin-left: 12px;
+}
+
+.text-slider__word {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  line-height: 1em;
+  transform: translateY(100%);
+  animation: slide 2.5s linear infinite;
+}
+
+.text-slider__word:nth-child(2) {
+  animation-delay: 0.83s;
+}
+
+.text-slider__word:nth-child(3) {
+  animation-delay: 1.67s;
+}
+
+@keyframes slide {
+  0% {
+    transform: translateY(100%);
+    opacity: 0.1;
+  }
+  15% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  30% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  45% {
+    transform: translateY(-100%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100%);
+    opacity: 0.1;
+  }
+}
+
 /** CLERK STYLES **/
 .cl-formButtonPrimary {
     @apply inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-primary px-3  font-medium text-primary-foreground !shadow-none ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
@@ -285,3 +338,22 @@ h1[data-localization-key='userProfile.navbar.title'] {
     @apply rounded-lg border-input bg-background;
 }
 
+/** STYLES FOR LEGAL SECTION */
+.legal__markdown > * {
+    @apply text-sm text-[#a3a3a3]
+}
+.legal__markdown > h1 {
+    @apply text-3xl text-primary-foreground
+}
+.legal__markdown > h2 {
+    @apply text-xl underline mt-4 text-primary-foreground
+}
+.legal__markdown > h3 {
+    @apply text-lg text-primary-foreground
+}
+.legal__markdown > p {
+    @apply text-sm text-[#a3a3a3]
+}
+.legal__markdown > a {
+    @apply text-sm text-white hover:underline
+}

@@ -1,12 +1,40 @@
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import Providers from "./providers";
 
-const inter = Inter({ subsets: ["latin"] });
-
+const helvetica = localFont({
+	src: [
+		{
+			path: "../public/fonts/helvetica-light.ttf",
+			weight: "200",
+			style: "normal",
+		},
+		{
+			path: "../public/fonts/helvetica.ttf",
+			weight: "400",
+			style: "normal",
+		},
+		{
+			path: "../public/fonts/helvetica-oblique.ttf",
+			weight: "400",
+			style: "italic",
+		},
+		{
+			path: "../public/fonts/helvetica-bold.ttf",
+			weight: "600",
+			style: "normal",
+		},
+		{
+			path: "../public/fonts/helvetica-bold-oblique.ttf",
+			weight: "600",
+			style: "italic",
+		},
+	],
+});
 export const metadata: Metadata = {
 	title: "Budgetbee - Expense Tracker",
 	description: "Simple but effective personal expense tracker.",
@@ -19,7 +47,8 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" className="antialiased">
-			<body className={cn(`${inter.className}`)}>
+			<body className={cn(`${helvetica.className}`)}>
+				<GoogleAnalytics gaId={process.env.GA_ID as string} />
 				<Providers>
 					{children}
 					<Toaster />
