@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.0.6
+- Added sharp for image optimization
+- Removed linting from build step
+
+## v1.0.5
+- Created a landing page, privacy policy page
+- Added Google Analytics
+- Fixed uri redirect for google oauth
+
 ## v1.0.4
 - Fixed bug where delete entry button was not working.
 

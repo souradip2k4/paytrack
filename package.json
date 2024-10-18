@@ -1,10 +1,10 @@
 {
     "name": "budgetbee",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "private": true,
     "scripts": {
         "dev": "next dev",
-        "build": "prisma generate --sql && next build",
+        "build": "prisma generate --sql && next build --no-lint",
         "start": "next start",
         "lint": "next lint",
         "fmt": "prettier --write \"{app,server,components,docs,lib,store}/**/*.{tsx,ts,jsx,js}\"",
@@ -55,6 +55,7 @@
         "react-resizable-panels": "^2.1.3",
         "recharts": "^2.12.7",
         "recoil": "^0.7.7",
+        "sharp": "^0.33.5",
         "sonner": "^1.4.41",
         "tailwind-merge": "^2.2.2",
         "tailwindcss-animate": "^1.0.7",
