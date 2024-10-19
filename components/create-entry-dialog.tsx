@@ -205,7 +205,7 @@ function EntryForm({ formRef }: { formRef: React.Ref<EntryFormRef | null> }) {
 							<Entry index={index} control={control} />
 							<Separator
 								orientation="horizontal"
-								className="bg-input/50"
+								className="bg-input/50 lg:hidden"
 							/>
 						</React.Fragment>
 					))}

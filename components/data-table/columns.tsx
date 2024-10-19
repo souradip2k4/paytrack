@@ -85,8 +85,8 @@ export const columns: ColumnDef<Entry>[] = [
 				currency: "INR",
 			}).format(amount);
 			const color =
-				amount > 0 ? "text-green-600"
-				: amount < 0 ? "text-red-600"
+				amount > 0 ? "text-green-600 dark:text-green-500"
+				: amount < 0 ? "text-red-600 dark:text-[#EE0000]"
 				: "";
 			return (
 				<div className={cn("text-right font-medium", color)}>
@@ -118,7 +118,9 @@ export const columns: ColumnDef<Entry>[] = [
 		},
 		cell: ({ row }) => {
 			const date = new Date(row.getValue("date"));
-			return <div>{date.toDateString()}</div>;
+			return (
+				<p className="text-muted-foreground">{date.toDateString()}</p>
+			);
 		},
 	},
 	{

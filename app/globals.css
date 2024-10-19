@@ -68,14 +68,24 @@
 }
 
 /** TYPOGRAPGY */
-h1 {
+p {
+    @apply text-sm
+}
+
+a {
+    @apply text-sm
+}
+
+/** EFFECTS */
+.glass {
+background-image: linear-gradient(169deg, rgba(97, 106, 115, 0.7), rgb(0, 0, 0) 155.91%), none;
 }
 
 /** CUSTOM STYPES + ANIMATIONS */
 .text-slider {
   position: relative;
   height: 1em;
-  width: 480px;
+  width: 390px;
   overflow: hidden;
   margin-left: 12px;
 }

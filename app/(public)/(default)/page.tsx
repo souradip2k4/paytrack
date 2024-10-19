@@ -1,7 +1,7 @@
 import { PricingCardGroup } from "@/components/pricing";
 import { Button } from "@/components/ui/button";
+import BudgetbeeDashboardImg from "@/public/images/budgetbee_dashboard.png";
 import DataSetsImg from "@/public/images/datasets.webp";
-import LinearImg from "@/public/images/linear.webp";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import Link from "next/link";
 
@@ -9,7 +9,7 @@ export default function Page() {
 	return (
 		<main>
 			<div className="flex flex-col justify-center gap-4 px-8 py-16 lg:items-center">
-				<h1 className="hidden items-center text-2xl text-[#A3A3A3] lg:flex lg:text-5xl">
+				<h1 className="hidden items-center text-2xl text-muted-foreground lg:flex lg:text-5xl">
 					Seemlessly track your
 					<span className="text-slider text-white">
 						<span className="text-slider__word">finances</span>
@@ -20,10 +20,12 @@ export default function Page() {
 				<h1 className="text-2xl lg:hidden">
 					Seemlessly track your finances
 				</h1>
-				<p className="text-lg text-[#A3A3A3] lg:w-1/2 lg:text-center">
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-					do eiusmod tempor incididunt ut labore et dolore magna
-					aliqua.
+				<p className="text-lg text-muted-foreground lg:w-1/2 lg:text-center">
+					Do you find managing your finances{" "}
+					<span className="text-primary-foreground">tedious</span> and
+					<span className="text-primary-foreground"> difficult</span>?
+					With budgetbee you can track your spendings and gain
+					valuable <span className="text-white">insights</span>.
 				</p>
 				<div className="mt-4 lg:flex">
 					<SignedIn>
@@ -61,7 +63,7 @@ export default function Page() {
 
 				<div className="mt-4 w-full rounded-md bg-black/20 p-4 lg:w-2/3">
 					<img
-						src={LinearImg.src}
+						src={BudgetbeeDashboardImg.src}
 						className="h-auto w-full rounded-md"
 					/>
 				</div>
@@ -75,33 +77,30 @@ export default function Page() {
 						<div>
 							<h1 className="text-lg">Gain valuable insights</h1>
 							<p className="text-sm text-[#a3a3a3]">
-								Lorem ipsum dolor sit amet, consectetur
-								adipiscing elit. Ut dui urna, pharetra eu
-								pretium sit amet, placerat vel eros.
+								Our analytics tools make it easier for you to
+								vizualize your data and gain insights you never
+								had before.
 							</p>
 						</div>
 					</div>
 					<div className="rounded-lg border p-8">
-						<h1 className="text-lg">Track finances</h1>
+						<h1 className="text-lg">Track your finances</h1>
 						<p className="text-sm text-[#a3a3a3]">
-							Lorem ipsum dolor sit amet, consectetur adipiscing
-							elit. Ut dui urna, pharetra eu pretium sit amet,
-							placerat vel eros.
+							Track your spending habits, identify areas for
+							savings, and make informed financial decisions.
 						</p>
 					</div>
 					<div className="rounded-lg border p-8">
 						<h1 className="text-lg">Automate things</h1>
 						<p className="text-sm text-[#a3a3a3]">
-							Lorem ipsum dolor sit amet, consectetur adipiscing
-							elit. Ut dui urna, pharetra eu pretium sit amet,
-							placerat vel eros.
+							Streamline repititve tasks and save time.
 						</p>
 					</div>
 				</div>
 			</div>
 
 			<div className="flex flex-col items-center justify-center space-y-4 px-4 py-8 lg:space-y-8 lg:px-8 lg:py-16">
-				<h1 className="text-2xl text-[#A3A3A3] lg:text-5xl">
+				<h1 className="text-2xl text-muted-foreground lg:text-5xl">
 					One <span className="text-white">flexible pricing</span> for
 					all.
 				</h1>
