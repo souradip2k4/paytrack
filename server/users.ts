@@ -63,6 +63,9 @@ users.get("/:user_id/entries", async ctx => {
 			},
 			amount: type,
 		},
+		orderBy: {
+			created_at: "desc",
+		},
 		select: {
 			amount: true,
 			category: true,
