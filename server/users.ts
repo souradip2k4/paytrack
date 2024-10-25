@@ -4,6 +4,8 @@ import { catchInvalid, run } from "@/lib/utils";
 import {
 	getDatapointsByCategory,
 	getDatapointsByDate,
+	getGroupedExpense,
+	getGroupedIncome,
 	getSum,
 } from "@prisma/client/sql";
 import { differenceInDays, isValid, parse } from "date-fns";
@@ -100,17 +102,16 @@ users.get("/:user_id/entries/_datapoints", async ctx => {
 	if (typeof from === "undefined" || typeof to === "undefined")
 		throw new HTTPException(422);
 
-	const sum = await prisma.$queryRawTyped(getSum(user_id, from, to));
+	const [sum, date, category, maxIncomes, maxExpenses] =
+		await prisma.$transaction([
+			prisma.$queryRawTyped(getSum(user_id, from, to)),
+			prisma.$queryRawTyped(getDatapointsByDate(user_id, from, to)),
+			prisma.$queryRawTyped(getDatapointsByCategory(user_id, from, to)),
+			prisma.$queryRawTyped(getGroupedIncome(user_id, from, to, 10)),
+			prisma.$queryRawTyped(getGroupedExpense(user_id, from, to, 10)),
+		]);
 
-	const date = await prisma.$queryRawTyped(
-		getDatapointsByDate(user_id, from, to),
-	);
-
-	const category = await prisma.$queryRawTyped(
-		getDatapointsByCategory(user_id, from, to),
-	);
-
-	const count = differenceInDays(to, from) + 1;
+	const count = differenceInDays(to, from);
 
 	const data = {
 		sum: {
@@ -142,6 +143,16 @@ users.get("/:user_id/entries/_datapoints", async ctx => {
 			income: x.income?.toNumber() ?? 0,
 			expense: x.expense?.toNumber() ?? 0,
 		})),
+		max: {
+			income: maxIncomes.map(x => ({
+				...x,
+				value: x.income?.toNumber() ?? 0,
+			})),
+			expense: maxExpenses.map(x => ({
+				...x,
+				value: x.expense?.toNumber() ?? 0,
+			})),
+		},
 	};
 	return ctx.json(data, { status: 200 });
 });
