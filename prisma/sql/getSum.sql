@@ -11,8 +11,8 @@ FROM
     FROM "Entry"
 
     -- @param {String} $1:user_id
-    -- @param {DateTime} $2:to
-    -- @param {DateTime} $3:from
+    -- @param {DateTime} $2:from
+    -- @param {DateTime} $3:to
     WHERE user_id=$1 AND date > $2 AND date < $3
     GROUP BY date
     ORDER BY date);

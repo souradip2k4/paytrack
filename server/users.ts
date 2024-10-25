@@ -110,7 +110,7 @@ users.get("/:user_id/entries/_datapoints", async ctx => {
 		getDatapointsByCategory(user_id, from, to),
 	);
 
-	const count = differenceInDays(from, to) + 1;
+	const count = differenceInDays(to, from) + 1;
 
 	const data = {
 		sum: {
