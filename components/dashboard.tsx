@@ -1,29 +1,26 @@
 "use client";
 
-import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableFooter,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
 import { InteractiveBarChart } from "@/components/charts";
 import LoadingSection from "@/components/loading-section";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatMoney } from "@/lib/money-utils";
 import { useUser } from "@clerk/nextjs";
 import { QueryKey, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { format, subDays } from "date-fns";
+import { Loading } from "./loading";
+import { Skeleton } from "./ui/skeleton";
 import { H3 } from "./ui/typography";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { Pick } from "@prisma/client/runtime/library";
-import { Button } from "./ui/button";
 
 type DataPoints = {
     sum: {
@@ -62,18 +59,31 @@ function AmountCard({
                 <CardTitle>{title}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-1">
-                <div className="flex justify-between">
+                <div className="flex justify-between gap-1">
                     <p>Income</p>
-                    <p>{formatMoney(value?.income)}</p>
+                    <Loading
+                        isLoading={value === undefined}
+                        fallback={<Skeleton className="h-4 w-[100px]" />}>
+                        <p>{formatMoney(value?.income)}</p>
+                    </Loading>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between gap-1">
                     <p>Expense</p>
-                    <p>{formatMoney(value?.expense)}</p>
+                    <Loading
+                        isLoading={value === undefined}
+                        fallback={<Skeleton className="h-4 w-[120px]" />}>
+                        <p>{formatMoney(value?.income)}</p>
+                    </Loading>
+
                 </div>
                 <Separator />
-                <div className="flex justify-between">
+                <div className="flex justify-between gap-1">
                     <p>Total</p>
-                    <CardTitle>{formatMoney(value?.total)}</CardTitle>
+                    <Loading
+                        isLoading={value === undefined}
+                        fallback={<Skeleton className="h-4 w-[100px]" />}>
+                        <CardTitle>{formatMoney(value?.total)}</CardTitle>
+                    </Loading>
                 </div>
             </CardContent>
         </Card>
@@ -81,7 +91,10 @@ function AmountCard({
 }
 
 function TopEntriesCard({ values }: { values: DataPoints["max"] }) {
-    const keys = [{ key: "income", name: "Income" }, { key: "expense", name: "Expense" }] as const
+    const keys = [
+        { key: "income", name: "Income" },
+        { key: "expense", name: "Expense" },
+    ] as const;
     return (
         <Card className="size-full">
             <CardHeader>
@@ -90,7 +103,11 @@ function TopEntriesCard({ values }: { values: DataPoints["max"] }) {
             <CardContent>
                 <Tabs defaultValue="income">
                     <TabsList>
-                        {keys.map(({ key, name }) => <TabsTrigger key={key} value={key}>{name}</TabsTrigger>)}
+                        {keys.map(({ key, name }) => (
+                            <TabsTrigger key={key} value={key}>
+                                {name}
+                            </TabsTrigger>
+                        ))}
                     </TabsList>
                     {keys.map(({ key, name }) => (
                         <TabsContent key={key} value={key}>
@@ -98,15 +115,24 @@ function TopEntriesCard({ values }: { values: DataPoints["max"] }) {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Date</TableHead>
-                                        <TableHead className="text-right">{name}</TableHead>
+                                        <TableHead className="text-right">
+                                            {name}
+                                        </TableHead>
                                     </TableRow>
                                 </TableHeader>
 
                                 <TableBody>
-                                    {values[key].map((value) => (
+                                    {values[key].map(value => (
                                         <TableRow key={value.date.toString()}>
-                                            <TableCell className="font-medium">{format(value.date, "EEE d MMM, yyyy")}</TableCell>
-                                            <TableCell className="text-right">{formatMoney(value.value)}</TableCell>
+                                            <TableCell className="font-medium">
+                                                {format(
+                                                    value.date,
+                                                    "EEE d MMM, yyyy",
+                                                )}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                {formatMoney(value.value)}
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -115,8 +141,8 @@ function TopEntriesCard({ values }: { values: DataPoints["max"] }) {
                     ))}
                 </Tabs>
             </CardContent>
-        </Card >
-    )
+        </Card>
+    );
 }
 
 export default function Dashboard() {
@@ -138,28 +164,26 @@ export default function Dashboard() {
         },
     });
 
-    if (query.isLoading) return <LoadingSection />;
     if (query.isError) throw new Error(query.error);
-    if (typeof query.data === "undefined") return <LoadingSection />;
 
     return (
         <div className="flex flex-col gap-6">
-            <H3 className="mt-0">Your cashflow report</H3>
+            <H3 className="mt-0">Dashboard</H3>
 
-            <div className="grid grid-rows-[repeat(2,auto)] grid-cols-1 lg:grid-rows-1 lg:grid-cols-[3fr_1fr] gap-4">
+            <div className="grid grid-cols-1 grid-rows-[repeat(2,auto)] gap-4 lg:grid-cols-[3fr_1fr] lg:grid-rows-1">
                 <div className="grid grid-rows-[repeat(2,auto)] gap-4">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                         <AmountCard title="Total" value={query.data?.sum} />
                         <AmountCard title="Average" value={query.data?.avg} />
                     </div>
                     {query.data?.date && (
                         <InteractiveBarChart chartData={query.data.date} />
                     )}
-
                 </div>
-                <div>{query.data && <TopEntriesCard values={query.data.max} />}</div>
+                <div>
+                    {query.data && <TopEntriesCard values={query.data.max} />}
+                </div>
             </div>
-
         </div>
     );
 }
