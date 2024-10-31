@@ -2,24 +2,25 @@ import { url as rootUrl } from "@/lib/utils";
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+	const sitemaps = [
+		"/pricing",
+		"/contact",
+		"/join",
+		"/login",
+		"/report-a-bug",
+		"/legal/privacy-policy",
+	].map(slug => ({
+		url: rootUrl(slug).toString(),
+		lastModified: new Date(),
+	}));
+
 	return [
 		{
 			url: rootUrl("/").toString(),
-			lastModified: new Date(),
-			changeFrequency: "yearly",
 			priority: 1,
-		},
-		{
-			url: "https://acme.com/about",
-			lastModified: new Date(),
 			changeFrequency: "monthly",
-			priority: 0.8,
-		},
-		{
-			url: "https://acme.com/blog",
 			lastModified: new Date(),
-			changeFrequency: "weekly",
-			priority: 0.5,
 		},
+		...sitemaps,
 	];
 }
