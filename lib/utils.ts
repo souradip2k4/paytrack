@@ -37,7 +37,7 @@ export function catchInvalid<T>(x: T | undefined | null, def: T): T {
 	return x;
 }
 
-export function url(route: string) {
+export function url(route: string = "/") {
 	const root = new URL(
 		process.env.NODE_ENV === "production" ?
 			"https://budgetbee.site"

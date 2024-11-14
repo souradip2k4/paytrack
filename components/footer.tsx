@@ -14,15 +14,8 @@ const blocks: FooterBlock[] = [
     {
         title: "Company",
         link: [
-            { name: "About Us", href: "/about" },
-            { name: "Blog", href: "/blog" },
-            { name: "Contact Us", href: "/contact" },
-        ],
-    },
-    {
-        title: "Resources",
-        link: [
             { name: "Community", href: "/community" },
+            { name: "Contact Us", href: "/contact" },
             { name: "Report a bug", href: "/report-a-bug" },
         ],
     },
@@ -46,8 +39,8 @@ const blocks: FooterBlock[] = [
 
 export function Footer() {
     return (
-        <div className="grid gap-8 text-sm lg:grid-cols-6">
-            <div className="col-span-2 flex justify-between lg:flex-col">
+        <div className="grid gap-8 text-sm lg:grid-cols-6 px-36">
+            <div className="col-span-3 flex justify-between lg:flex-col">
                 <div className="inline-flex items-center gap-1">
                     <img
                         alt="Budgetbee logo"

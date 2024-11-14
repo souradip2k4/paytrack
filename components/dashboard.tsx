@@ -12,15 +12,25 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { Calendar } from "@/components/ui/calendar"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatMoney } from "@/lib/money-utils";
 import { useUser } from "@clerk/nextjs";
 import { QueryKey, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { format, subDays } from "date-fns";
+import { addDays, format, subDays } from "date-fns";
 import { Loading } from "./loading";
 import { Skeleton } from "./ui/skeleton";
 import { H3 } from "./ui/typography";
+import { useState } from "react";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "./ui/button";
 
 type DataPoints = {
     sum: {
@@ -145,14 +155,26 @@ function TopEntriesCard({ values }: { values: DataPoints["max"] }) {
     );
 }
 
+type DateRange = {
+    from: Date,
+    to: Date
+}
+
 export default function Dashboard() {
     const { user } = useUser();
+
+    const [date, setDate] = useState<DateRange | undefined>({
+        from: subDays(new Date(), 30),
+        to: new Date(),
+    })
+
     const query = useQuery<any, any, DataPoints | null>({
         queryKey: ["entries", user?.id],
         queryFn: async ({ queryKey }: { queryKey: QueryKey }) => {
             if (!queryKey[1]) return null;
-            const from = format(subDays(new Date(), 30), "yyyy-MM-dd");
-            const to = format(new Date(), "yyyy-MM-dd");
+            if (date === undefined) return null;
+            const from = format(date.from, "yyyy-MM-dd");
+            const to = format(date.to, "yyyy-MM-dd");
             try {
                 const res = await axios.get(
                     `/api/users/${queryKey[1]}/entries/_datapoints?from=${from}&to=${to}`,
@@ -169,6 +191,48 @@ export default function Dashboard() {
     return (
         <div className="flex flex-col gap-6">
             <H3 className="mt-0">Dashboard</H3>
+
+            <div className={cn("grid gap-2")}>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button
+                            id="date"
+                            variant={"outline"}
+                            className={cn(
+                                "w-[300px] justify-start text-left font-normal",
+                                !date && "text-muted-foreground"
+                            )}
+                        >
+                            <CalendarIcon />
+                            {date?.from ? (
+                                date.to ? (
+                                    <>
+                                        {format(date.from, "LLL dd, y")} -{" "}
+                                        {format(date.to, "LLL dd, y")}
+                                    </>
+                                ) : (
+                                    format(date.from, "LLL dd, y")
+                                )
+                            ) : (
+                                <span>Pick a date</span>
+                            )}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                            initialFocus
+                            mode="range"
+                            defaultMonth={date?.from}
+                            selected={date}
+                            // @ts-ignore
+                            onSelect={setDate}
+                            numberOfMonths={2}
+                        />
+                    </PopoverContent>
+                </Popover>
+            </div>
+
+            <Button onClick={() => query.refetch()}>Filter</Button>
 
             <div className="grid grid-cols-1 grid-rows-[repeat(2,auto)] gap-4 lg:grid-cols-[3fr_1fr] lg:grid-rows-1">
                 <div className="grid grid-rows-[repeat(2,auto)] gap-4">

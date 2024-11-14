@@ -1,9 +1,9 @@
 import { faker } from "@faker-js/faker";
 import { PrismaClient } from "@prisma/client";
 
-if (!process.env._DEV_PRISMA_SEED_CLERK_USER_ID)
+if (!process.env.DEV_ONLY_PRISMA_SEED_CLERK_USER_ID)
 	throw new Error(
-		"Seeding failed. Please provide _DEV_PRISMA_SEED_CLERK_USER_ID env variable",
+		"Seeding failed. Please provide DEV_ONLY_PRISMA_SEED_CLERK_USER_ID env variable",
 	);
 
 /**

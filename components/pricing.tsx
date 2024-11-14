@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { Sparkles } from "lucide-react";
-import React from "react";
+import React, { ReactNode } from "react";
 
 type PricingOption = {
     title: string;
@@ -12,27 +12,31 @@ type PricingOption = {
     description: string;
     perks: string[];
     redirect?: string;
+    highlight?: boolean;
+    disabled?: boolean;
 };
 
 const options: PricingOption[] = [
     {
         title: "Free",
-        price: "Free",
+        price: { amount: 0, validity: "monthly" },
         description: "Basic features for individual use.",
-        perks: ["10,000 entries", "1 user", "1 workspace", "100 workflow runs"],
+        perks: ["10,000 entries", "1 user", "1 workspace", "100 workflow runs (coming soon)"],
     },
     {
         title: "Pro",
         price: { amount: 10, validity: "monthly" },
-        description: "Unlock advanced features for teams and businesses.",
+        description: "More advanced features (coming soon)",
         perks: [
             "Unlimited entries",
             "5 users",
             "3 workspaces",
-            "10,000 workflow runs",
+            "10,000 workflow runs (coming soon)",
         ],
+        disabled: true,
     },
     {
+        highlight: true,
         title: "Lifetime",
         price: { amount: 119, validity: "lifetime" },
         description: "Limited time plan for lifetime usage.",
@@ -40,7 +44,7 @@ const options: PricingOption[] = [
             "Unlimited entries",
             "1 users",
             "1 workspace",
-            "10,000 monthly workflow runs",
+            "10,000 monthly workflow runs (coming soon)",
         ],
     },
     {
@@ -59,21 +63,25 @@ const options: PricingOption[] = [
 
 export function PricingCardGroup() {
     return (
-        <div className="md:grid-row-2 grid grid-cols-1 grid-rows-1 gap-4 md:grid-cols-2 lg:flex lg:items-start lg:justify-center">
+        <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1">
             {options.map((option, index) => {
-                const { title, price, description, perks } = option;
+                const { title, price, description, perks, highlight } = option;
                 return (
                     <React.Fragment key={index}>
                         <div
                             className={cn(
                                 "flex flex-col items-start gap-4 rounded-lg p-8 lg:max-w-[360px]",
-                                { glass: title === "Lifetime" },
+                                { "pricing-card__hightlight": highlight },
                             )}>
                             <Button size="icon" variant="outline" disabled>
                                 <Sparkles className="h-4 w-4" />
                             </Button>
-                            <h2 className="text-xl">{title}</h2>
-                            <p className="text-[#A3A3A3]">{description}</p>
+                            <div className="space-y-2 mb-4">
+                                <div className="flex gap-2">
+                                    <h2 className="text-xl">{title}</h2>
+                                </div>
+                                <p className="text-[#A3A3A3] line-clamp-1">{description}</p>
+                            </div>
                             {typeof price === "string" && (
                                 <h1 className="text-2xl">{price}</h1>
                             )}
@@ -82,16 +90,21 @@ export function PricingCardGroup() {
                                     ${price.amount}
                                     {price.validity === "monthly" && (
                                         <span className="text-sm text-muted-foreground">
-                                            {" /mo"}
+                                            {" /month"}
+                                        </span>
+                                    )}
+                                    {price.validity === "yearly" && (
+                                        <span className="text-sm text-muted-foreground">
+                                            {" /year"}
                                         </span>
                                     )}
                                 </h1>
                             )}
-                            <Separator />
-                            <div className="flex flex-col gap-4">
+                            <Separator className={cn({ "bg-white/10": title === "Lifetime" })} />
+                            <div className="grow space-y-4 gap-4">
                                 {perks.map((perk, index) => (
                                     <React.Fragment key={index}>
-                                        <p className="text-sm text-[#A3A3A3]">
+                                        <p className="text-sm text-[#A3A3A3] line-clamp-1">
                                             ✦ &nbsp;{perk}
                                         </p>
                                     </React.Fragment>
@@ -99,6 +112,7 @@ export function PricingCardGroup() {
                             </div>
                             <Button
                                 className="w-full"
+                                disabled={option.disabled}
                                 variant={
                                     title === "Lifetime" ? "default" : (
                                         "secondary"

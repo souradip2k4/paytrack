@@ -5,6 +5,7 @@ import BudgetbeeDashboardImg from "@/public/images/budgetbee_dashboard.png";
 import DataSetsImg from "@/public/images/datasets.webp";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import Link from "next/link";
+import React from "react";
 
 export default function Page() {
     return (
