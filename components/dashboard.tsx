@@ -190,20 +190,21 @@ export default function Dashboard() {
 
     return (
         <div className="flex flex-col gap-6">
+
             <H3 className="mt-0">Dashboard</H3>
 
-            <div className={cn("grid gap-2")}>
+            <div className={cn("flex items-center gap-2 max-sm:flex-col max-sm:items-start")}>
+                <p>Filter by date: </p>
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button
                             id="date"
                             variant={"outline"}
                             className={cn(
-                                "w-[300px] justify-start text-left font-normal",
+                                "w-[300px] flex justify-start items-center text-left font-normal",
                                 !date && "text-muted-foreground"
                             )}
                         >
-                            <CalendarIcon />
                             {date?.from ? (
                                 date.to ? (
                                     <>
@@ -230,9 +231,9 @@ export default function Dashboard() {
                         />
                     </PopoverContent>
                 </Popover>
-            </div>
 
-            <Button onClick={() => query.refetch()}>Filter</Button>
+                <Button onClick={() => query.refetch()}>Filter</Button>
+            </div>
 
             <div className="grid grid-cols-1 grid-rows-[repeat(2,auto)] gap-4 lg:grid-cols-[3fr_1fr] lg:grid-rows-1">
                 <div className="grid grid-rows-[repeat(2,auto)] gap-4">
@@ -241,7 +242,7 @@ export default function Dashboard() {
                         <AmountCard title="Average" value={query.data?.avg} />
                     </div>
                     {query.data?.date && (
-                        <InteractiveBarChart chartData={query.data.date} />
+                        <InteractiveBarChart chartData={query.data.date} total={query.data.sum} />
                     )}
                 </div>
                 <div>
