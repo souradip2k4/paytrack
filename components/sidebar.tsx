@@ -57,19 +57,19 @@ export function Sidebar() {
 
             <NavItemGroup text="Components">
                 <NavItem href={"/entries"} text={"Entry"} />
-                <NavItem href={"/categories"} text={"Category"} />
-                <NavItem href={"/tags"} text={"Tag"} />
+               {/* <NavItem href={"/categories"} text={"Category"} />
+                <NavItem href={"/tags"} text={"Tag"} />*/}
             </NavItemGroup>
 
-            <NavItemGroup text="Developers">
+            {/*<NavItemGroup text="Developers">
                 <NavItem href={"/automation"} text={"Automation"} />
                 <NavItem href={"/tokens"} text={"Tokens"} />
-            </NavItemGroup>
+            </NavItemGroup>*/}
 
             <NavItemGroup text="Settings">
                 <NavItem href={"/settings"} text={"Settings"} />
                 <NavItem href={"/account"} text={"Accounts"} />
-                <NavItem href={"/billing"} text={"Billing"} />
+                {/*<NavItem href={"/billing"} text={"Billing"} />*/}
             </NavItemGroup>
         </ScrollArea>
     );

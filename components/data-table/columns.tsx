@@ -123,7 +123,7 @@ export const columns: ColumnDef<Entry>[] = [
 			);
 		},
 	},
-	{
+	/*{
 		accessorKey: "category",
 		header: "Category",
 		cell: CategoryCell,
@@ -132,5 +132,5 @@ export const columns: ColumnDef<Entry>[] = [
 		accessorKey: "tags",
 		header: "Tags",
 		cell: TagsCell,
-	},
+	},*/
 ];
