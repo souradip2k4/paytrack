@@ -1,3 +1,4 @@
+import { PayButton } from "@/app/(public)/(default)/appl/pay";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
@@ -110,7 +111,7 @@ export function PricingCardGroup() {
                                     </React.Fragment>
                                 ))}
                             </div>
-                            <Button
+                            {/*<Button
                                 className="w-full"
                                 disabled={option.disabled}
                                 variant={
@@ -119,7 +120,8 @@ export function PricingCardGroup() {
                                     )
                                 }>
                                 Get started
-                            </Button>
+                            </Button>*/}
+                            <PayButton />
                         </div>
                     </React.Fragment>
                 );
