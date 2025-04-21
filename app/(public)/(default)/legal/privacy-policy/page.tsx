@@ -65,7 +65,7 @@ export default function Page() {
 				</li>
 				<li>
 					<p>
-						<strong>Country</strong> refers to: West Bengal, India
+						<strong>Country</strong> refers to: India
 					</p>
 				</li>
 				<li>
