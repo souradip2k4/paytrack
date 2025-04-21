@@ -20,7 +20,7 @@ export default function Page() {
                 terms (the &quot;<strong>Legal Terms</strong>&quot;)
                 (collectively, the &quot;<strong>Services</strong>&quot;). You
                 can contact us by phone at (+91)7719154350, email at
-                budgetbee@gmail.com, or by mail to Ganapati Tower, Gorai Road,
+                samyabratamaji334@gmail.com, or by mail to Ganapati Tower, Gorai Road,
                 Gopalpur, West Bengal 713304, India. These Legal Terms
                 constitute a legally binding agreement made between you, whether
                 personally or on behalf of an entity (&quot;<strong>you</strong>
@@ -105,7 +105,7 @@ export default function Page() {
                     express prior written permission. If you wish to make any
                     use of the Services, Content, or Marks other than as set out
                     in this section or elsewhere in our Legal Terms, please
-                    address your request to: budgetbee@gmail.com. If we ever
+                    address your request to: samyabratamaji334@gmail.com. If we ever
                     grant you the permission to post, reproduce, or publicly
                     display any part of our Services or Content, you must
                     identify us as the owners or licensors of the Services,
@@ -296,7 +296,7 @@ export default function Page() {
                 using the contact information provided below. Your cancellation
                 will take effect at the end of the current paid term. If you
                 have any questions or are unsatisfied with our Services, please
-                email us at budgetbee@gmail.com.{" "}
+                email us at samyabratamaji334@gmail.com.{" "}
             </p>
             <h3 id="fee-changes">Fee Changes</h3>
             <p>
@@ -991,11 +991,12 @@ export default function Page() {
                 receive further information regarding use of the Services,
                 please contact us at:
             </p>
-            <p>Budgetbee Ganapati Tower, Gorai Road,</p>
+            <p>Budgetbee</p>
+            <p>Ganapati Tower, Gorai Road,</p>
             <p>Gopalpur, West Bengal 713304,</p>
             <p>India.</p>
-            <p>Phone: (+91)7719154350</p>
-            <p>budgetbee@gmail.com</p>
+            <p>Phone: (91)7719154350</p>
+            <p>samyabratamaji334@gmail.com</p>
         </main>
     );
 }

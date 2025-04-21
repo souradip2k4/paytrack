@@ -12,8 +12,8 @@ export default function Page() {
             <p>Gopalpur, West Bengal,</p>
             <p>India.</p>
             <p>Pin code: 713304</p>
-            <p>Phone: (+91)7719154350</p>
-            <p>Email: budgetbee@gmail.com</p>
+            <p>Phone: (91)7719154350</p>
+            <p>Email: samyabratamaji334@gmail.com</p>
         </main>
     )
 }
