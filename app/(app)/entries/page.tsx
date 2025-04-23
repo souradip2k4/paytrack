@@ -1,29 +1,10 @@
-import { EntryTable } from "@/components/entry-table";
-import { currentUser } from "@clerk/nextjs/server";
-import {
-	HydrationBoundary,
-	QueryClient,
-	dehydrate,
-} from "@tanstack/react-query";
-import axios from "axios";
+import { EntriesTable } from "@/components/entries-table";
+import React from "react";
 
 export default async function Page() {
-	const user = await currentUser();
-	const queryClient = new QueryClient();
-	await queryClient.prefetchQuery({
-		queryKey: ["entries", user?.id],
-		queryFn: async () => {
-			if (!user) {
-				return [];
-			}
-			const res = await axios.get(`/api/users/${user?.id}/entries`);
-			return res.data;
-		},
-	});
-
 	return (
-		<HydrationBoundary state={dehydrate(queryClient)}>
-			<EntryTable />
-		</HydrationBoundary>
+		<React.Suspense>
+			<EntriesTable />
+		</React.Suspense>
 	);
 }

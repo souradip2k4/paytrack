@@ -23,7 +23,6 @@ import axios from "axios";
 import { Copy, Trash2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { H3 } from "./ui/typography";
 
 export default function ApiKeysList() {
 	const { user } = useUser();
@@ -55,7 +54,7 @@ export default function ApiKeysList() {
 
 	return (
 		<div className="space-y-8">
-			<H3 className="mt-0">API Keys</H3>
+			<h3 className="mt-0">API Keys</h3>
 			<div>
 				<Table>
 					<TableHeader>

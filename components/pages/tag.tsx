@@ -27,7 +27,6 @@ import axios, { AxiosError } from "axios";
 import { Pencil, X } from "lucide-react";
 import React from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import { H3 } from "../ui/typography";
 
 export default function Tag() {
 	const { user } = useUser();
@@ -101,7 +100,7 @@ export default function Tag() {
 	return (
 		<div>
 			<div className="space-y-4">
-				<H3 className="mt-0">Tags</H3>
+				<h3 className="mt-0">Tags</h3>
 				{tagsQuery.isLoading && <p>Loading</p>}
 
 				{!tagsQuery.isLoading && (
@@ -134,9 +133,9 @@ export default function Tag() {
 					<div className="flex gap-4">
 						{tagsQuery.data?.data.map(value => (
 							<React.Fragment key={value.id}>
-								<div className="inline-flex h-9 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+								<div className="border-input bg-background focus-visible:ring-ring inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 py-2 text-sm font-medium whitespace-nowrap shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50">
 									<p>{value.name}</p>
-									<p className="text-xs text-muted-foreground">
+									<p className="text-muted-foreground text-xs">
 										{`(${value._count.entries} entries)`}
 									</p>
 									<Dialog>

@@ -20,9 +20,9 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { QueryCategories, QueryEntry } from "@/lib/api";
+import { QueryEntries, QueryEntry } from "@/lib/api";
 import { deleteEntriesMutationFn } from "@/lib/query";
-import { categoriesAtom } from "@/store/atoms";
+import { useStore } from "@/lib/store";
 import { useUser } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -35,42 +35,151 @@ import {
 	flexRender,
 	getCoreRowModel,
 	getFilteredRowModel,
-	getPaginationRowModel,
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
 import axios from "axios";
 import { EyeOff } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useSetRecoilState } from "recoil";
-import { CreateEntryDialog } from "../create-entry-dialog";
+import { parseAsInteger, useQueryStates } from "nuqs";
+import React from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { Skeleton } from "../ui/skeleton";
+import { columns } from "./columns";
+import { CreateEntriesButton } from "./create-entries-button";
 import { DeleteButton } from "./delete-button";
-import { EditButton } from "./edit-button";
+import { FilterEntriesButton } from "./filter-entries-button";
+
+type FilterState = {
+	page: number;
+	page_size: number;
+};
+
+export function EntriesTable() {
+	// @ts-ignore
+	const [pagination, setPaginantion] = useQueryStates<FilterState>(
+		{
+			page: parseAsInteger.withDefault(1),
+			page_size: parseAsInteger.withDefault(10),
+		},
+		{ clearOnDefault: true },
+	);
+
+	const filters = useStore(s => s.filters);
+
+	const { user } = useUser();
+	const { data, isLoading, isError, error } = useQuery<
+		unknown,
+		unknown,
+		QueryEntries
+	>({
+		queryKey: ["entries", "GET", user?.id, pagination, filters],
+		queryFn: async () => {
+			if (!user) {
+				return [];
+			}
+			const pg = new URLSearchParams(pagination).toString();
+			const fl = new URLSearchParams(filters).toString();
+			const res = await axios.get(
+				`/api/users/${user?.id}/entries?${pg}&${fl}`,
+			);
+			return res.data;
+		},
+		enabled: !!user && !!user.id,
+	});
+
+	const tableData = React.useMemo(() => {
+		if (isLoading) return Array(pagination.page_size || 8).fill({});
+		if (!data || !data?.data) return [];
+		return data.data;
+	}, [isLoading, data]);
+
+	const tableColumns = React.useMemo(
+		() =>
+			isLoading ?
+				columns.map(c => ({
+					...c,
+					cell: () => <Skeleton className="my-2 h-4 w-full" />,
+				}))
+			:	columns,
+		[isLoading, columns],
+	);
+
+	if (isError) return <div>{JSON.stringify(error)}</div>;
+	return (
+		<React.Fragment>
+			<DataTable
+				data={tableData}
+				columns={tableColumns}
+				pagination={{
+					page: data?.page ?? 1,
+					page_size: data?.page_size ?? 10,
+					total: data?.total ?? 0,
+					has_prev: data?.has_prev ?? false,
+					has_next: data?.has_next ?? false,
+				}}
+			/>
+			<div className="flex items-center justify-end space-x-2 py-4">
+				<Button
+					variant="outline"
+					size="sm"
+					onClick={() =>
+						setPaginantion({ page: pagination.page - 1 })
+					}
+					disabled={!data?.has_prev}>
+					Previous
+				</Button>
+				<Button
+					variant="outline"
+					size="sm"
+					onClick={() =>
+						setPaginantion({ page: pagination.page + 1 })
+					}
+					disabled={!data?.has_next}>
+					Next
+				</Button>
+			</div>
+		</React.Fragment>
+	);
+}
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
 	data: TData[];
+	pagination: {
+		page: number;
+		page_size: number;
+		total: number;
+		has_prev: boolean;
+		has_next: boolean;
+	};
 }
 
 export function DataTable<TData, TValue>({
 	columns,
 	data,
+	pagination,
 }: DataTableProps<TData, TValue>) {
 	const { user } = useUser();
 
-	const [sorting, setSorting] = useState<SortingState>([]);
-	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+	const [searchToggle, setSearchToggle] = React.useState(false);
+
+	const [sorting, setSorting] = React.useState<SortingState>([]);
+	const [columnFilters, setColumnFilters] =
+		React.useState<ColumnFiltersState>([]);
+	const [columnVisibility, setColumnVisibility] =
+		React.useState<VisibilityState>({});
+	const [rowSelection, setRowSelection] = React.useState<RowSelectionState>(
 		{},
 	);
-	const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+	/*const [] = React.useState<PaginationState>({
+        pageIndex: pagination.page - 1,
+        pageSize: pagination.page_size,
+    });*/
 	const table = useReactTable({
 		data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
-		getPaginationRowModel: getPaginationRowModel(),
 		onSortingChange: setSorting,
 		getSortedRowModel: getSortedRowModel(),
 		onColumnVisibilityChange: setColumnVisibility,
@@ -83,6 +192,9 @@ export function DataTable<TData, TValue>({
 			rowSelection,
 			columnFilters,
 		},
+		manualPagination: true,
+		rowCount: pagination.total,
+		pageCount: pagination.page,
 	});
 
 	const queryClient = useQueryClient();
@@ -102,39 +214,32 @@ export function DataTable<TData, TValue>({
 		setRowSelection({}); // reset selection
 	};
 
-	const categoriesQuery = useQuery<unknown, unknown, QueryCategories>({
-		queryKey: ["category"],
-		queryFn: async () => {
-			if (!user?.id) return [] as QueryCategories;
-			const res = await axios.get(`/api/users/${user?.id}/categories`);
-			return res.data as QueryCategories;
-		},
-	});
-
-	const setCategories = useSetRecoilState(categoriesAtom);
-	useEffect(() => setCategories(categoriesQuery.data));
-
 	return (
 		<div>
 			<div className="flex items-center gap-4 pb-4 max-sm:flex-wrap">
-				<Input
-					placeholder="Filter messages..."
-					value={
-						(table
-							.getColumn("message")
-							?.getFilterValue() as string) ?? ""
-					}
-					onChange={event =>
-						table
-							.getColumn("message")
-							?.setFilterValue(event.target.value)
-					}
-					className="max-w-sm"
-				/>
+				{searchToggle && (
+					<Input
+						placeholder="Filter messages..."
+						value={
+							(table
+								.getColumn("message")
+								?.getFilterValue() as string) ?? ""
+						}
+						onChange={event =>
+							table
+								.getColumn("message")
+								?.setFilterValue(event.target.value)
+						}
+						className="max-w-sm"
+					/>
+				)}
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
-						<Button variant="outline" className="ml-auto">
-							<EyeOff className="mr-2 h-4 w-4" /> Hide
+						<Button
+							variant="outline"
+							size="icon"
+							className="ml-auto">
+							<EyeOff className="size-4" />
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
@@ -156,11 +261,12 @@ export function DataTable<TData, TValue>({
 							})}
 					</DropdownMenuContent>
 				</DropdownMenu>
-				<CreateEntryDialog />
+				<FilterEntriesButton />
+				<CreateEntriesButton />
 			</div>
-			<div className="rounded-md border border-input">
+			<div className="border-input rounded-md border">
 				<Table>
-					<TableHeader>
+					<TableHeader className="bg-muted">
 						{table.getHeaderGroups().map(headerGroup => (
 							<TableRow key={headerGroup.id}>
 								{headerGroup.headers.map(header => {
@@ -179,7 +285,7 @@ export function DataTable<TData, TValue>({
 							</TableRow>
 						))}
 					</TableHeader>
-					<TableBody>
+					<TableBody className="bg-muted/40">
 						{table.getRowModel().rows?.length ?
 							table.getRowModel().rows.map(row => {
 								return (
@@ -207,12 +313,6 @@ export function DataTable<TData, TValue>({
 										</ContextMenuTrigger>
 										<ContextMenuContent>
 											<ContextMenuItem asChild>
-												<EditButton
-													row={row as Row<QueryEntry>}
-												/>
-											</ContextMenuItem>
-
-											<ContextMenuItem asChild>
 												<DeleteButton
 													row={row as Row<QueryEntry>}
 												/>
@@ -231,22 +331,6 @@ export function DataTable<TData, TValue>({
 						}
 					</TableBody>
 				</Table>
-			</div>
-			<div className="flex items-center justify-end space-x-2 py-4">
-				<Button
-					variant="outline"
-					size="sm"
-					onClick={() => table.previousPage()}
-					disabled={!table.getCanPreviousPage()}>
-					Previous
-				</Button>
-				<Button
-					variant="outline"
-					size="sm"
-					onClick={() => table.nextPage()}
-					disabled={!table.getCanNextPage()}>
-					Next
-				</Button>
 			</div>
 		</div>
 	);

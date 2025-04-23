@@ -1,6 +1,7 @@
 import { padDates } from "@/lib/date-utils";
 import prisma from "@/lib/prisma";
 import { catchInvalid, run } from "@/lib/utils";
+import { Prisma } from "@prisma/client";
 import {
 	getDatapointsByCategory,
 	getDatapointsByDate,
@@ -44,7 +45,12 @@ users.get("/:id", async ctx => {
 
 users.get("/:user_id/entries", async ctx => {
 	const { user_id } = ctx.req.param();
-	const take = run<string, number>(ctx.req.query("take"), num => Number(num));
+	const take =
+		run<string, number>(ctx.req.query("page_size"), num => Number(num)) ??
+		10;
+	const page =
+		run<string, number>(ctx.req.query("page"), num => Number(num)) ?? 1;
+	const skip = (page - 1) * take;
 	const from = run<string, Date>(ctx.req.query("from"), date =>
 		parse(date, "yyyy-MM-dd", new Date()),
 	);
@@ -56,30 +62,55 @@ users.get("/:user_id/entries", async ctx => {
 		else if (type === "exp") return { lte: 0 };
 		return undefined;
 	});
-	const result = await prisma.entry.findMany({
-		where: {
-			user_id,
-			date: {
-				gte: from,
-				lte: to,
-			},
-			amount: type,
+
+	const categories = (() => {
+		const c = ctx.req.query("category");
+		if (!c) return undefined;
+		return c.split(",");
+	})();
+
+	const tags = (() => {
+		const t = ctx.req.query("tag");
+		if (!t) return undefined;
+		return t.split(",");
+	})();
+
+	const where: Prisma.EntryWhereInput = {
+		user_id,
+		date: {
+			gte: from,
+			lte: to,
 		},
+		amount: type,
+		tags: { some: { id: { in: tags } } },
+	};
+
+	if (categories && categories.length > 0) {
+		where.category_id = { in: categories };
+	}
+
+	if (tags && tags.length > 0) {
+		where.tags = { every: { id: { in: tags } } };
+	}
+
+	const result = await prisma.entry.findMany({
+		where,
 		orderBy: {
 			created_at: "desc",
 		},
 		select: {
 			amount: true,
-			category: true,
+			category: false,
 			category_id: true,
 			date: true,
 			id: true,
 			message: true,
-			tags: true,
+			tags: { select: { id: true } },
 			user: false,
 			user_id: true,
 		},
 		take,
+		skip,
 	});
 	if (!result) throw new HTTPException(404);
 	const modifiedData = result.map(value => ({
@@ -87,7 +118,17 @@ users.get("/:user_id/entries", async ctx => {
 		date: value.date.toJSON(),
 		amount: value.amount.toNumber(),
 	}));
-	return ctx.json(modifiedData, { status: 200 });
+	return ctx.json(
+		{
+			page,
+			page_size: take,
+			total: result.length,
+			has_prev: take > 1,
+			has_next: result.length === take,
+			data: modifiedData,
+		},
+		{ status: 200 },
+	);
 });
 
 users.get("/:user_id/entries/_datapoints", async ctx => {
@@ -181,9 +222,18 @@ users.get("/:user_id/api-keys", async ctx => {
 	const { user_id } = ctx.req.param();
 	const result = await prisma.apiKey.findMany({
 		where: { user_id },
-		select: { id: true, key: true, user: false, user_id: true },
+		select: {
+			id: true,
+			name: true,
+			key: false,
+			user: false,
+			user_id: true,
+			created_at: true,
+			expire_at: true,
+			permissions: true,
+		},
 	});
-	return ctx.json({ data: result }, { status: 200 });
+	return ctx.json(result, { status: 200 });
 });
 
 users.get("/:user_id/tags", async ctx => {

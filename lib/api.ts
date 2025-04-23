@@ -20,25 +20,32 @@ export type QueryEntry = {
 };
 
 export type QueryEntries = {
-	id: string;
-	amount: number;
-	date: string;
-	message: string | null;
-	tags: {
+	total: number;
+	page: number;
+	page_size: number;
+	has_prev: boolean;
+	has_next: boolean;
+	data: {
 		id: string;
-		name: string;
+		amount: number;
+		date: string;
+		message: string | null;
+		tags: {
+			id: string;
+			name: string;
+			user_id: string;
+		}[];
+		category: {
+			id: string;
+			name: string;
+			created_at: Date; // TODO: change this
+			updated_at: Date; // TODO: change this
+			user_id: string;
+		} | null;
 		user_id: string;
+		category_id: string | null;
 	}[];
-	category: {
-		id: string;
-		name: string;
-		created_at: Date; // TODO: change this
-		updated_at: Date; // TODO: change this
-		user_id: string;
-	} | null;
-	user_id: string;
-	category_id: string | null;
-}[];
+};
 
 export type QueryCategory = {
 	id: string;

@@ -7,6 +7,7 @@ import { tags as tagsRouter } from "@/server/tags";
 import { users as usersRouter } from "@/server/users";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { Hono } from "hono";
+import { compress } from "hono/compress";
 import { createMiddleware } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
 import { handle } from "hono/vercel";
@@ -37,7 +38,7 @@ const apiAuthMiddleware = createMiddleware(async (ctx, next) => {
 });
 
 const cacheMiddleware = createMiddleware(async (ctx, next) => {
-	const ignored = ["/ping"];
+	const ignored = ["/ping", "/health"];
 	const isignored = ignored.some(x => x == ctx.req.path);
 	const shouldcache = !isignored && ctx.req.method === "GET";
 	const shouldinvalidate = !isignored && ctx.req.method !== "get";
@@ -46,21 +47,15 @@ const cacheMiddleware = createMiddleware(async (ctx, next) => {
 
 	if (shouldinvalidate) redis.del(key);
 
-	if (!shouldcache) return next();
+	if (!shouldcache) {
+		return next();
+	}
 
-	if ((await redis.exists(key)) === 0) {
+	const exists = await redis.exists(key);
+	if (exists === 0) {
 		const oldjsonfn = ctx.json;
 		ctx.json = ((obj, arg, headers) => {
-			redis.set(key, JSON.stringify(obj), "EX", 30, err => {
-				if (!err) {
-					console.log(`[api] cache hit ${key}`);
-					if (headers === undefined) {
-						headers = { ["x-cache-status"]: "hit" };
-						return;
-					}
-					headers["x-cache-status"] = "hit";
-				} else console.log(err);
-			});
+			redis.set(key, JSON.stringify(obj), "EX", 5);
 			return oldjsonfn(obj, arg, headers);
 		}) as typeof oldjsonfn;
 		return next();
@@ -71,17 +66,19 @@ const cacheMiddleware = createMiddleware(async (ctx, next) => {
 	return ctx.json(JSON.parse(obj), { status: 200 });
 });
 
+app.use(compress());
 //app.use("*", apiAuthMiddleware);
 app.use("*", cacheMiddleware);
 
 app.get("/ping", ctx => ctx.json({ success: true }));
+app.get("/health", ctx => ctx.json({ status: "ok" }));
 
 app.route("/entries", entriesRouter);
 app.route("/users", usersRouter);
 app.route("/tags", tagsRouter);
 app.route("/categories", categoriesRouter);
 app.route("/api-keys", apiKeysRouter);
-app.route("/settings");
+//app.route("/settings");
 
 app.onError((err, ctx) => {
 	if (err instanceof HTTPException) return err.getResponse();

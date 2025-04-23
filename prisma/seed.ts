@@ -12,7 +12,7 @@ if (!process.env.DEV_ONLY_PRISMA_SEED_CLERK_USER_ID)
  * email and other user information, but
  * that is alright
  */
-const user_id = process.env._DEV_PRISMA_SEED_CLERK_USER_ID;
+const user_id = process.env.DEV_ONLY_PRISMA_SEED_CLERK_USER_ID;
 
 const prisma = new PrismaClient();
 
