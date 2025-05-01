@@ -1,142 +1,184 @@
+"use client";
+
 import { PayButton } from "@/app/(public)/(default)/appl/pay";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
-import { Sparkles } from "lucide-react";
+import { Check } from "lucide-react";
 import React from "react";
+import { Label } from "./ui/label";
+import { Switch } from "./ui/switch";
 
 type PricingOption = {
-	title: string;
-	price:
-		| string
-		| { amount: number; validity: "monthly" | "lifetime" | "yearly" };
-	description: string;
-	perks: string[];
-	redirect?: string;
-	highlight?: boolean;
-	disabled?: boolean;
+    title: string;
+    price:
+    | string
+    | { amount: number; validity: "monthly" | "lifetime" | "yearly" };
+    description: string;
+    perks: string[];
+    redirect?: string;
+    highlight?: boolean;
+    disabled?: boolean;
 };
 
 const options: PricingOption[] = [
-	{
-		title: "Free",
-		price: { amount: 0, validity: "monthly" },
-		description: "Basic features for individual use.",
-		perks: [
-			"10,000 entries",
-			"1 user",
-			"1 workspace",
-			"100 workflow runs (coming soon)",
-		],
-	},
-	{
-		title: "Pro",
-		price: { amount: 10, validity: "monthly" },
-		description: "More advanced features (coming soon)",
-		perks: [
-			"Unlimited entries",
-			"5 users",
-			"3 workspaces",
-			"10,000 workflow runs (coming soon)",
-		],
-		disabled: true,
-	},
-	{
-		highlight: true,
-		title: "Lifetime",
-		price: { amount: 119, validity: "lifetime" },
-		description: "Limited time plan for lifetime usage.",
-		perks: [
-			"Unlimited entries",
-			"1 users",
-			"1 workspace",
-			"10,000 monthly workflow runs (coming soon)",
-		],
-	},
-	{
-		title: "Enterprise",
-		price: "Custom Pricing",
-		description: "Custom solution for large enterprises.",
-		perks: [
-			"All features in Pro tier",
-			"More users",
-			"More workflow runs",
-			"Custom integrations",
-			"Advanced security",
-		],
-	},
+    {
+        title: "Free",
+        price: { amount: 0, validity: "monthly" },
+        description: "Basic features for individual use.",
+        perks: [
+            "1 user",
+            "1 project",
+            "10k entries per month",
+            "Non-commercial use",
+        ],
+    },
+    {
+        title: "Pro",
+        price: { amount: 10, validity: "monthly" },
+        description: "More advanced features (coming soon)",
+        perks: [
+            "Everthing in Free tier",
+            "5 users",
+            "3 projects",
+            "Unlimited entries",
+            "API access",
+            "24/7 support",
+            "Third-party integrations (coming soon)",
+            "Commercial use",
+        ],
+        disabled: true,
+    },
+    {
+        highlight: true,
+        title: "Lifetime",
+        price: { amount: 119, validity: "lifetime" },
+        description: "Limited time plan for lifetime usage.",
+        perks: [
+            "Unlimited entries",
+            "1 users",
+            "1 workspace",
+            "API access",
+            "24/7 support",
+            "Third-party integrations (coming soon)",
+            "Commercial use",
+        ],
+    },
+    {
+        title: "Enterprise",
+        price: "Custom Pricing",
+        description: "Custom solution for large enterprises.",
+        perks: [
+            "Everything in Pro tier",
+            "Upto 1000 users",
+            "Unlimited projects",
+            "Custom integrations",
+        ],
+        disabled: true
+    },
 ];
 
+const formatPrice = (price: PricingOption["price"]) => {
+    if (typeof price === "string") return price;
+
+    const formatter = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        minimumFractionDigits: 0,
+    });
+
+    const formattedAmount = formatter.format(price.amount);
+
+    switch (price.validity) {
+        case "monthly":
+            return `${formattedAmount} per month`;
+        case "yearly":
+            return `${formattedAmount} per year`;
+        case "lifetime":
+            return `${formattedAmount} one-time`;
+        default:
+            return formattedAmount;
+    }
+};
+
 export function PricingCardGroup() {
-	return (
-		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-			{options.map((option, index) => {
-				const { title, price, description, perks, highlight } = option;
-				return (
-					<React.Fragment key={index}>
-						<div
-							className={cn(
-								"flex flex-col items-start gap-4 rounded-lg p-8 lg:max-w-[360px]",
-								{ "pricing-card__hightlight": highlight },
-							)}>
-							<Button size="icon" variant="outline" disabled>
-								<Sparkles className="h-4 w-4" />
-							</Button>
-							<div className="mb-4 space-y-2">
-								<div className="flex gap-2">
-									<h2 className="text-xl">{title}</h2>
-								</div>
-								<p className="line-clamp-1 text-[#A3A3A3]">
-									{description}
-								</p>
-							</div>
-							{typeof price === "string" && (
-								<h1 className="text-2xl">{price}</h1>
-							)}
-							{typeof price !== "string" && (
-								<h1 className="text-2xl">
-									${price.amount}
-									{price.validity === "monthly" && (
-										<span className="text-muted-foreground text-sm">
-											{" /month"}
-										</span>
-									)}
-									{price.validity === "yearly" && (
-										<span className="text-muted-foreground text-sm">
-											{" /year"}
-										</span>
-									)}
-								</h1>
-							)}
-							<Separator
-								className={cn({
-									"bg-white/10": title === "Lifetime",
-								})}
-							/>
-							<div className="grow gap-4 space-y-4">
-								{perks.map((perk, index) => (
-									<React.Fragment key={index}>
-										<p className="line-clamp-1 text-sm text-[#A3A3A3]">
-											✦ &nbsp;{perk}
-										</p>
-									</React.Fragment>
-								))}
-							</div>
-							{/*<Button
-                                className="w-full"
-                                disabled={option.disabled}
-                                variant={
-                                    title === "Lifetime" ? "default" : (
-                                        "secondary"
-                                    )
-                                }>
-                                Get started
-                            </Button>*/}
-							<PayButton />
-						</div>
-					</React.Fragment>
-				);
-			})}
-		</div>
-	);
+    return (
+        <div className="grid w-full grid-cols-4 gap-4 px-32">
+            {options.map((option, index) => (
+                <React.Fragment key={index}>
+                    <PricingCard option={option} />
+                </React.Fragment>
+            ))}
+        </div>
+    );
+}
+
+function PricingCard({ option }: { option: PricingOption }) {
+    const isFree =
+        typeof option.price !== "string" && option.price.amount === 0;
+    const yearlyBilling = useStore(s => s.yearly_billing);
+    const setYearlyBilling = useStore(s => s.set_yearly_billing);
+
+    const switchId = React.useId();
+
+    return (
+        <Card
+            className={cn(
+                option.highlight &&
+                "border-primary relative overflow-hidden shadow-lg",
+            )}>
+            <CardHeader className="border-b">
+                <CardTitle className="text-2xl font-normal">
+                    {option.title}
+                </CardTitle>
+                <CardDescription className="mt-2">
+                    {formatPrice(option.price)}
+                </CardDescription>
+            </CardHeader>
+
+            <div className="flex border-b px-4 pb-6">
+                {isFree && <p>Free for individuals</p>}
+                {!isFree && (
+                    <React.Fragment>
+                        <div className="flex items-center">
+                            <Switch
+                                id={switchId}
+                                checked={yearlyBilling}
+                                onCheckedChange={setYearlyBilling}
+                            />
+                            <Label htmlFor={switchId} className="ml-2">
+                                Yearly billing
+                            </Label>
+                        </div>
+                    </React.Fragment>
+                )}
+            </div>
+
+            <CardContent className="h-full">
+                <ul className="space-y-3">
+                    {option.perks.map((perk, perkIndex) => (
+                        <li key={perkIndex} className="flex items-start">
+                            <p className="inline-flex">
+                                <Check className="mt-1 mr-2 h-4 w-4 flex-shrink-0 text-green-500" />
+                                <span>{perk}</span>
+                            </p>
+                        </li>
+                    ))}
+                </ul>
+            </CardContent>
+            <CardFooter>
+                <PayButton
+                    disabled={option.disabled}
+                    highlight={option.highlight}
+                />
+            </CardFooter>
+        </Card>
+    );
 }

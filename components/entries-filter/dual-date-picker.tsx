@@ -1,13 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Separator } from "@/components/ui/separator";
-import { today, useStore } from "@/lib/store";
-
 export type DateRange = {
-    from?: Date;
-    to?: Date;
+	from?: Date;
+	to?: Date;
 };
 
 /*export function DualDatePicker() {

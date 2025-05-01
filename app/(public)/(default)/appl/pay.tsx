@@ -12,7 +12,13 @@ type PaymentHandler = (order: {
 	razorpay_signature: string;
 }) => Promise<void>;
 
-export function PayButton() {
+export function PayButton({
+	disabled,
+	highlight,
+}: {
+	disabled?: boolean;
+	highlight?: boolean;
+}) {
 	const router = useRouter();
 	const [pending, startTransition] = React.useTransition();
 	const plan = plans[0];
@@ -68,8 +74,12 @@ export function PayButton() {
 	}
 
 	return (
-		<Button disabled={pending} onClick={handleBuy}>
-			Purchase
+		<Button
+			variant={highlight ? "default" : "secondary"}
+			disabled={disabled || pending}
+			className="w-full"
+			onClick={handleBuy}>
+			{disabled ? "Coming soon" : "Get started"}
 		</Button>
 	);
 }
