@@ -2,11 +2,13 @@
  * CATEGORY HANDLERS
  * documentation: docs/api/categories
  */
-
 import prisma from "@/lib/prisma";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
-import { createCategorySchema, editCategorySchema } from "./schema";
+import {
+	postCategoryRequestBodySchema,
+	putCategoryRequestBodySchema,
+} from "./schema";
 
 export const categories = new Hono();
 
@@ -17,22 +19,21 @@ categories.get("/:id", async ctx => {
 		select: {
 			id: true,
 			name: true,
-			created_at: true,
-			updated_at: true,
-			entries: false,
+			user_id: true,
 			user: false,
-			user_id: false,
-			_count: true,
+			created_at: false,
+			updated_at: false,
+			entries: false,
 		},
 	});
-	if (!result) {
-		throw new HTTPException(404);
-	}
+	if (!result) throw new HTTPException(404);
 	return ctx.json(result, { status: 200 });
 });
 
 categories.post("/", async ctx => {
-	const payload = createCategorySchema.safeParse(await ctx.req.json());
+	const payload = postCategoryRequestBodySchema.safeParse(
+		await ctx.req.json(),
+	);
 	if (!payload.success) {
 		throw new HTTPException(422);
 	}
@@ -46,7 +47,9 @@ categories.post("/", async ctx => {
 // Updates a single category
 categories.put("/:id", async ctx => {
 	const { id } = ctx.req.param();
-	const payload = editCategorySchema.safeParse(await ctx.req.json());
+	const payload = putCategoryRequestBodySchema.safeParse(
+		await ctx.req.json(),
+	);
 	if (!payload.success) {
 		throw new HTTPException(422);
 	}

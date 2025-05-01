@@ -26,6 +26,7 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import { useUser } from "@clerk/nextjs";
+import Link from "next/link";
 
 export function NavUser() {
 	const { isMobile } = useSidebar();
@@ -89,9 +90,11 @@ export function NavUser() {
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 						<DropdownMenuGroup>
-							<DropdownMenuItem>
-								<Sparkles />
-								Upgrade to Pro
+							<DropdownMenuItem asChild>
+								<Link href="/pricing">
+									<Sparkles />
+									Upgrade to Pro
+								</Link>
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />

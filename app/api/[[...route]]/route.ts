@@ -1,16 +1,18 @@
 import prisma from "@/lib/prisma";
 import { redis } from "@/lib/redis";
-import { apiKeys as apiKeysRouter } from "@/server/api-keys";
-import { categories as categoriesRouter } from "@/server/categories";
-import { entries as entriesRouter } from "@/server/entries";
-import { tags as tagsRouter } from "@/server/tags";
-import { users as usersRouter } from "@/server/users";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { Hono } from "hono";
 import { compress } from "hono/compress";
 import { createMiddleware } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
 import { handle } from "hono/vercel";
+import {
+	apiKeysRouter,
+	categoriesRouter,
+	entriesRouter,
+	tagsRouter,
+	usersRouter,
+} from "./server";
 
 export const runtime = "nodejs";
 

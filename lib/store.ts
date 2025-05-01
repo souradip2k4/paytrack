@@ -1,3 +1,6 @@
+import { type Entry } from "@/app/api/[[...route]]/server";
+import { type RowSelectionState } from "@tanstack/react-table";
+import { addDays } from "date-fns";
 import { nanoid } from "nanoid";
 import { create } from "zustand";
 
@@ -13,7 +16,19 @@ export type Store = {
 	existsFilter: (field: FilterFields, value: string) => boolean;
 	resetAllFilters: () => void;
 	toggleFilter: (field: FilterFields, value: string) => void;
+
+	filter_date_to: Date;
+	filter_date_from: Date;
+	set_filter_date_from: (date: Date) => void;
+	set_filter_date_to: (date: Date) => void;
+
+	data_entries: Entry[];
+	set_data_entries: (data_entries: Entry[]) => void;
+	row_selection_entries: RowSelectionState;
+	set_row_selection_entries: (row_selection: RowSelectionState) => void;
 };
+
+export const today = new Date();
 
 export const useStore = create<Store>((set, get) => ({
 	fields: [nanoid()],
@@ -38,4 +53,15 @@ export const useStore = create<Store>((set, get) => ({
 			:	{ ...filters, [name]: [...f, value] };
 		set({ filters: x });
 	},
+
+	filter_date_from: addDays(today, -7),
+	filter_date_to: today,
+	set_filter_date_from: (date: Date) => set({ filter_date_from: date }),
+	set_filter_date_to: (date: Date) => set({ filter_date_to: date }),
+
+	data_entries: [],
+	set_data_entries: data_entries => set({ data_entries }),
+	row_selection_entries: {},
+	set_row_selection_entries: row_selection_entries =>
+		set({ row_selection_entries }),
 }));

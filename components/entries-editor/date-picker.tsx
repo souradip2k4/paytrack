@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { addDays, format, subDays } from "date-fns";
 import { CalendarPlus } from "lucide-react";
 import { Control, FieldValues, useController } from "react-hook-form";
-import { CreateEntriesFormValues } from "./entries-table/create-entries-button";
+import { CreateEntriesFormValues } from "./create-entries-button";
 
 interface DatePickerProps<T extends FieldValues> {
 	name: string;

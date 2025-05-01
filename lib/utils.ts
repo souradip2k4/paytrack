@@ -53,3 +53,7 @@ export function apiUrl(route: string) {
 	);
 	return new URL(path.join("api", route), root);
 }
+
+export function deep_console_log(obj: any) {
+	console.log(JSON.stringify(obj, null, 2));
+}

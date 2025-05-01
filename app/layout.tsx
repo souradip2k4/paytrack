@@ -36,8 +36,8 @@ const helvetica = localFont({
 	],
 });
 export const metadata: Metadata = {
-	title: "Budgetbee - Expense Tracker",
-	description: "Simple but effective personal expense tracker.",
+	title: "Budgetbee",
+	description: "Simple, user-freidly, minimal expense tracker.",
 };
 
 export default function RootLayout({

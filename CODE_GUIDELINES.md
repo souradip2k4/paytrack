@@ -7,3 +7,20 @@ We will follow the google style guidelines for the codebase.
 ## Primary branch
 
 We use `main` branch as the primary branch. At no point should you break the main branch. In case, the `main` branch breaks, fixing it should be prioritized.
+
+
+## Serialization / Deserialization
+
+All dates when sent from client to server should be in ISO format (yyyy-mm-dd). This includes query params, request body, url paths, etc.
+
+
+
+
+all types for api endpoints are named as follows
+<method><obj><type>
+
+PostCategoryQueryParams
+PostCategoriesResponseBody
+
+
+types are QueryParams, ResponseBody, Request

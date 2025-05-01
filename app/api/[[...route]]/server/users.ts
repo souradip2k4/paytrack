@@ -1,6 +1,7 @@
 import { padDates } from "@/lib/date-utils";
 import prisma from "@/lib/prisma";
 import { catchInvalid, run } from "@/lib/utils";
+import { zValidator } from "@hono/zod-validator";
 import { Prisma } from "@prisma/client";
 import {
 	getDatapointsByCategory,
@@ -12,6 +13,13 @@ import {
 import { differenceInDays, isValid, parse } from "date-fns";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
+import { z } from "zod";
+import {
+	getEntriesQueryParamsSchema,
+	type Entry,
+	type GetEntriesResponse,
+} from "./schema";
+import { transformers } from "./utils";
 
 export const users = new Hono();
 
@@ -43,93 +51,66 @@ users.get("/:id", async ctx => {
 	return ctx.json(result, { status: 200 });
 });
 
-users.get("/:user_id/entries", async ctx => {
-	const { user_id } = ctx.req.param();
-	const take =
-		run<string, number>(ctx.req.query("page_size"), num => Number(num)) ??
-		10;
-	const page =
-		run<string, number>(ctx.req.query("page"), num => Number(num)) ?? 1;
-	const skip = (page - 1) * take;
-	const from = run<string, Date>(ctx.req.query("from"), date =>
-		parse(date, "yyyy-MM-dd", new Date()),
-	);
-	const to = run<string, Date>(ctx.req.query("to"), date =>
-		parse(date, "yyyy-MM-dd", new Date()),
-	);
-	const type = run<string, any>(ctx.req.query("type"), type => {
-		if (type === "inc") return { gte: 0 };
-		else if (type === "exp") return { lte: 0 };
-		return undefined;
-	});
+users.get(
+	"/:user_id/entries",
+	zValidator("query", getEntriesQueryParamsSchema),
+	async ctx => {
+		const { user_id } = ctx.req.param();
+		const { page, page_size, from, to, type, category, tag } =
+			ctx.req.valid("query");
+		const skip = (page - 1) * page_size;
+		const where: Prisma.EntryWhereInput = {
+			user_id,
+			date: {
+				gte: from,
+				lte: to,
+			},
+			amount: type,
+		};
 
-	const categories = (() => {
-		const c = ctx.req.query("category");
-		if (!c) return undefined;
-		return c.split(",");
-	})();
+		if (type === "inc") where.amount = { gte: 0 };
+		if (type === "exp") where.amount = { lte: 0 };
 
-	const tags = (() => {
-		const t = ctx.req.query("tag");
-		if (!t) return undefined;
-		return t.split(",");
-	})();
+		if (category && category.length > 0)
+			where.category_id = { in: category };
+		if (tag && tag.length > 0) where.tags = { some: { id: { in: tag } } };
 
-	const where: Prisma.EntryWhereInput = {
-		user_id,
-		date: {
-			gte: from,
-			lte: to,
-		},
-		amount: type,
-		tags: { some: { id: { in: tags } } },
-	};
-
-	if (categories && categories.length > 0) {
-		where.category_id = { in: categories };
-	}
-
-	if (tags && tags.length > 0) {
-		where.tags = { every: { id: { in: tags } } };
-	}
-
-	const result = await prisma.entry.findMany({
-		where,
-		orderBy: {
-			created_at: "desc",
-		},
-		select: {
-			amount: true,
-			category: false,
-			category_id: true,
-			date: true,
-			id: true,
-			message: true,
-			tags: { select: { id: true } },
-			user: false,
-			user_id: true,
-		},
-		take,
-		skip,
-	});
-	if (!result) throw new HTTPException(404);
-	const modifiedData = result.map(value => ({
-		...value,
-		date: value.date.toJSON(),
-		amount: value.amount.toNumber(),
-	}));
-	return ctx.json(
-		{
+		const result = await prisma.entry.findMany({
+			where,
+			orderBy: {
+				date: "desc",
+			},
+			select: {
+				amount: true,
+				category: false,
+				category_id: true,
+				date: true,
+				id: true,
+				message: true,
+				tags: { select: { id: true } },
+				user: false,
+				user_id: true,
+			},
+			take: page_size,
+			skip,
+		});
+		if (!result) throw new HTTPException(404);
+		const data: Entry[] = result.map(value => ({
+			...value,
+			date: transformers.date.format(value.date),
+			amount: value.amount.toNumber(),
+		}));
+		const response: GetEntriesResponse = {
 			page,
-			page_size: take,
+			page_size,
 			total: result.length,
-			has_prev: take > 1,
-			has_next: result.length === take,
-			data: modifiedData,
-		},
-		{ status: 200 },
-	);
-});
+			has_prev: skip > 1,
+			has_next: result.length === page_size,
+			data: data,
+		};
+		return ctx.json(response, { status: 200 });
+	},
+);
 
 users.get("/:user_id/entries/_datapoints", async ctx => {
 	const { user_id } = ctx.req.param();
@@ -177,7 +158,7 @@ users.get("/:user_id/entries/_datapoints", async ctx => {
 					0,
 				) / count,
 		},
-		date: padDates(date, from, to),
+		data: padDates(date, from, to),
 		category: category.map(x => ({
 			...x,
 			total: x.total?.toNumber() ?? 0,
@@ -197,6 +178,31 @@ users.get("/:user_id/entries/_datapoints", async ctx => {
 	};
 	return ctx.json(data, { status: 200 });
 });
+
+users.get(
+	"/:user_id/entries/by-date",
+	zValidator(
+		"query",
+		z.object({
+			from: z.coerce.date(),
+			to: z.coerce.date(),
+		}),
+	),
+	async ctx => {
+		const { user_id } = ctx.req.param();
+		const { from, to } = ctx.req.valid("query");
+		const result = await prisma.$queryRawTyped(
+			getDatapointsByDate(user_id, from, to),
+		);
+		const data = result.map(x => ({
+			date: transformers.date.format(x.date),
+			total: x.total?.toNumber(),
+			income: x.income?.toNumber(),
+			expense: x.expense?.toNumber(),
+		}));
+		return ctx.json(data, { status: 200 });
+	},
+);
 
 users.get("/:user_id/categories", async ctx => {
 	const { user_id } = ctx.req.param();

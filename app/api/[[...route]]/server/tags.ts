@@ -2,11 +2,11 @@
  * TAG HANDLERS
  * documentation: docs/api/tags
  */
-
 import prisma from "@/lib/prisma";
+import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
-import { createTagSchema, editTagSchema } from "./schema";
+import { postTagRequestBodySchema, putTagRequestBodySchema } from "./schema";
 
 export const tags = new Hono();
 
@@ -15,40 +15,36 @@ tags.get("/:id", async ctx => {
 	const result = await prisma.tag.findUnique({
 		where: { id },
 		select: {
-			_count: true,
-			entries: false,
 			id: true,
 			name: true,
-			user: false,
 			user_id: true,
+			user: false,
+			entries: false,
+			updated_at: false,
+			created_at: false,
 		},
 	});
 	if (!result) throw new HTTPException(404);
 	return ctx.json(result, { status: 200 });
 });
 
-tags.post("/", async ctx => {
-	const payload = createTagSchema.safeParse(await ctx.req.json());
-	if (!payload.success) {
-		throw new HTTPException(422);
-	}
-	const { name, user_id } = payload.data;
+tags.post("/", zValidator("json", postTagRequestBodySchema), async ctx => {
+	const payload = ctx.req.valid("json");
 	await prisma.tag.create({
-		data: { name, user_id },
+		data: {
+			name: payload.name,
+			user_id: payload.user_id,
+		},
 	});
 	return ctx.json({}, { status: 200 });
 });
 
-tags.put("/:id", async ctx => {
+tags.put("/:id", zValidator("json", putTagRequestBodySchema), async ctx => {
 	const { id } = ctx.req.param();
-	const payload = editTagSchema.safeParse(await ctx.req.json());
-	if (!payload.success) {
-		throw new HTTPException(422);
-	}
-	const { name } = payload.data;
+	const payload = ctx.req.valid("json");
 	await prisma.tag.update({
 		where: { id },
-		data: { name },
+		data: { name: payload.name },
 	});
 });
 

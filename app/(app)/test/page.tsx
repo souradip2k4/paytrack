@@ -1,11 +1,11 @@
 "use client";
 
-import { FilterEntriesButton } from "@/components/entries-table/filter-entries-button";
+import { WeirdLineChart } from "@/components/charts/line-chart";
 
 export default function Page() {
-	return (
-		<div>
-			<FilterEntriesButton />
-		</div>
-	);
+    return (
+        <div>
+            <WeirdLineChart />
+        </div>
+    );
 }
