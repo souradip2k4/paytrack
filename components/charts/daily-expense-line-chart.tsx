@@ -22,6 +22,7 @@ import axios from "axios";
 import { addDays, format } from "date-fns";
 import LoadingSpinner from "../loading-spinner";
 import { padDates } from "./pad-dates";
+import { formatMoney } from "@/lib/money-utils";
 
 const chartConfig = {
     income: {
@@ -101,9 +102,9 @@ export function DailyExpenseLineChart() {
                                     {chartConfig[chart].label}
                                 </span>
                                 <span className="text-lg leading-none font-bold sm:text-3xl">
-                                    {total[
+                                    {formatMoney(total[
                                         key as keyof typeof total
-                                    ].toLocaleString()}
+                                    ])}
                                 </span>
                             </button>
                         );
@@ -148,7 +149,6 @@ export function DailyExpenseLineChart() {
                                         className="w-[150px]"
                                         nameKey="date"
                                         labelFormatter={value => {
-                                            console.log(value);
                                             return value;
                                         }}
                                     />

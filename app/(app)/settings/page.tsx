@@ -1,13 +1,5 @@
+import { CurrencySelect } from "@/components/settings/currency-select";
 import { ThemeRadioGroup } from "@/components/theme-radio-group";
-import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
     Select,
@@ -51,6 +43,11 @@ export default function Page() {
                         </Select>
                     </div>
                 </div>*/}
+
+                <h3>Currencies</h3>
+                <div>
+                    <CurrencySelect />
+                </div>
             </div>
         </div>
     );
