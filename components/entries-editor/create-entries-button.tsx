@@ -43,9 +43,9 @@ interface FormValues extends FieldValues {
 	fields: FormValue[];
 }
 
-export type CreateEntriesFormValues = FormValues;
+export type LogEntriesFormValues = FormValues;
 
-export function CreateEntriesButton() {
+export function LogEntriesButton({ children }: { children: React.ReactNode }) {
 	const [open, setOpen] = React.useState(false);
 	const [enableCategoryTagsColumn, setEnableCategoryTagsColumn] =
 		React.useState(true);
@@ -60,7 +60,7 @@ export function CreateEntriesButton() {
 
 	const createEntriesMutation = useMutation({
 		mutationKey: ["entries/all", "post"],
-		mutationFn: async (data: CreateEntriesFormValues) => {
+		mutationFn: async (data: LogEntriesFormValues) => {
 			if (!user) return;
 			const newfields = data.fields.map(f => {
 				return {
@@ -84,7 +84,7 @@ export function CreateEntriesButton() {
 		},
 	});
 
-	const onSubmit = (e: CreateEntriesFormValues) => {
+	const onSubmit = (e: LogEntriesFormValues) => {
 		createEntriesMutation.mutateAsync(e).then(_ => {
 			setOpen(false);
 			reset();
@@ -106,9 +106,7 @@ export function CreateEntriesButton() {
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
-				<Button>Create new</Button>
-			</DialogTrigger>
+			<DialogTrigger asChild>{children}</DialogTrigger>
 			<DialogContent className="min-w-screen max-lg:h-screen lg:min-w-1/2">
 				<DialogHeader>
 					<DialogTitle className="font-normal">

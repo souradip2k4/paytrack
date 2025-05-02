@@ -1,1 +1,1 @@
-export { CreateEntriesButton } from "./create-entries-button";
+export { LogEntriesButton as CreateEntriesButton } from "./create-entries-button";

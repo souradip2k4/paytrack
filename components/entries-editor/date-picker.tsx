@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { addDays, format, subDays } from "date-fns";
 import { CalendarPlus } from "lucide-react";
 import { Control, FieldValues, useController } from "react-hook-form";
-import { CreateEntriesFormValues } from "./create-entries-button";
+import { LogEntriesFormValues } from "./create-entries-button";
 
 interface DatePickerProps<T extends FieldValues> {
 	name: string;
@@ -19,7 +19,7 @@ interface DatePickerProps<T extends FieldValues> {
 	defaultValue?: Date;
 }
 
-export function DatePicker(props: DatePickerProps<CreateEntriesFormValues>) {
+export function DatePicker(props: DatePickerProps<LogEntriesFormValues>) {
 	const today = new Date();
 	const yesterday = subDays(today, 1);
 	const tommorrow = addDays(today, 1);

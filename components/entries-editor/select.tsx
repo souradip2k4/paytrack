@@ -12,7 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import * as React from "react";
 import { Control, Controller, FieldValues } from "react-hook-form";
-import { CreateEntriesFormValues } from "./create-entries-button";
+import { LogEntriesFormValues } from "./create-entries-button";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -36,9 +36,7 @@ interface MultiSelectProps<T extends FieldValues> {
 
 type Checked = DropdownMenuCheckboxItemProps["checked"];
 
-export function TagsMultiSelect(
-	props: MultiSelectProps<CreateEntriesFormValues>,
-) {
+export function TagsMultiSelect(props: MultiSelectProps<LogEntriesFormValues>) {
 	const { user } = useUser();
 	const { data: tags } = useQuery<QueryTags>({
 		queryKey: ["tags", "GET", user?.id],
@@ -100,7 +98,7 @@ export function TagsMultiSelect(
 	);
 }
 
-export function CategorySelect(props: SelectProps<CreateEntriesFormValues>) {
+export function CategorySelect(props: SelectProps<LogEntriesFormValues>) {
 	const { user } = useUser();
 	const { data: categories } = useQuery<unknown, unknown, QueryCategories>({
 		queryKey: ["categories", "GET", user?.id],

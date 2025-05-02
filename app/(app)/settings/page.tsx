@@ -1,147 +1,57 @@
+import { ThemeRadioGroup } from "@/components/theme-radio-group";
 import { Button } from "@/components/ui/button";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
-//import CurrenciesJson from "@/lib/currencies.json";
+import { Separator } from "@/components/ui/separator";
 
 export default function Page() {
-	return (
-		<div className="space-y-8">
-			<h3 className="mt-0">Settings</h3>
+    return (
+        <div className="space-y-8 lg:px-32">
+            <h3 className="mt-0">Settings</h3>
 
-			<Card className="w-full">
-				<CardHeader>
-					<CardTitle>Currencies</CardTitle>
-					<CardDescription>
-						Deploy your new project in one-click.
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<div className="space-y-4">
-						<div className="flex gap-4">
-							<div className="space-y-1">
-								<Label>Change displayed currency.</Label>
-								<p className="text-muted-foreground w-[480px]">
-									Changing currency only changes what currency
-									is displayed. It does not convert currency
-									values.
-								</p>
-							</div>
-							{/*
-                            <Select defaultValue="INR">
-                                <SelectTrigger className="w-[180px]">
-                                    <SelectValue placeholder="Select a fruit" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {Object.keys(CurrenciesJson).map(code => {
-                                        return (
-                                            <React.Fragment key={code}>
-                                                <SelectItem value={code}>
-                                                    {CurrenciesJson[code].name}
-                                                </SelectItem>
-                                            </React.Fragment>
-                                        );
-                                    })}
-                                </SelectContent>
-                            </Select>
-                */}
-						</div>
-						<div className="flex items-center gap-4">
-							<Label>Enable multi-currency.</Label>
-							<Input className="max-w-[200px]" />
-						</div>
-					</div>
-				</CardContent>
-			</Card>
+            <Separator className="col-span-2 mt-4" />
+            <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
+                <h3>Themes</h3>
+                <ThemeRadioGroup />
+                <Separator className="col-span-2 my-4" />
 
-			<Card className="w-full">
-				<CardHeader>
-					<CardTitle>Date & Time</CardTitle>
-					<CardDescription>
-						Deploy your new project in one-click.
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<div className="space-y-4">
-						<div className="flex items-center gap-4">
-							<Label>Default formatting for dates.</Label>
-							<Select>
-								<SelectTrigger className="w-[200px]">
-									<SelectValue placeholder="Date Formatting" />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="light">
-										DD/MM/YYYY
-									</SelectItem>
-									<SelectItem value="dark">
-										MM/DD/YYYY
-									</SelectItem>
-									<SelectItem value="system">
-										YYYY-MM-DD
-									</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
-						<div className="flex items-center gap-4">
-							<Label>Custom formatting for dates.</Label>
-							<Input className="max-w-[200px]" />
-						</div>
-					</div>
-				</CardContent>
-			</Card>
-
-			<Card className="w-full">
-				<CardHeader>
-					<CardTitle>Themes</CardTitle>
-					<CardDescription>
-						Deploy your new project in one-click.
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<div className="space-y-4">
-						<div className="flex items-center gap-4">
-							<Label>Default formatting for dates.</Label>
-							<Select>
-								<SelectTrigger className="w-[200px]">
-									<SelectValue placeholder="Date Formatting" />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="light">
-										DD/MM/YYYY
-									</SelectItem>
-									<SelectItem value="dark">
-										MM/DD/YYYY
-									</SelectItem>
-									<SelectItem value="system">
-										YYYY-MM-DD
-									</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
-						<div className="flex items-center gap-4">
-							<Label>Custom formatting for dates.</Label>
-							<Input className="max-w-[200px]" />
-						</div>
-					</div>
-				</CardContent>
-			</Card>
-
-			<div className="flex w-full items-center justify-end">
-				<Button>Save changes</Button>
-			</div>
-		</div>
-	);
+                {/*<h3>Date & time</h3>
+                <div>
+                    <div className="space-y-3">
+                        <Label>Default formatting for dates.</Label>
+                        <Select>
+                            <SelectTrigger className="w-[200px]">
+                                <SelectValue placeholder="Date Formatting" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="light">
+                                    DD/MM/YYYY
+                                </SelectItem>
+                                <SelectItem value="dark">
+                                    MM/DD/YYYY
+                                </SelectItem>
+                                <SelectItem value="system">
+                                    YYYY-MM-DD
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>*/}
+            </div>
+        </div>
+    );
 }

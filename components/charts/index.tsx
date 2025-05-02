@@ -1,2 +1,2 @@
 export * from "./bar-chart";
-export * from "./line-chart";
+export * from "./daily-expense-line-chart";

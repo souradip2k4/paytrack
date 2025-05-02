@@ -1,11 +1,11 @@
 "use client";
 
-import { WeirdLineChart } from "@/components/charts/line-chart";
+import { DailyExpenseLineChart } from "@/components/charts/daily-expense-line-chart";
 
 export default function Page() {
-	return (
-		<div>
-			<WeirdLineChart />
-		</div>
-	);
+    return (
+        <div>
+            <DailyExpenseLineChart />
+        </div>
+    );
 }
