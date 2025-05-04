@@ -22,6 +22,8 @@ const blocks: FooterBlock[] = [
                 name: "Terms and conditions",
                 href: "/legal/terms-and-conditions",
             },
+            { name: "Refund Policy", href: "/legal/refund-policy" },
+            { name: "Cookies Policy", href: "/legal/cookies-policy" },
         ],
     },
     {

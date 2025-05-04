@@ -3,8 +3,7 @@ export function formatMoney(amt: number | undefined | null) {
 	const IS_SERVER = typeof window === "undefined";
 	let currency = "USD";
 	if (!IS_SERVER) {
-		currency = localStorage.getItem("currency") ?? "USD";
-		console.log("curr>> ", currency);
+		currency = window.localStorage.getItem("currency") ?? "USD";
 	}
 	let rounded = parseFloat(amt.toFixed(2));
 	const formatted = new Intl.NumberFormat("en-US", {

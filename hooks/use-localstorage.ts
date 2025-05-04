@@ -1,10 +1,12 @@
 import React from "react";
 
+const IS_SERVER = typeof window === "undefined";
+
 export function useLocalStorage(
 	key: string,
 	defaultValue: string,
 ): [string, React.Dispatch<React.SetStateAction<string>>] {
-	const item = window.localStorage.getItem(key);
+	const item = IS_SERVER ? undefined : window.localStorage.getItem(key);
 	const [storedValue, setStoredValue] = React.useState<string>(
 		item ? item : defaultValue,
 	);

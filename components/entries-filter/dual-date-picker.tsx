@@ -1,14 +1,25 @@
 "use client";
 
+import { useStore } from "@/lib/store";
+import { Button } from "../ui/button";
+import { Separator } from "../ui/separator";
+import { Calendar } from "../ui/calendar";
+
 export type DateRange = {
-	from?: Date;
-	to?: Date;
+    from?: Date;
+    to?: Date;
 };
 
-/*export function DualDatePicker() {
-    const from = useStore(s => s.filters.date?.from ?? today);
-    const to = useStore(s => s.filters.date?.to ?? today);
-    const setDateFilters = useStore(s => s.setDateFilters);
+export function DualDatePicker() {
+    const from = useStore(s => s.filter_date_from);
+    const to = useStore(s => s.filter_date_to);
+    const setFilterDateFrom = useStore(s => s.set_filter_date_from);
+    const setFilterDateTo = useStore(s => s.set_filter_date_to);
+
+    const setDateFilters = (date: DateRange) => {
+        if (date.from) setFilterDateFrom(date.from);
+        if (date.to) setFilterDateTo(date.to);
+    };
     return (
         <div className="flex">
             <div className="flex flex-col pt-8">
@@ -53,14 +64,18 @@ export type DateRange = {
             <Calendar
                 mode="single"
                 selected={from}
-                onSelect={(e: Date) => setDateFilters({ date: { from: e } })}
+                onSelect={(e) => {
+                    if (e) setFilterDateFrom(e)
+                }}
             />
             <Separator orientation="vertical" />
             <Calendar
                 mode="single"
                 selected={to}
-                onSelect={(e: Date) => setDateFilters({ date: { to: e } })}
+                onSelect={(e) => {
+                    if (e) setFilterDateTo(e)
+                }}
             />
         </div>
     );
-}*/
+}
