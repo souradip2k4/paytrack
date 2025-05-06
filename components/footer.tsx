@@ -1,4 +1,3 @@
-import BudgetbeeLogo from "@/public/images/logo/wallet_16.svg";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -23,7 +22,7 @@ const blocks: FooterBlock[] = [
                 href: "/legal/terms-and-conditions",
             },
             { name: "Refund Policy", href: "/legal/refund-policy" },
-            { name: "Cookies Policy", href: "/legal/cookies-policy" },
+            { name: "Cookie Policy", href: "/legal/cookie-policy" },
         ],
     },
     {
@@ -41,7 +40,7 @@ export function Footer() {
     return (
         <div className="grid gap-8 px-36 text-sm lg:grid-cols-6">
             <div className="col-span-3 flex justify-between lg:flex-col">
-                <div className="inline-flex items-center gap-1">
+                <div className="inline-flex flex-col items-start gap-1">
                     <Link href="/" className="flex items-center gap-2">
                         <Image
                             alt="Budgetbee Logo"
@@ -55,14 +54,11 @@ export function Footer() {
                         </div>
                     </Link>
                 </div>
-                {/*
-				<div className="inline-flex gap-4 text-[#A3A3A3] [&>*]:h-4 [&>*]:w-4">
-					<IconBrandGithubFilled />
-					<IconBrandYoutubeFilled />
-					<IconBrandX />
-					<IconBrandSlack />
-				</div>
-                */}
+
+                <div className="inline-flex gap-4 text-muted-foreground">
+                    <h1>Built by <Link className="text-accent-foreground hover:text-primary underline underline-offset-2" href="https://x.com/sammaji15">@sammaji15</Link></h1>
+                </div>
+
             </div>
             {blocks.map((item: any, index: number) => {
                 return (
@@ -72,7 +68,7 @@ export function Footer() {
                             {item.link.map((link: any, index: number) => (
                                 <footer key={`flnk-${index}`}>
                                     <Link
-                                        className="text-[#A3A3A3]"
+                                        className="text-muted-foreground hover:text-primary"
                                         key={`fl-${index}`}
                                         href={link.href}>
                                         {link.name}

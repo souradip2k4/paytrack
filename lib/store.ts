@@ -57,8 +57,8 @@ export const useStore = create<Store>((set, get) => ({
 		set({ filters: x });
 	},
 
-	filter_date_from: addDays(today, -7),
-	filter_date_to: today,
+	filter_date_from: addDays(today, -30),
+	filter_date_to: addDays(today, 2),
 	set_filter_date_from: (date: Date) => set({ filter_date_from: date }),
 	set_filter_date_to: (date: Date) => set({ filter_date_to: date }),
 

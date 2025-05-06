@@ -1,4 +1,4 @@
-import { PricingCardGroup, PricingSection } from "@/components/pricing";
+import { PricingSection } from "@/components/pricing";
 import { BentoGrid } from "@/components/section/bento-grid";
 import { Button } from "@/components/ui/button";
 import BudgetbeeDashboardImg from "@/public/images/budgetbee_dashboard.png";
@@ -10,9 +10,9 @@ export default function Page() {
     return (
         <main>
             <div className="flex flex-col justify-center gap-4 px-8 py-16 lg:items-center">
-                <h1 className="text-muted-foreground hidden items-center text-2xl lg:flex lg:text-5xl">
+                <h1 className="text-accent-foreground hidden items-center text-2xl lg:flex lg:text-5xl">
                     Seemlessly track your
-                    <span className="text-slider text-white">
+                    <span className="text-slider text-primary">
                         <span className="text-slider__word">finances</span>
                         <span className="text-slider__word">expense</span>
                         <span className="text-slider__word">subscriptions</span>
@@ -21,19 +21,21 @@ export default function Page() {
                 <h1 className="text-2xl lg:hidden">
                     Seemlessly track your finances
                 </h1>
-                <p className="text-muted-foreground text-lg lg:w-1/2 lg:text-center">
+                <h2 className="text-xl leading-relaxed text-muted-foreground lg:w-1/2 lg:text-center">
                     Do you find managing your finances{" "}
-                    <span className="text-white">tedious</span> and
-                    <span className="text-white"> difficult</span>? With
+                    <span className="text-accent-foreground underline underline-offset-2">tedious</span> and{" "}
+                    <span className="text-accent-foreground underline underline-offset-2">difficult</span>? With
                     budgetbee you can track your spendings and gain valuable{" "}
-                    <span className="text-white">insights</span>.
-                </p>
+                    <span className="text-accent-foreground underline underline-offset-2">insights</span>.
+                </h2>
                 <div className="mt-4 lg:flex">
                     <SignedIn>
                         <Button asChild>
                             <Link href="/insights">
                                 Open dashboard
-                                <span className=""><ArrowRight className="size-4" /></span>
+                                <span className="">
+                                    <ArrowRight className="size-4" />
+                                </span>
                             </Link>
                         </Button>
                     </SignedIn>
@@ -44,11 +46,11 @@ export default function Page() {
                                 <span>🡒</span>
                             </Link>
                         </Button>
-                        <Button variant="secondary" className="ml-2" asChild>
+                        {/*<Button variant="secondary" className="ml-2" asChild>
                             <Link href="/blogs/getting-started">
                                 Learn more
                             </Link>
-                        </Button>
+                        </Button>*/}
                     </SignedOut>
                 </div>
 
@@ -63,7 +65,7 @@ export default function Page() {
             {/** BENTO GRID SECTION **/}
             <BentoGrid />
 
-            <PricingSection />
+            {/*<PricingSection />*/}
         </main>
     );
 }

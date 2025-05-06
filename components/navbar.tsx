@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { Menu } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import {
@@ -14,7 +15,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import Image from "next/image";
 
 const links: { name: string; href: string | URL }[] = [
     { name: "Overview", href: "/overview" },
@@ -42,7 +42,7 @@ export function Navbar() {
 
             {isDesktop && (
                 <React.Fragment>
-                    <div className="hidden gap-4 text-sm text-[#A3A3A3] lg:flex [&>a:hover]:text-primary">
+                    <div className="[&>a:hover]:text-primary hidden gap-4 text-sm lg:flex">
                         {links.map((link, index) => (
                             <React.Fragment key={index}>
                                 <Link href={link.href}>{link.name}</Link>

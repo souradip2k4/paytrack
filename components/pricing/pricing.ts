@@ -24,7 +24,7 @@ export const options: PricingOption[] = [
 	},
 	{
 		title: "Pro",
-		price: { amount: 999, validity: "monthly" },
+		price: { amount: 8, validity: "monthly" },
 		description: "More advanced features (coming soon)",
 		perks: [
 			"Everthing in Free tier",
@@ -41,7 +41,7 @@ export const options: PricingOption[] = [
 	{
 		highlight: true,
 		title: "Lifetime",
-		price: { amount: 8999, validity: "lifetime" },
+		price: { amount: 79, validity: "lifetime" },
 		description: "Limited time plan for lifetime usage.",
 		perks: [
 			"Unlimited entries",
@@ -73,7 +73,7 @@ export const formatPrice = (price: PricingOption["price"]) => {
 
 	const formatter = new Intl.NumberFormat("en-US", {
 		style: "currency",
-		currency: "INR",
+		currency: "USD",
 		minimumFractionDigits: 0,
 	});
 

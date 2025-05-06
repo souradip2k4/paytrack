@@ -23,11 +23,7 @@ type FormData = {
 	name: string;
 };
 
-export function CreateCategoryButton({
-	children,
-}: {
-	children: React.ReactNode;
-}) {
+export function CreateTagButton({ children }: { children: React.ReactNode }) {
 	const { user } = useUser();
 	const [open, setOpen] = React.useState(false);
 
@@ -35,14 +31,10 @@ export function CreateCategoryButton({
 	const { register, handleSubmit, reset } = useForm();
 
 	const queryClient = useQueryClient();
-	const { isPending, mutate } = useMutation<
-		{ name: string },
-		{ name: string },
-		FormData
-	>({
-		mutationKey: ["categories", "POST"],
+	const { isPending, mutate } = useMutation<any, any, FormData>({
+		mutationKey: ["tags", "POST"],
 		mutationFn: async data => {
-			const res = await axios.post("/api/categories", {
+			const res = await axios.post("/api/tags", {
 				user_id: user?.id,
 				name: data.name,
 			});
@@ -50,21 +42,24 @@ export function CreateCategoryButton({
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({
-				queryKey: ["categories", "GET"],
+				queryKey: ["tags", "GET"],
 				exact: false,
 			});
 			queryClient.refetchQueries({
-				queryKey: ["categories", "GET"],
+				queryKey: ["tags", "GET"],
 				exact: false,
 			});
 			reset();
 			setOpen(false);
-			toast.success("Category created successfully.");
+			toast.success("Tag created successfully.");
 		},
-		onError: () => toast.error("Failed to create category."),
+		onError: () => toast.error("Failed to create tag."),
 	});
 
-	const onSubmit = (e: FieldValues) => mutate(e as FormData);
+	const onSubmit = (e: FieldValues) => {
+		mutate(e as FormData);
+		setOpen(false);
+	};
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
@@ -72,7 +67,7 @@ export function CreateCategoryButton({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle className="font-normal">
-						Create category.
+						Create tag.
 					</DialogTitle>
 				</DialogHeader>
 
@@ -81,12 +76,12 @@ export function CreateCategoryButton({
 						<Label
 							htmlFor={nameId}
 							className="text-primary text-xs font-normal">
-							Category name
+							Tag name
 						</Label>
 						<Input
 							id={nameId}
 							type="text"
-							placeholder="Enter a name for the category."
+							placeholder="Enter a name for the tag."
 							{...register("name")}
 						/>
 					</div>

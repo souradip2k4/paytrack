@@ -3,6 +3,7 @@
 import { type Entry } from "@/app/api/[[...route]]/server";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { formatMoney } from "@/lib/money-utils";
 import { cn } from "@/lib/utils";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp } from "lucide-react";
@@ -49,10 +50,7 @@ export const columns: ColumnDef<Entry>[] = [
 		header: () => <div className="text-right">Amount</div>,
 		cell: ({ row }) => {
 			const amount = parseFloat(row.getValue("amount"));
-			const formatted = new Intl.NumberFormat("en-US", {
-				style: "currency",
-				currency: "INR",
-			}).format(amount);
+			const formatted = formatMoney(amount);
 			const color =
 				amount > 0 ? "text-green-600 dark:text-green-500"
 				: amount < 0 ? "text-red-600 dark:text-[#EE0000]"

@@ -42,14 +42,17 @@ import {
     useReactTable,
 } from "@tanstack/react-table";
 import axios from "axios";
+import { format } from "date-fns";
 import { ChevronDown, EyeOff, Trash2 } from "lucide-react";
 import { parseAsInteger, useQueryStates } from "nuqs";
 import React from "react";
 import { CreateCategoryButton } from "../entries-editor/create-category-button";
 import { LogEntriesButton } from "../entries-editor/create-entries-button";
+import { CreateTagButton } from "../entries-editor/create-tag-button";
+import { FilterEntriesButton } from "../entries-filter/filter-entries-button";
 import { columns } from "./columns";
 import { DeleteButton } from "./delete-button";
-import { FilterEntriesButton } from "../entries-filter/filter-entries-button";
+import { toast } from "sonner";
 
 type FilterState = {
     page: number;
@@ -67,6 +70,8 @@ export function EntriesTable() {
     );
 
     const filters = useStore(s => s.filters);
+    const filter_date_from = useStore(s => s.filter_date_from);
+    const filter_date_to = useStore(s => s.filter_date_to);
 
     const { user } = useUser();
     const { data, isLoading, isError, error } = useQuery<GetEntriesResponse>({
@@ -85,8 +90,10 @@ export function EntriesTable() {
             }
             const pg = new URLSearchParams(pagination).toString();
             const fl = new URLSearchParams(filters as any).toString();
+            const from_str = format(filter_date_from, "yyyy-MM-dd");
+            const to_str = format(filter_date_to, "yyyy-MM-dd");
             const res = await axios.get(
-                `/api/users/${user?.id}/entries?${pg}&${fl}`,
+                `/api/users/${user?.id}/entries?${pg}&${fl}&from=${from_str}&to=${to_str}`,
             );
             return res.data;
         },
@@ -214,6 +221,7 @@ export function DataTable(props: DataTableProps<Entry>) {
                 queryKey: ["entries", "GET"],
                 exact: false,
             });
+            toast.success("Entries deleted successfully.");
         },
     });
 
@@ -305,13 +313,13 @@ export function DataTable(props: DataTableProps<Entry>) {
                                 </CreateCategoryButton>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                                <CreateCategoryButton>
+                                <CreateTagButton>
                                     <Button
                                         variant="ghost"
                                         className="w-full justify-start">
                                         Create tag
                                     </Button>
-                                </CreateCategoryButton>
+                                </CreateTagButton>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

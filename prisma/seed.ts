@@ -51,9 +51,9 @@ async function genentries(
 		let entry = await prisma.entry.create({
 			data: {
 				user_id: user.id,
-				amount: faker.finance.amount({ min: -10_000, max: +10_000 }),
+				amount: faker.finance.amount({ min: -200, max: +250 }),
 				date: faker.date.recent({ days: 300 }),
-				message: faker.lorem.text(),
+				message: faker.lorem.words({ min: 1, max: 5 }),
 				category_id: randomCategory?.id,
 				tags: {
 					connect: randomTags
@@ -123,7 +123,7 @@ async function seed() {
 
 	const tags = await gentags(user);
 	const categories = await gencategories(user);
-	await genentries(10_000, user, categories, tags);
+	await genentries(100, user, categories, tags);
 }
 
 seed()

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
-
+import { useStore } from "@/lib/store";
 import {
     Card,
     CardContent,
@@ -16,13 +16,13 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart";
+import { formatMoney } from "@/lib/money-utils";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { addDays, format } from "date-fns";
 import LoadingSpinner from "../loading-spinner";
 import { padDates } from "./pad-dates";
-import { formatMoney } from "@/lib/money-utils";
 
 const chartConfig = {
     income: {
@@ -48,10 +48,9 @@ export function DailyExpenseLineChart() {
 
     const { user } = useUser();
 
-    const [range, setRange] = React.useState({
-        from: addDays(new Date(), -30),
-        to: new Date(),
-    });
+    const from = useStore(s => s.filter_date_from);
+    const to = useStore(s => s.filter_date_to);
+    const range = React.useMemo(() => ({ from, to }), [from, to]);
 
     const { data, isLoading, isFetched } = useQuery<any, any, Datapoint[]>({
         queryKey: ["entries/by-date", "GET", range],
@@ -102,9 +101,9 @@ export function DailyExpenseLineChart() {
                                     {chartConfig[chart].label}
                                 </span>
                                 <span className="text-lg leading-none font-bold sm:text-3xl">
-                                    {formatMoney(total[
-                                        key as keyof typeof total
-                                    ])}
+                                    {formatMoney(
+                                        total[key as keyof typeof total],
+                                    )}
                                 </span>
                             </button>
                         );

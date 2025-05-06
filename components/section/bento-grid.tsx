@@ -17,7 +17,7 @@ function BentoGridItem({
     return (
         <div
             className={cn(
-                "bg-accent/10 flex flex-col items-center justify-center gap-4 rounded-xl border bg-[#161616] p-4 text-center md:p-8",
+                "bg-accent/10 flex flex-col items-center justify-center gap-4 rounded-xl border dark:bg-card bg-gray-100 p-4 text-center md:p-8",
                 className,
             )}>
             {children}
@@ -28,8 +28,8 @@ function BentoGridItem({
 export function BentoGrid() {
     return (
         <div className="flex w-full flex-col items-center justify-center gap-8 border-t border-b px-4 py-8 lg:px-36 lg:py-24">
-            <h1 className="text-muted-foreground text-4xl">
-                The <span className="text-white">easy</span> way to track
+            <h1 className="text-accent-foreground text-4xl">
+                The <span className="text-primary">easy</span> way to track
                 expenses.
             </h1>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:grid-rows-3 lg:grid-cols-4 lg:grid-rows-2">

@@ -20,8 +20,10 @@ import { useStore } from "@/lib/store";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { Funnel } from "lucide-react";
+import { Funnel, PlusIcon } from "lucide-react";
 import { DualDatePicker } from "./dual-date-picker";
+import { CreateCategoryButton } from "../entries-editor/create-category-button";
+import { CreateTagButton } from "../entries-editor/create-tag-button";
 
 export type FilterState = {
     category: string[];
@@ -112,6 +114,14 @@ export function FilterEntriesButton() {
                                         {category.name}
                                     </DropdownMenuCheckboxItem>
                                 ))}
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem asChild>
+                                    <CreateCategoryButton>
+                                        <Button variant="ghost">
+                                            <PlusIcon className="size-4" />Create category
+                                        </Button>
+                                    </CreateCategoryButton>
+                                </DropdownMenuItem>
                             </DropdownMenuSubContent>
                         </DropdownMenuPortal>
                     </DropdownMenuSub>
@@ -134,6 +144,14 @@ export function FilterEntriesButton() {
                                         {tag.name}
                                     </DropdownMenuCheckboxItem>
                                 ))}
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem asChild>
+                                    <CreateTagButton>
+                                        <Button variant="ghost">
+                                            <PlusIcon className="size-4" />Create tag
+                                        </Button>
+                                    </CreateTagButton>
+                                </DropdownMenuItem>
                             </DropdownMenuSubContent>
                         </DropdownMenuPortal>
                     </DropdownMenuSub>
