@@ -5,6 +5,7 @@ import {
     Dialog,
     DialogClose,
     DialogContent,
+    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -105,10 +106,32 @@ export function LogEntriesButton({ children }: { children: React.ReactNode }) {
         [], // eslint-disable-next-line react-hooks/exhaustive-deps
     );
 
+    React.useEffect(() => {
+        const handleAddMoreButton = (e: KeyboardEvent) => {
+            e.preventDefault()
+            e.stopPropagation()
+            if (e.key === "=" && e.altKey) {
+                onClick_addMoreButton()
+            }
+            if (e.key === "-" && e.altKey) {
+                remove(fields.length - 1)
+            }
+        }
+        document.addEventListener("keydown", handleAddMoreButton, true)
+        return () => document.removeEventListener("keydown", handleAddMoreButton, true)
+    }, [])
+
+    const onClick_addMoreButton = () =>
+        append({
+            amount: 0,
+            date: new Date(),
+            message: "",
+        })
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>{children}</DialogTrigger>
-            <DialogContent className="min-w-screen max-lg:h-screen lg:min-w-1/2">
+            <DialogContent className="min-w-screen max-lg:h-screen max-lg:rounded-none lg:min-w-1/2">
                 <DialogHeader>
                     <DialogTitle className="font-normal">
                         Log multiple entries
@@ -116,166 +139,151 @@ export function LogEntriesButton({ children }: { children: React.ReactNode }) {
                 </DialogHeader>
 
                 {/* CREATE ENTRIES FORM */}
-                <div className="flex-1 overflow-y-auto py-4">
-                    <form onSubmit={handleSubmit(onSubmit)} className="w-full">
-                        <div className="space-y-4">
-                            <div className="bg-background overflow-hidden rounded-md border">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow className="bg-muted/50">
-                                            <TableHead className="text-primary h-9 w-24 border py-2">
-                                                Amount
-                                            </TableHead>
-                                            <TableHead className="text-primary h-9 border py-2">
-                                                Date
-                                            </TableHead>
-                                            <TableHead className="text-primary h-9 border py-2">
-                                                Message
-                                            </TableHead>
-                                            {enableCategoryTagsColumn && (
-                                                <React.Fragment>
-                                                    <TableHead className="text-primary h-9 w-32 border py-2">
-                                                        Category
-                                                    </TableHead>
+                <form onSubmit={handleSubmit(onSubmit)} className="lg:max-h-[75dvh] overflow-y-auto">
+                    <Table>
+                        <TableHeader>
+                            <TableRow className="bg-muted/50">
+                                <TableHead className="text-primary h-9 w-24 border py-2">
+                                    Amount
+                                </TableHead>
+                                <TableHead className="text-primary h-9 border py-2">
+                                    Date
+                                </TableHead>
+                                <TableHead className="text-primary h-9 border py-2">
+                                    Message
+                                </TableHead>
+                                {enableCategoryTagsColumn && (
+                                    <React.Fragment>
+                                        <TableHead className="text-primary h-9 w-32 border py-2">
+                                            Category
+                                        </TableHead>
 
-                                                    <TableHead className="text-primary h-9 w-32 border py-2">
-                                                        Tags
-                                                    </TableHead>
-                                                </React.Fragment>
-                                            )}
-                                            <TableHead className="text-primary h-9 w-9 border py-2"></TableHead>
-                                        </TableRow>
-                                    </TableHeader>
+                                        <TableHead className="text-primary h-9 w-32 border py-2">
+                                            Tags
+                                        </TableHead>
+                                    </React.Fragment>
+                                )}
+                                <TableHead className="text-primary h-9 w-9 border py-2"></TableHead>
+                            </TableRow>
+                        </TableHeader>
 
-                                    <TableBody>
-                                        {fields.map((f, i) => (
-                                            <React.Fragment key={i}>
-                                                <TableRow>
-                                                    <TableCell className="border p-0">
-                                                        <Input
-                                                            placeholder="Amount"
-                                                            type="number"
-                                                            key={f.id}
-                                                            className="rounded-none border-none"
-                                                            {...register(
-                                                                `fields.${i}.amount`,
-                                                                {
-                                                                    valueAsNumber:
-                                                                        true,
-                                                                },
-                                                            )}
-                                                        />
-                                                    </TableCell>
+                        <TableBody>
+                            {fields.map((f, i) => (
+                                <React.Fragment key={i}>
+                                    <TableRow>
+                                        <TableCell className="border p-0 [&>*]:ring-inset">
+                                            <Input
+                                                placeholder="Amount"
+                                                type="number"
+                                                key={f.id}
+                                                className="rounded-none border-none"
+                                                {...register(
+                                                    `fields.${i}.amount`,
+                                                    {
+                                                        valueAsNumber:
+                                                            true,
+                                                    },
+                                                )}
+                                            />
+                                        </TableCell>
 
-                                                    <TableCell className="border p-0">
-                                                        <DatePicker
-                                                            name={`fields.${i}.date`}
-                                                            control={control}
-                                                        />
-                                                    </TableCell>
+                                        <TableCell className="border p-0">
+                                            <DatePicker
+                                                name={`fields.${i}.date`}
+                                                control={control}
+                                            />
+                                        </TableCell>
 
-                                                    <TableCell className="border p-0">
-                                                        <Input
-                                                            placeholder="Message"
-                                                            type="text"
-                                                            className="rounded-none border-none"
-                                                            {...register(
-                                                                `fields.${i}.message`,
-                                                            )}
-                                                        />
-                                                    </TableCell>
+                                        <TableCell className="border p-0">
+                                            <Input
+                                                placeholder="Message"
+                                                type="text"
+                                                className="rounded-none border-none"
+                                                {...register(
+                                                    `fields.${i}.message`,
+                                                )}
+                                            />
+                                        </TableCell>
 
-                                                    {enableCategoryTagsColumn && (
-                                                        <React.Fragment>
-                                                            <TableCell className="border p-0">
-                                                                <CategorySelect
-                                                                    control={
-                                                                        control
-                                                                    }
-                                                                    name={`fields.${i}.category_id`}
-                                                                />
-                                                            </TableCell>
-                                                            <TableCell className="border p-0">
-                                                                <TagsMultiSelect
-                                                                    control={
-                                                                        control
-                                                                    }
-                                                                    name={`fields.${i}.tag_ids`}
-                                                                />
-                                                            </TableCell>
-                                                        </React.Fragment>
-                                                    )}
-
-                                                    <TableCell className="bg-input/30 w-9 border p-0">
-                                                        <Button
-                                                            type="button"
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            onClick={() => {
-                                                                if (
-                                                                    fields.length <=
-                                                                    1
-                                                                )
-                                                                    return;
-                                                                remove(i);
-                                                            }}>
-                                                            <Trash2 className="size-4" />
-                                                        </Button>
-                                                    </TableCell>
-                                                </TableRow>
+                                        {enableCategoryTagsColumn && (
+                                            <React.Fragment>
+                                                <TableCell className="border p-0">
+                                                    <CategorySelect
+                                                        control={
+                                                            control
+                                                        }
+                                                        name={`fields.${i}.category_id`}
+                                                    />
+                                                </TableCell>
+                                                <TableCell className="border p-0">
+                                                    <TagsMultiSelect
+                                                        control={
+                                                            control
+                                                        }
+                                                        name={`fields.${i}.tag_ids`}
+                                                    />
+                                                </TableCell>
                                             </React.Fragment>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </div>
+                                        )}
 
-                            <div className="flex gap-4">
-                                <Button
-                                    variant="secondary"
-                                    type="button"
-                                    onClick={() =>
-                                        append({
-                                            amount: 0,
-                                            date: new Date(),
-                                            message: "",
-                                        })
-                                    }>
-                                    + Add More
-                                </Button>
-
-                                <div className="flex items-center gap-2">
-                                    <Switch
-                                        id="enbl-tags"
-                                        defaultChecked={
-                                            enableCategoryTagsColumn
-                                        }
-                                        onCheckedChange={
-                                            setEnableCategoryTagsColumn
-                                        }
-                                    />
-                                    <Label htmlFor="enbl-tags">
-                                        Category & Tags
-                                    </Label>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+                                        <TableCell className="bg-input/30 w-9 border p-0">
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => {
+                                                    if (
+                                                        fields.length <=
+                                                        1
+                                                    )
+                                                        return;
+                                                    remove(i);
+                                                }}>
+                                                <Trash2 className="size-4" />
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                </React.Fragment>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </form>
 
                 <DialogFooter>
-                    <DialogClose asChild>
-                        <Button type="button" variant="ghost">
-                            Cancel
+                    <div className="flex justify-between gap-4 w-full">
+                        <div className="flex gap-4">
+                            <Button
+                                variant="secondary"
+                                type="button"
+                                onClick={onClick_addMoreButton}>
+                                + Add More
+                            </Button>
+
+                            <div className="flex items-center gap-2">
+                                <Switch
+                                    id="enbl-tags"
+                                    defaultChecked={
+                                        enableCategoryTagsColumn
+                                    }
+                                    onCheckedChange={
+                                        setEnableCategoryTagsColumn
+                                    }
+                                />
+                                <Label htmlFor="enbl-tags">
+                                    Category & Tags
+                                </Label>
+                            </div>
+                        </div>
+
+                        <Button
+                            disabled={isPending}
+                            onClick={() => {
+                                handleSubmit(onSubmit)();
+                            }}
+                            type="submit">
+                            {isPending ? "Creating..." : "Create"}
                         </Button>
-                    </DialogClose>
-                    <Button
-                        disabled={isPending}
-                        onClick={() => {
-                            handleSubmit(onSubmit)();
-                        }}
-                        type="submit">
-                        {isPending ? "Creating..." : "Create"}
-                    </Button>
+                    </div>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

@@ -31,7 +31,7 @@ async function cleardb() {
 }
 
 async function genentries(
-	count: number = 10,
+	count: number = 100,
 	user: User,
 	categories?: Category[],
 	tags?: Tag[],

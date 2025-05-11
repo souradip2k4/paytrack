@@ -204,6 +204,34 @@ users.get(
 	},
 );
 
+users.get("/:user_id/entries/by-category", async ctx => {
+	const income = await prisma.entry.groupBy({
+		by: ["category_id"],
+		where: { amount: { gte: 0 } },
+		_sum: { amount: true },
+	});
+	const expense = await prisma.entry.groupBy({
+		by: ["category_id"],
+		where: { amount: { lte: 0 } },
+		_sum: { amount: true },
+	});
+	const total = await prisma.entry.groupBy({
+		by: ["category_id"],
+		_sum: { amount: true },
+	});
+	const result = total.map(x => ({
+		category_id: x.category_id,
+		total: x._sum.amount?.toNumber() ?? 0,
+		income:
+			income.find(f => f.category_id === x.category_id)?._sum.amount
+				?.toNumber ?? 0,
+		expense:
+			expense.find(f => f.category_id === x.category_id)?._sum.amount
+				?.toNumber ?? 0,
+	}));
+	return ctx.json(result, { status: 200 });
+});
+
 users.get("/:user_id/categories", async ctx => {
 	const { user_id } = ctx.req.param();
 	const result = await prisma.category.findMany({
