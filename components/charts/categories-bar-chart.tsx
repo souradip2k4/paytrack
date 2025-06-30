@@ -20,6 +20,7 @@ import {
 import { useQuery } from "@tanstack/react-query"
 import { useUser } from "@clerk/nextjs"
 import axios from "axios"
+import * as React from "react"
 
 const chartData = [
     { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
@@ -82,7 +83,7 @@ export function CategoriesBarChart() {
         enabled: !!user && !!user?.id,
     });
 
-    const chartData = React.useMemo(() => {}, [data])
+    const chartData = React.useMemo(() => ({}), [data])
 
     return (
         <Card>
@@ -94,7 +95,7 @@ export function CategoriesBarChart() {
                 <ChartContainer config={chartConfig}>
                     <BarChart
                         accessibilityLayer
-                        data={chartData}
+                        data={chartData as any[]}
                         layout="vertical"
                         margin={{
                             left: 0,
