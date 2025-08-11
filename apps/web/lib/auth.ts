@@ -1,0 +1,166 @@
+import { resetPassword, verificationLink } from "@/lib/emails";
+import { getActiveOrganization } from "@/server/organization";
+import { betterAuth } from "better-auth";
+import { nextCookies } from "better-auth/next-js";
+import { organization } from "better-auth/plugins";
+import { Pool } from "pg";
+import { Resend } from "resend";
+
+if (!process.env.RESEND_MAIL) throw new Error("env: RESEND_MAIL is not set");
+if (!process.env.RESEND_API_KEY)
+	throw new Error("env: RESEND_API_KEY is not set");
+
+const resend = new Resend(process.env.RESEND_API_KEY!);
+
+export const auth = betterAuth({
+	database: new Pool({
+		connectionString: process.env.DATABASE_URL,
+	}),
+	appName: "Budgetbee",
+	emailAndPassword: {
+		enabled: true,
+		requireEmailVerification: true,
+		sendResetPassword: async data => {
+			const { data: success, error } = await resend.emails.send({
+				from: `Budgetbee <${process.env.RESEND_MAIL}>`,
+				to: [data.user.email],
+				subject: "Password reset",
+				html: resetPassword(data.url),
+			});
+			if (error) console.error(error);
+			if (success) console.log(success);
+		},
+	},
+	emailVerification: {
+		sendVerificationEmail: async data => {
+			const { data: success, error } = await resend.emails.send({
+				from: `Budgetbee <${process.env.RESEND_MAIL}>`,
+				to: [data.user.email],
+				subject: "Verify your email",
+				html: verificationLink(data.url),
+			});
+			if (error) console.error(error);
+			if (success) console.log(success);
+		},
+		sendOnSignUp: true,
+		sendOnSignIn: true, // send email if user is not verified
+	},
+	user: {
+		modelName: "users",
+		fields: {
+			emailVerified: "email_verified",
+			createdAt: "created_at",
+			updatedAt: "updated_at",
+		},
+	},
+	session: {
+		modelName: "sessions",
+		fields: {
+			updatedAt: "updated_at",
+			expiresAt: "expires_at",
+			createdAt: "created_at",
+			ipAddress: "ip_address",
+			userAgent: "user_agent",
+			userId: "user_id",
+		},
+	},
+	account: {
+		accountLinking: {
+			enabled: true,
+			trustedProviders: ["google"],
+		},
+		modelName: "accounts",
+		fields: {
+			accountId: "account_id",
+			providerId: "provider_id",
+			userId: "user_id",
+			accessToken: "access_token",
+			refreshToken: "refresh_token",
+			idToken: "id_token",
+			accessTokenExpiresAt: "access_token_expires_at",
+			refreshTokenExpiresAt: "refresh_token_expires_at",
+			createdAt: "created_at",
+			updatedAt: "updated_at",
+		},
+	},
+	verification: {
+		modelName: "verifications",
+		fields: {
+			expiresAt: "expires_at",
+			createdAt: "created_at",
+			updatedAt: "updated_at",
+		},
+	},
+	socialProviders: {
+		google: {
+			enabled: true,
+			prompt: "select_account",
+			clientId: process.env.GOOGLE_CLIENT_ID!,
+			clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+		},
+	},
+	databaseHooks: {
+		session: {
+			create: {
+				before: async session => {
+					const activeOrganizationId = await getActiveOrganization(
+						session.userId,
+					);
+					return {
+						data: {
+							...session,
+							activeOrganizationId,
+						},
+					};
+				},
+			},
+		},
+	},
+	plugins: [
+		organization({
+			autoCreateOrganizationOnSignUp: true,
+			cancelPendingInvitationsOnReInvite: true,
+			sendInvitationEmail: async data => {
+				const { data: success, error } = await resend.emails.send({
+					from: `Budgetbee <${process.env.RESEND_MAIL}>`,
+					to: [data.invitation.email],
+					subject: "You've been invited to join a team",
+					text: `You've been invited to join ${data.organization.name} by ${data.inviter.user.name}.\nIf this wasn't you, you can ignore this email.`,
+				});
+				if (error) console.error(error);
+				if (success) console.log(success);
+			},
+			invitationExpiresIn: 24 * 7,
+			schema: {
+				organization: {
+					modelName: "organizations",
+					fields: {
+						createdAt: "created_at",
+					},
+				},
+				member: {
+					modelName: "members",
+					fields: {
+						organizationId: "organization_id",
+						userId: "user_id",
+						createdAt: "created_at",
+					},
+				},
+				invitation: {
+					modelName: "invitations",
+					fields: {
+						organizationId: "organization_id",
+						expiresAt: "expires_at",
+						inviterId: "inviter_id",
+					},
+				},
+				session: {
+					fields: {
+						activeOrganizationId: "active_organization_id",
+					},
+				},
+			},
+		}),
+		nextCookies(),
+	],
+});
