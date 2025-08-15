@@ -36,8 +36,12 @@ export function CreateCategoryButton({
 
 	const queryClient = useQueryClient();
 	const { isPending, mutate } = useMutation<
-		{ name: string },
-		{ name: string },
+		{
+			name: string;
+		},
+		{
+			name: string;
+		},
 		FormData
 	>({
 		mutationKey: ["categories", "POST"],

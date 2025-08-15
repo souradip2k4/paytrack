@@ -7,9 +7,21 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useTheme } from "next-themes";
 
 const items = [
-	{ value: "light", label: "Light", image: "/images/ui-light.png" },
-	{ value: "dark", label: "Dark", image: "/images/ui-dark.png" },
-	{ value: "system", label: "System", image: "/images/ui-system.png" },
+	{
+		value: "light",
+		label: "Light",
+		image: "/images/ui-light.png",
+	},
+	{
+		value: "dark",
+		label: "Dark",
+		image: "/images/ui-dark.png",
+	},
+	{
+		value: "system",
+		label: "System",
+		image: "/images/ui-system.png",
+	},
 ];
 
 export function ThemeRadioGroup() {

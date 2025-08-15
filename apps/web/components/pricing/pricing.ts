@@ -2,7 +2,10 @@ export type PricingOption = {
 	title: string;
 	price:
 		| string
-		| { amount: number; validity: "monthly" | "lifetime" | "yearly" };
+		| {
+				amount: number;
+				validity: "monthly" | "lifetime" | "yearly";
+		  };
 	description: string;
 	perks: string[];
 	redirect?: string;
@@ -13,7 +16,10 @@ export type PricingOption = {
 export const options: PricingOption[] = [
 	{
 		title: "Free",
-		price: { amount: 0, validity: "monthly" },
+		price: {
+			amount: 0,
+			validity: "monthly",
+		},
 		description: "Basic features for individual use.",
 		perks: [
 			"1 user",
@@ -24,7 +30,10 @@ export const options: PricingOption[] = [
 	},
 	{
 		title: "Pro",
-		price: { amount: 8, validity: "monthly" },
+		price: {
+			amount: 8,
+			validity: "monthly",
+		},
 		description: "More advanced features (coming soon)",
 		perks: [
 			"Everthing in Free tier",
@@ -41,7 +50,10 @@ export const options: PricingOption[] = [
 	{
 		highlight: true,
 		title: "Lifetime",
-		price: { amount: 79, validity: "lifetime" },
+		price: {
+			amount: 79,
+			validity: "lifetime",
+		},
 		description: "Limited time plan for lifetime usage.",
 		perks: [
 			"Unlimited entries",

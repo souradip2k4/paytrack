@@ -6,7 +6,9 @@ import prisma from "./prisma";
 export const entriesMutationFn = async (
 	data: Prisma.EntryCreateManyInput[],
 ) => {
-	return prisma.entry.createMany({ data });
+	return prisma.entry.createMany({
+		data,
+	});
 };
 
 export type EditEntryMutationFnParams = {
@@ -26,17 +28,29 @@ export const editEntryMutationFn = async ({
 }: EditEntryMutationFnParams) => {
 	if (category_id === null) {
 		return prisma.entry.update({
-			where: { id },
-			data: { amount: amount?.toString(), message, date },
+			where: {
+				id,
+			},
+			data: {
+				amount: amount?.toString(),
+				message,
+				date,
+			},
 		});
 	}
 	return prisma.entry.update({
-		where: { id },
+		where: {
+			id,
+		},
 		data: {
 			amount: amount?.toString(),
 			message,
 			date,
-			category: { connect: { id: category_id } },
+			category: {
+				connect: {
+					id: category_id,
+				},
+			},
 		},
 	});
 };

@@ -527,7 +527,10 @@ function SidebarMenuButton({
 			data-size={size}
 			data-active={isActive}
 			className={cn(
-				sidebarMenuButtonVariants({ variant, size }),
+				sidebarMenuButtonVariants({
+					variant,
+					size,
+				}),
 				className,
 			)}
 			{...props}

@@ -56,7 +56,13 @@ const schema = z.object({
 type FieldValues = z.infer<typeof schema>;
 
 export function StatusBadge({ status }: { status: string }) {
-    const statusMap: Record<string, { color: string; title: string }> = {
+    const statusMap: Record<
+        string,
+        {
+            color: string;
+            title: string;
+        }
+    > = {
         paid: {
             color: "bg-emerald-500",
             title: "Paid",
@@ -100,8 +106,14 @@ export function TransactionDialog() {
         onError: () => toast.error("Failed to create transaction"),
         onSuccess: () => {
             toast.success("Transaction created successfully");
-            queryClient.invalidateQueries({ queryKey: ["tr", "get"] });
-            queryClient.refetchQueries({ queryKey: ["tr", "get"] });
+            queryClient.invalidateQueries({
+                queryKey: ["tr", "get"],
+                exact: false,
+            });
+            queryClient.refetchQueries({
+                queryKey: ["tr", "get"],
+                exact: false,
+            });
         },
     });
 
@@ -118,7 +130,12 @@ export function TransactionDialog() {
             amount: 0,
             status: "paid",
             transaction_date: new Date().toISOString(),
-            currency: (() => { if (!IS_SERVER) { return localStorage.getItem("last_used_currency") || "USD" }; return "USD" })(),
+            currency: (() => {
+                if (!IS_SERVER) {
+                    return localStorage.getItem("last_used_currency") || "USD";
+                }
+                return "USD";
+            })(),
         },
     });
 
@@ -194,7 +211,9 @@ export function TransactionDialog() {
                         <Input
                             id={nameId}
                             placeholder="Title (eg, Groceries)"
-                            {...register("name", { required: true })}
+                            {...register("name", {
+                                required: true,
+                            })}
                         />
                     </div>
 

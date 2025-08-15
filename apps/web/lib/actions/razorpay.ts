@@ -21,8 +21,14 @@ type SuccessfulOrder = {
 };
 
 type Order =
-	| { status: "success"; body: SuccessfulOrder }
-	| { status: "failed"; body: FailedOrder };
+	| {
+			status: "success";
+			body: SuccessfulOrder;
+	  }
+	| {
+			status: "failed";
+			body: FailedOrder;
+	  };
 
 class PaymentError extends HTTPException {}
 
@@ -32,7 +38,13 @@ export async function createOrder({
 }: CreateOrderProps): Promise<Order> {
 	const plan = plans.find(p => p.id === planId);
 
-	if (!plan) return { status: "failed", body: { statusCode: 422 } };
+	if (!plan)
+		return {
+			status: "failed",
+			body: {
+				statusCode: 422,
+			},
+		};
 
 	try {
 		const KEY = process.env.NEXT_PUBLIC_RAZORPAY_ID;
@@ -40,16 +52,30 @@ export async function createOrder({
 
 		if (!KEY || !SECRET) {
 			console.log("?> Missing Razorpay keys");
-			return { status: "failed", body: { statusCode: 500 } };
+			return {
+				status: "failed",
+				body: {
+					statusCode: 500,
+				},
+			};
 		}
 
-		const instance = new Razorpay({ key_id: KEY, key_secret: SECRET });
+		const instance = new Razorpay({
+			key_id: KEY,
+			key_secret: SECRET,
+		});
 		const orders = await instance.orders.create({
 			amount: (plan.price - plan.price * (plan.discount / 100)) * 100,
 			currency: "INR",
 		});
 
-		if (!orders) return { status: "failed", body: { statusCode: 501 } }; // reserved for payment error
+		if (!orders)
+			return {
+				status: "failed",
+				body: {
+					statusCode: 501,
+				},
+			}; // reserved for payment error
 
 		// create order in database
 
@@ -64,7 +90,12 @@ export async function createOrder({
 		console.log("===ERROR===");
 		console.log(error);
 		console.log("===ERROR===");
-		return { status: "failed", body: { statusCode: 500 } };
+		return {
+			status: "failed",
+			body: {
+				statusCode: 500,
+			},
+		};
 	}
 }
 
@@ -79,14 +110,20 @@ export async function verifyPayment(data: {
 		const digest = shasum.digest("hex");
 
 		if (digest !== data.razorpay_signature) {
-			return { error: "Transaction not legit!" };
+			return {
+				error: "Transaction not legit!",
+			};
 		}
 
 		// Save the payment details in the database
 
-		return { success: true };
+		return {
+			success: true,
+		};
 	} catch (error) {
 		console.log("Error verifying payment", error);
-		return { error: "Error verifying payment" };
+		return {
+			error: "Error verifying payment",
+		};
 	}
 }

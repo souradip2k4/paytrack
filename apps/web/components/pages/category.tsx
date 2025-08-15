@@ -34,7 +34,9 @@ export default function Category() {
 	const createCategoriesMutation = useMutation<
 		unknown,
 		unknown,
-		{ name: string | undefined }
+		{
+			name: string | undefined;
+		}
 	>({
 		mutationKey: ["category", user?.id, "new"],
 		mutationFn: async variables => {
@@ -58,14 +60,18 @@ export default function Category() {
 			queryClient.invalidateQueries({
 				queryKey: ["category", user?.id],
 			});
-			queryClient.refetchQueries({ queryKey: ["category", user?.id] });
+			queryClient.refetchQueries({
+				queryKey: ["category", user?.id],
+			});
 		},
 	});
 
 	const deleteCategoriesMutation = useMutation<
 		unknown,
 		unknown,
-		{ id?: string }
+		{
+			id?: string;
+		}
 	>({
 		mutationKey: ["category", user?.id, "new"],
 		mutationFn: async variables => {
@@ -84,7 +90,9 @@ export default function Category() {
 			queryClient.invalidateQueries({
 				queryKey: ["category", user?.id],
 			});
-			queryClient.refetchQueries({ queryKey: ["category", user?.id] });
+			queryClient.refetchQueries({
+				queryKey: ["category", user?.id],
+			});
 		},
 	});
 
@@ -92,7 +100,9 @@ export default function Category() {
 
 	const onSubmit = async (e: FieldValues) => {
 		if (!user?.id) return;
-		await createCategoriesMutation.mutateAsync({ name: e.name });
+		await createCategoriesMutation.mutateAsync({
+			name: e.name,
+		});
 	};
 
 	return (
@@ -175,7 +185,9 @@ export default function Category() {
 								</Label>
 								<Input
 									placeholder="category"
-									{...register("name", { required: true })}
+									{...register("name", {
+										required: true,
+									})}
 								/>
 								<Button type="submit">Create</Button>
 							</form>

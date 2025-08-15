@@ -8,28 +8,49 @@ const blocks: FooterBlock[] = [
 	{
 		title: "Company",
 		link: [
-			{ name: "Community", href: "https://discord.gg/auFkSuADMe" },
-			{ name: "Contact us", href: "/contact" },
-			{ name: "Report a bug", href: "/report-a-bug" },
+			{
+				name: "Community",
+				href: "https://discord.gg/auFkSuADMe",
+			},
+			{
+				name: "Contact us",
+				href: "/contact",
+			},
+			{
+				name: "Report a bug",
+				href: "/report-a-bug",
+			},
 		],
 	},
 	{
 		title: "Legal",
 		link: [
-			{ name: "Privacy Policy", href: "/legal/privacy-policy" },
+			{
+				name: "Privacy Policy",
+				href: "/legal/privacy-policy",
+			},
 			{
 				name: "Terms and conditions",
 				href: "/legal/terms-and-conditions",
 			},
-			{ name: "Refund Policy", href: "/legal/refund-policy" },
-			{ name: "Cookie Policy", href: "/legal/cookie-policy" },
+			{
+				name: "Refund Policy",
+				href: "/legal/refund-policy",
+			},
+			{
+				name: "Cookie Policy",
+				href: "/legal/cookie-policy",
+			},
 		],
 	},
 	{
 		title: "Developers",
 		link: [
 			// { name: "API", href: "/api" },
-			{ name: "Status", href: "https://budgetbee.openstatus.dev" },
+			{
+				name: "Status",
+				href: "https://budgetbee.openstatus.dev",
+			},
 			// { name: "GitHub", href: "https://github.com/budgetbee-org" },
 			// { name: "README", href: "/readme" },
 		],

@@ -28,8 +28,14 @@ import { FilterEntriesButton } from "./entries-filter";
 
 function TopEntriesCard() {
 	const keys = [
-		{ key: "income", name: "Income" },
-		{ key: "expense", name: "Expense" },
+		{
+			key: "income",
+			name: "Income",
+		},
+		{
+			key: "expense",
+			name: "Expense",
+		},
 	] as const;
 
 	const { user } = useUser();

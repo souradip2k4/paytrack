@@ -50,7 +50,13 @@ export function DailyExpenseLineChart() {
 
 	const from = useStore(s => s.filter_date_from);
 	const to = useStore(s => s.filter_date_to);
-	const range = React.useMemo(() => ({ from, to }), [from, to]);
+	const range = React.useMemo(
+		() => ({
+			from,
+			to,
+		}),
+		[from, to],
+	);
 
 	const { data, isLoading, isFetched } = useQuery<any, any, Datapoint[]>({
 		queryKey: ["entries/by-date", "GET", range],

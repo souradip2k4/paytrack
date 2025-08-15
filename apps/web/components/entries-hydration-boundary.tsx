@@ -19,7 +19,10 @@ export default async function EntriesHydrationBoundary({
 		queryKey: [
 			"entries",
 			user?.id,
-			{ from: "2024-04-01", to: "2024-04-30" },
+			{
+				from: "2024-04-01",
+				to: "2024-04-30",
+			},
 		],
 		queryFn: entriesQueryFn,
 	});

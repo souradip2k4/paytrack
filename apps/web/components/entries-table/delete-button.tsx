@@ -9,8 +9,12 @@ export function DeleteButton({ row }: { row: Row<QueryEntry> }) {
 	const deleteEntryMutation = useMutation({
 		mutationFn: deleteEntryMutationFn,
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["entries"] });
-			queryClient.refetchQueries({ queryKey: ["entries"] });
+			queryClient.invalidateQueries({
+				queryKey: ["entries"],
+			});
+			queryClient.refetchQueries({
+				queryKey: ["entries"],
+			});
 		},
 	});
 

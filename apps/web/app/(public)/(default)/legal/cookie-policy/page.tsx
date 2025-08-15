@@ -4,18 +4,26 @@ export default function Page() {
 			<h1 id="cookie-policy">Cookie Policy</h1>
 			<p>
 				Last updated April 20, 2025 This Cookie Policy explains how
-				Budgetbee (&quot;<strong>Company</strong>,&quot; &quot;
-				<strong>we</strong>,&quot; &quot;<strong>us</strong>,&quot; and
-				&quot;<strong>our</strong>&quot;) uses cookies and similar
-				technologies to recognize you when you visit our website at{" "}
+				Budgetbee (&quot;
+				<strong>Company</strong>
+				,&quot; &quot;
+				<strong>we</strong>
+				,&quot; &quot;
+				<strong>us</strong>
+				,&quot; and &quot;
+				<strong>our</strong>
+				&quot;) uses cookies and similar technologies to recognize you
+				when you visit our website at{" "}
 				<a href="https://www.budgetbee.site">
 					https://www.budgetbee.site
 				</a>{" "}
-				(&quot;<strong>Website</strong>&quot;). It explains what these
-				technologies are and why we use them, as well as your rights to
-				control our use of them. In some cases we may use cookies to
-				collect personal information, or that becomes personal
-				information if we combine it with other information.
+				(&quot;
+				<strong>Website</strong>
+				&quot;). It explains what these technologies are and why we use
+				them, as well as your rights to control our use of them. In some
+				cases we may use cookies to collect personal information, or
+				that becomes personal information if we combine it with other
+				information.
 			</p>
 			<h2 id="what-are-cookies-">What are cookies?</h2>
 			<p>

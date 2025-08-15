@@ -7,8 +7,8 @@ import { formatMoney } from "@/lib/money-utils";
 import { avatarUrl, cn } from "@/lib/utils";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, Ellipsis } from "lucide-react";
-import { Badge } from "../ui/badge";
 import { StatusBadge } from "../transaction-editor/transaction-dialog";
+import { Badge } from "../ui/badge";
 
 const MessageCell = ({ row }: { row: Row<Entry> }) => {
     const message = row.getValue("message") as string;
@@ -106,9 +106,7 @@ export const columns: ColumnDef<Entry>[] = [
         accessorKey: "status",
         header: "Status",
         cell: ({ row }) => {
-            return (
-                <StatusBadge status={row.getValue("status")} />
-            );
+            return <StatusBadge status={row.getValue("status")} />;
         },
     },
 
@@ -129,10 +127,10 @@ export const columns: ColumnDef<Entry>[] = [
         accessorKey: "last_updated",
         header: "Last updated",
         cell: ({ row }) => {
-            const date = new Date(row.getValue("last_updated"));
+            const category_id = row.original?.category_id;
             return (
                 <div>
-                    <p className="text-muted-foreground">3 mins ago</p>
+                    <p className="text-muted-foreground">{category_id}</p>
                 </div>
             );
         },

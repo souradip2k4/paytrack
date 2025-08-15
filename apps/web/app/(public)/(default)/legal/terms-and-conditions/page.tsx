@@ -7,23 +7,32 @@ export default function Page() {
 				AGREEMENT TO OUR LEGAL TERMS
 			</h2>
 			<p>
-				We are Budgetbee (&quot;<strong>Company</strong>,&quot; &quot;
-				<strong>we</strong>,&quot; &quot;<strong>us</strong>,&quot;
-				&quot;<strong>our</strong>&quot;), a company registered in India
-				at Ganapati Tower, Gorai Road, Gopalpur, West Bengal 713304. We
-				operate the website{" "}
+				We are Budgetbee (&quot;
+				<strong>Company</strong>
+				,&quot; &quot;
+				<strong>we</strong>
+				,&quot; &quot;
+				<strong>us</strong>
+				,&quot; &quot;
+				<strong>our</strong>
+				&quot;), a company registered in India at Ganapati Tower, Gorai
+				Road, Gopalpur, West Bengal 713304. We operate the website{" "}
 				<a href="https://www.budgetbee.site">
 					https://www.budgetbee.site
 				</a>{" "}
-				(the &quot;<strong>Site</strong>&quot;), as well as any other
-				related products and services that refer or link to these legal
-				terms (the &quot;<strong>Legal Terms</strong>&quot;)
-				(collectively, the &quot;<strong>Services</strong>&quot;). You
-				can contact us by phone at (+91)7719154350, email at
-				samyabratamaji334@gmail.com, or by mail to Ganapati Tower, Gorai
-				Road, Gopalpur, West Bengal 713304, India. These Legal Terms
-				constitute a legally binding agreement made between you, whether
-				personally or on behalf of an entity (&quot;<strong>you</strong>
+				(the &quot;
+				<strong>Site</strong>
+				&quot;), as well as any other related products and services that
+				refer or link to these legal terms (the &quot;
+				<strong>Legal Terms</strong>
+				&quot;) (collectively, the &quot;
+				<strong>Services</strong>
+				&quot;). You can contact us by phone at (+91)7719154350, email
+				at samyabratamaji334@gmail.com, or by mail to Ganapati Tower,
+				Gorai Road, Gopalpur, West Bengal 713304, India. These Legal
+				Terms constitute a legally binding agreement made between you,
+				whether personally or on behalf of an entity (&quot;
+				<strong>you</strong>
 				&quot;), and Budgetbee, concerning your access to and use of the
 				Services. You agree that by accessing the Services, you have
 				read, understood, and agreed to be bound by all of these Legal
@@ -86,9 +95,10 @@ export default function Page() {
 			<h3 id="your-use-of-our-services">Your use of our Services</h3>
 			<p>
 				Subject to your compliance with these Legal Terms, including the
-				&quot;<a href="#prohibited">PROHIBITED ACTIVITIES</a>&quot;
-				section below, we grant you a non-exclusive, non-transferable,
-				revocable license to:
+				&quot;
+				<a href="#prohibited">PROHIBITED ACTIVITIES</a>
+				&quot; section below, we grant you a non-exclusive,
+				non-transferable, revocable license to:
 			</p>
 			<ul>
 				<li>access the Services; and</li>
@@ -124,10 +134,10 @@ export default function Page() {
 			</h3>
 			<p>
 				Please review this section and the &quot;
-				<a href="#prohibited">PROHIBITED ACTIVITIES</a>&quot; section
-				carefully prior to using our Services to understand the (a)
-				rights you give us and (b) obligations you have when you post or
-				upload any content through the Services.
+				<a href="#prohibited">PROHIBITED ACTIVITIES</a>
+				&quot; section carefully prior to using our Services to
+				understand the (a) rights you give us and (b) obligations you
+				have when you post or upload any content through the Services.
 				<strong>Submissions:</strong> By directly sending us any
 				question, comment, suggestion, idea, feedback, or other
 				information about the Services (&quot;Submissions&quot;), you
@@ -178,13 +188,13 @@ export default function Page() {
 			<ul>
 				<li>
 					confirm that you have read and agree with our &quot;
-					<a href="#prohibited">PROHIBITED ACTIVITIES</a>&quot; and
-					will not post, send, publish, upload, or transmit through
-					the Services any Submission nor post any Contribution that
-					is illegal, harassing, hateful, harmful, defamatory,
-					obscene, bullying, abusive, discriminatory, threatening to
-					any person or group, sexually explicit, false, inaccurate,
-					deceitful, or misleading;
+					<a href="#prohibited">PROHIBITED ACTIVITIES</a>
+					&quot; and will not post, send, publish, upload, or transmit
+					through the Services any Submission nor post any
+					Contribution that is illegal, harassing, hateful, harmful,
+					defamatory, obscene, bullying, abusive, discriminatory,
+					threatening to any person or group, sexually explicit,
+					false, inaccurate, deceitful, or misleading;
 				</li>
 				<li>
 					to the extent permissible by applicable law, waive any and

@@ -9,12 +9,17 @@ export function padDates(
 	to: Date,
 ) {
 	const diff = differenceInDays(to, from);
-	const result = Array.from({ length: diff + 1 }, (_, i) => ({
-		date: addDays(from, i),
-		total: 0,
-		income: 0,
-		expense: 0,
-	}));
+	const result = Array.from(
+		{
+			length: diff + 1,
+		},
+		(_, i) => ({
+			date: addDays(from, i),
+			total: 0,
+			income: 0,
+			expense: 0,
+		}),
+	);
 
 	for (let i = 0; i < elements.length; i++) {
 		const gap = differenceInDays(elements[i].date, from);
@@ -24,5 +29,8 @@ export function padDates(
 		result[gap].expense = elements[i].expense?.toNumber() ?? 0;
 	}
 
-	return result.map(x => ({ ...x, date: format(x.date, "yyyy-MM-dd") }));
+	return result.map(x => ({
+		...x,
+		date: format(x.date, "yyyy-MM-dd"),
+	}));
 }

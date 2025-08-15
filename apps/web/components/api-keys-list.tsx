@@ -43,8 +43,12 @@ export default function ApiKeysList() {
 			await axios.post(`/api/api-keys/${user?.id}`);
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["query", user?.id] });
-			queryClient.refetchQueries({ queryKey: ["query", user?.id] });
+			queryClient.invalidateQueries({
+				queryKey: ["query", user?.id],
+			});
+			queryClient.refetchQueries({
+				queryKey: ["query", user?.id],
+			});
 		},
 	});
 

@@ -31,8 +31,16 @@ export function InteractiveBarChart({
 	total,
 	chartData,
 }: {
-	total: { income: number; expense: number; total: number };
-	chartData: { date: string; income: number; expense: number }[];
+	total: {
+		income: number;
+		expense: number;
+		total: number;
+	};
+	chartData: {
+		date: string;
+		income: number;
+		expense: number;
+	}[];
 }) {
 	const [activeChart, setActiveChart] =
 		React.useState<keyof typeof chartConfig>("total");

@@ -45,7 +45,9 @@ export default function JoinPage() {
 		register,
 		watch,
 		formState: { errors, isValid },
-	} = useForm({ resolver: zodResolver(schema) });
+	} = useForm({
+		resolver: zodResolver(schema),
+	});
 
 	const onSubmit = (e: FieldValues) => {
 		startTransition(async () => {
@@ -72,10 +74,22 @@ export default function JoinPage() {
 
 	const checkStrength = (pass: string) => {
 		const requirements = [
-			{ regex: /.{8,}/, text: "At least 8 characters" },
-			{ regex: /[0-9]/, text: "At least 1 number" },
-			{ regex: /[a-z]/, text: "At least 1 lowercase letter" },
-			{ regex: /[A-Z]/, text: "At least 1 uppercase letter" },
+			{
+				regex: /.{8,}/,
+				text: "At least 8 characters",
+			},
+			{
+				regex: /[0-9]/,
+				text: "At least 1 number",
+			},
+			{
+				regex: /[a-z]/,
+				text: "At least 1 lowercase letter",
+			},
+			{
+				regex: /[A-Z]/,
+				text: "At least 1 uppercase letter",
+			},
 		];
 		return requirements.map(req => ({
 			met: req.regex.test(pass),
@@ -125,7 +139,9 @@ export default function JoinPage() {
 								id="name"
 								type="text"
 								placeholder="Enter your full name"
-								{...register("name", { required: true })}
+								{...register("name", {
+									required: true,
+								})}
 							/>
 							{errors.name && (
 								<p className="text-destructive text-sm">
@@ -139,7 +155,9 @@ export default function JoinPage() {
 								id="email"
 								type="email"
 								placeholder="Enter your email"
-								{...register("email", { required: true })}
+								{...register("email", {
+									required: true,
+								})}
 							/>
 							{errors.email && (
 								<p className="text-destructive text-sm">

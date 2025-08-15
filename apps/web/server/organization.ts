@@ -7,7 +7,9 @@ export async function getActiveOrganization(userId: string) {
 		.from("members")
 		.select("organizationId")
 		.eq("user_id", userId)
-		.order("createdAt", { ascending: true })
+		.order("createdAt", {
+			ascending: true,
+		})
 		.limit(1)
 		.single();
 	if (error) {

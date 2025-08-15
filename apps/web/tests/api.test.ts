@@ -16,7 +16,9 @@ const apiUrl = (path: string) => {
 describe("health check /ping", () => {
 	it("should return status ok", async () => {
 		const result = await axios.get(url("/api/ping"));
-		expect(result.data).toEqual({ success: true });
+		expect(result.data).toEqual({
+			success: true,
+		});
 	});
 });
 

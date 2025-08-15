@@ -18,7 +18,13 @@ import { Separator } from "../ui/separator";
 export function DualDatePicker() {
 	const from = useStore(s => s.filter_date_from);
 	const to = useStore(s => s.filter_date_to);
-	const range = React.useMemo<DateRange>(() => ({ from, to }), [from, to]);
+	const range = React.useMemo<DateRange>(
+		() => ({
+			from,
+			to,
+		}),
+		[from, to],
+	);
 	const setFilterDateFrom = useStore(s => s.set_filter_date_from);
 	const setFilterDateTo = useStore(s => s.set_filter_date_to);
 

@@ -13,8 +13,14 @@ export type ChartConfig = {
 		label?: React.ReactNode;
 		icon?: React.ComponentType;
 	} & (
-		| { color?: string; theme?: never }
-		| { color?: never; theme: Record<keyof typeof THEMES, string> }
+		| {
+				color?: string;
+				theme?: never;
+		  }
+		| {
+				color?: never;
+				theme: Record<keyof typeof THEMES, string>;
+		  }
 	);
 };
 
@@ -50,7 +56,10 @@ function ChartContainer({
 	const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`;
 
 	return (
-		<ChartContext.Provider value={{ config }}>
+		<ChartContext.Provider
+			value={{
+				config,
+			}}>
 			<div
 				data-slot="chart"
 				data-chart={chartId}

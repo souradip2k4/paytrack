@@ -16,10 +16,19 @@ import {
 } from "./ui/dropdown-menu";
 
 const links: { name: string; href: string | URL }[] = [
-	{ name: "Overview", href: "/overview" },
-	{ name: "Pricing", href: "/pricing" },
+	{
+		name: "Overview",
+		href: "/overview",
+	},
+	{
+		name: "Pricing",
+		href: "/pricing",
+	},
 	// { name: "About", href: "/about" },
-	{ name: "Support", href: "/contact" },
+	{
+		name: "Support",
+		href: "/contact",
+	},
 ];
 
 export function Navbar() {

@@ -88,7 +88,9 @@ export function DatePicker(props: DatePickerProps<LogEntriesFormValues>) {
 						}}
 						className="p-2"
 						disabled={[
-							{ after: today }, // Dates before today
+							{
+								after: today,
+							}, // Dates before today
 						]}
 					/>
 				</div>

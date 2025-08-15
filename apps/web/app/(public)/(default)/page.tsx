@@ -44,18 +44,36 @@ export default function GradientHero() {
 
 						{/* Heading */}
 						<motion.h1
-							initial={{ opacity: 0, y: 20 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.5, delay: 0.1 }}
+							initial={{
+								opacity: 0,
+								y: 20,
+							}}
+							animate={{
+								opacity: 1,
+								y: 0,
+							}}
+							transition={{
+								duration: 0.5,
+								delay: 0.1,
+							}}
 							className="from-primary/10 via-foreground/85 to-foreground/50 text-balance bg-gradient-to-tl bg-clip-text text-center text-4xl tracking-tighter text-transparent sm:text-5xl md:text-6xl lg:text-7xl">
 							Accounting Software for Non-accountants.
 						</motion.h1>
 
 						{/* Description */}
 						<motion.p
-							initial={{ opacity: 0, y: 20 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.5, delay: 0.2 }}
+							initial={{
+								opacity: 0,
+								y: 20,
+							}}
+							animate={{
+								opacity: 1,
+								y: 0,
+							}}
+							transition={{
+								duration: 0.5,
+								delay: 0.2,
+							}}
 							className="text-muted-foreground mx-auto mt-6 max-w-2xl text-center text-lg">
 							Budgetbee is a simple accounting tool to help you
 							manage your income, expenses, subscriptions,
@@ -86,9 +104,18 @@ export default function GradientHero() {
 
 						{/* CTA Buttons */}
 						<motion.div
-							initial={{ opacity: 0, y: 20 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.5, delay: 0.3 }}
+							initial={{
+								opacity: 0,
+								y: 20,
+							}}
+							animate={{
+								opacity: 1,
+								y: 0,
+							}}
+							transition={{
+								duration: 0.5,
+								delay: 0.3,
+							}}
 							className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
 							<Button
 								size="lg"
@@ -114,8 +141,14 @@ export default function GradientHero() {
 
 						{/* Feature Image */}
 						<motion.div
-							initial={{ opacity: 0, y: 40 }}
-							animate={{ opacity: 1, y: 0 }}
+							initial={{
+								opacity: 0,
+								y: 40,
+							}}
+							animate={{
+								opacity: 1,
+								y: 0,
+							}}
 							transition={{
 								duration: 0.8,
 								delay: 0.5,

@@ -6,7 +6,9 @@ export default function Page() {
 			<UserProfile
 				appearance={{
 					elements: {
-						rootBox: { width: "100%" },
+						rootBox: {
+							width: "100%",
+						},
 						cardBox: {
 							border: "none",
 							width: "100%",

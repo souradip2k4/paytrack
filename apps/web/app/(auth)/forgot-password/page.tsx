@@ -33,7 +33,9 @@ export default function ForgotpasswordPage() {
 		handleSubmit,
 		register,
 		formState: { errors },
-	} = useForm({ resolver: zodResolver(schema) });
+	} = useForm({
+		resolver: zodResolver(schema),
+	});
 
 	const onSubmit = (data: FieldValues) => {
 		startTransition(async () => {
@@ -79,7 +81,9 @@ export default function ForgotpasswordPage() {
 								id="email"
 								type="email"
 								placeholder="Enter your email"
-								{...register("email", { required: true })}
+								{...register("email", {
+									required: true,
+								})}
 							/>
 							{errors.email && (
 								<p className="text-destructive text-sm">

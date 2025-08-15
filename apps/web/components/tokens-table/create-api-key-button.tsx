@@ -28,14 +28,28 @@ const initialTree: TreeNode = {
 	id: "1",
 	label: "Admin",
 	children: [
-		{ id: "2", label: "Read", defaultChecked: true },
+		{
+			id: "2",
+			label: "Read",
+			defaultChecked: true,
+		},
 		{
 			id: "3",
 			label: "Write",
 			children: [
-				{ id: "4", label: "Create" },
-				{ id: "5", label: "Edit" },
-				{ id: "6", label: "Delete", defaultChecked: false },
+				{
+					id: "4",
+					label: "Create",
+				},
+				{
+					id: "5",
+					label: "Edit",
+				},
+				{
+					id: "6",
+					label: "Delete",
+					defaultChecked: false,
+				},
 			],
 		},
 	],

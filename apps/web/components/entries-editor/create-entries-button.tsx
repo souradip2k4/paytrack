@@ -85,7 +85,12 @@ export function LogEntriesButton({ children }: { children: React.ReactNode }) {
 			reset();
 			setOpen(false);
 			toast.success("Entries created successfully.");
-			append({ amount: 0, date: new Date(), message: "", tag_ids: [] });
+			append({
+				amount: 0,
+				date: new Date(),
+				message: "",
+				tag_ids: [],
+			});
 		},
 		onError: () => toast.error("Failed to create entries."),
 	});

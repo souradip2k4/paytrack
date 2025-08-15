@@ -51,17 +51,30 @@ async function genentries(
 		let entry = await prisma.entry.create({
 			data: {
 				user_id: user.id,
-				amount: faker.finance.amount({ min: -200, max: +250 }),
-				date: faker.date.recent({ days: 300 }),
-				message: faker.lorem.words({ min: 1, max: 5 }),
+				amount: faker.finance.amount({
+					min: -200,
+					max: +250,
+				}),
+				date: faker.date.recent({
+					days: 300,
+				}),
+				message: faker.lorem.words({
+					min: 1,
+					max: 5,
+				}),
 				category_id: randomCategory?.id,
 				tags: {
 					connect: randomTags
 						?.filter(x => x !== undefined)
-						.map(randomTag => ({ id: randomTag.id })),
+						.map(randomTag => ({
+							id: randomTag.id,
+						})),
 				},
 			},
-			include: { tags: true, category: true },
+			include: {
+				tags: true,
+				category: true,
+			},
 		});
 		process.stdout.write(
 			`[entry] ${entry.amount.toString()} ${entry.message} `,
@@ -82,7 +95,10 @@ async function gencategories(user: User) {
 	let categories: Category[] = await Promise.all(
 		categoryNames.map(async name => {
 			let category = await prisma.category.create({
-				data: { name, user_id: user.id },
+				data: {
+					name,
+					user_id: user.id,
+				},
 			});
 			console.log(`[category] ${category.name} -> ${category.user_id}`);
 			return category;
@@ -96,7 +112,10 @@ async function gentags(user: User) {
 	let tags: Tag[] = await Promise.all(
 		tagNames.map(async name => {
 			let tag = await prisma.tag.create({
-				data: { name, user_id: user.id },
+				data: {
+					name,
+					user_id: user.id,
+				},
 			});
 			console.log(`[tag] ${tag.name} -> ${tag.user_id}`);
 			return tag;

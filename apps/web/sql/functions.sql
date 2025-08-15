@@ -1,7 +1,11 @@
-DROP FUNCTION IF EXISTS get_transaction_summary(date, date);
+DROP FUNCTION IF EXISTS get_transaction_summary (date, date);
 
-CREATE OR REPLACE FUNCTION get_transaction_summary(start_date date, end_date date)
-RETURNS TABLE(day date, debit numeric, credit numeric, balance numeric) AS $$
+CREATE OR REPLACE FUNCTION get_transaction_summary (start_date date, end_date date) RETURNS TABLE (
+	day date,
+	debit numeric,
+	credit numeric,
+	balance numeric
+) AS $$
 BEGIN
     RETURN QUERY
     SELECT
@@ -18,8 +22,3 @@ BEGIN
         date_series.day;
 END;
 $$ LANGUAGE plpgsql;
-
-
-
-
-

@@ -37,7 +37,9 @@ export default function LoginPage() {
 		handleSubmit,
 		register,
 		formState: { errors },
-	} = useForm({ resolver: zodResolver(schema) });
+	} = useForm({
+		resolver: zodResolver(schema),
+	});
 
 	const onSubmit = (e: FieldValues) => {
 		startTransition(async () => {
@@ -107,7 +109,9 @@ export default function LoginPage() {
 								id="email"
 								type="email"
 								placeholder="Enter your email"
-								{...register("email", { required: true })}
+								{...register("email", {
+									required: true,
+								})}
 							/>
 							{errors.email && (
 								<p className="text-destructive text-sm">

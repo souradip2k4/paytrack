@@ -10,7 +10,10 @@ export const entriesQueryFn = async ({ queryKey }: { queryKey: QueryKey }) => {
 	}
 	const res = await axios.get(`/api/users/${queryKey[1]}/entries`);
 	const data = JSON.parse(res.data);
-	return { ...data, date: new Date(data.date) };
+	return {
+		...data,
+		date: new Date(data.date),
+	};
 };
 
 export const deleteEntryMutationFn = (data?: string) => {
@@ -19,5 +22,9 @@ export const deleteEntryMutationFn = (data?: string) => {
 
 export const deleteEntriesMutationFn = (data?: any[]) => {
 	const ids = data?.map(value => value.id);
-	return axios.delete("/api/entries", { data: { ids } });
+	return axios.delete("/api/entries", {
+		data: {
+			ids,
+		},
+	});
 };
