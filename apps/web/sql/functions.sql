@@ -22,3 +22,19 @@ BEGIN
         date_series.day;
 END;
 $$ LANGUAGE plpgsql;
+
+DROP FUNCTION IF EXISTS get_transaction_by_category (date, date);
+
+CREATE OR REPLACE FUNCTION get_transaction_by_category (start_date date, end_date date) RETURNS TABLE (
+	amount numeric,
+	name varchar(255),
+	category_id uuid
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT SUM(tr.amount)::numeric, ca.name, ca.id as category_id
+    FROM transactions tr
+    LEFT JOIN categories ca ON tr.category_id=ca.id
+    GROUP BY ca.id;
+END
+$$ LANGUAGE plpgsql;

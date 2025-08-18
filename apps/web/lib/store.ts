@@ -1,24 +1,14 @@
 import { type Entry } from "@/app/api/[[...route]]/server";
 import { PostgrestFilterBuilder } from "@supabase/postgrest-js";
-import { type RowSelectionState } from "@tanstack/react-table";
+import {
+	OnChangeFn,
+	VisibilityState,
+	type RowSelectionState,
+} from "@tanstack/react-table";
 import { addDays } from "date-fns";
 import { nanoid } from "nanoid";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
-export type FilterState = Record<FilterFields, string[]>;
-export type FilterFields = "categories" | "status";
-export type FilterOperations =
-	| "is" // also, is-any-of when there are multiple values
-	| "is not" // also, is-not-any-of when there are multiple values
-	| "is empty";
-export type FilterValue = { id: string; label: string };
-export type FilterStackItem = {
-	id: string;
-	field: FilterFields;
-	operation: FilterOperations;
-	values: FilterValue[];
-};
 
 export type Store = {
 	fields: string[];
@@ -50,33 +40,6 @@ export type Store = {
 	popover_transaction_dialog_set_open: (s: boolean) => void;
 	popover_category_picker_set_open: (s: boolean) => void;
 	popover_currency_picker_set_open: (s: boolean) => void;
-};
-
-type FilterStore = {
-	filter_stack: FilterStackItem[];
-	filter_add: (
-		field: FilterFields,
-		operation: FilterOperations,
-		values: FilterValue[],
-		id: string,
-	) => void;
-	filter_remove: (idx: number) => void;
-	filter_toggle: (
-		field: FilterFields,
-		operation: FilterOperations,
-		value: FilterValue,
-		id: string,
-	) => void;
-	filter_clear: () => void;
-
-	apply_filter: (
-		query: PostgrestFilterBuilder<
-			{ PostgrestVersion: "12" },
-			any,
-			any,
-			any
-		>,
-	) => PostgrestFilterBuilder<{ PostgrestVersion: "12" }, any, any, any>;
 };
 
 export const today = new Date();
@@ -172,6 +135,84 @@ export const useStore = create<Store>((set, get) => ({
 		}),
 }));
 
+export type DisplayFieldIds =
+	| "category_id"
+	| "name"
+	| "transaction_date"
+	| "created_at"
+	| "updated_at"
+	| "user_id"
+	| "status";
+
+export type DisplayFields = {
+	id: DisplayFieldIds;
+	label: string;
+	default: boolean;
+};
+
+export let display_fields: DisplayFields[] = [
+	// { id: "amount", label: "Amount", default: true },
+	{ id: "name", label: "Title", default: true },
+	{ id: "category_id", label: "Category", default: true },
+	{ id: "transaction_date", label: "Transaction date", default: true },
+	{ id: "created_at", label: "Created", default: true },
+	{ id: "updated_at", label: "Last updated", default: true },
+	{ id: "status", label: "Status", default: true },
+	{ id: "user_id", label: "Creator", default: false },
+];
+
+export type FilterState = Record<FilterFields, string[]>;
+export type FilterFields = "categories" | "status";
+export type FilterOperations =
+	| "is" // also, is-any-of when there are multiple values
+	| "is not" // also, is-not-any-of when there are multiple values
+	| "is empty";
+export type FilterValue = { id: string; label: string };
+export type FilterStackItem = {
+	id: string;
+	field: FilterFields;
+	operation: FilterOperations;
+	values: FilterValue[];
+};
+
+export type FilterStore = {
+	filter_stack: FilterStackItem[];
+	filter_add: (
+		field: FilterFields,
+		operation: FilterOperations,
+		values: FilterValue[],
+		id: string,
+	) => void;
+	filter_remove: (idx: number) => void;
+	filter_toggle: (
+		field: FilterFields,
+		operation: FilterOperations,
+		value: FilterValue,
+		id: string,
+	) => void;
+	filter_clear: () => void;
+
+	display_page_size: string;
+	display_group_by: string;
+
+	display_visibility_state: VisibilityState;
+	display_row_selection_state: RowSelectionState;
+	set_display_visibility_state: OnChangeFn<VisibilityState>;
+	set_display_row_selection_state: OnChangeFn<RowSelectionState>;
+
+	apply_filter: (
+		query: PostgrestFilterBuilder<
+			{ PostgrestVersion: "12" },
+			any,
+			any,
+			any
+		>,
+	) => PostgrestFilterBuilder<{ PostgrestVersion: "12" }, any, any, any>;
+
+	settings_date_format: string;
+	settings_relative_dates: boolean;
+};
+
 export const useFilterStore = create<FilterStore>()(
 	persist(
 		(set, get) => ({
@@ -226,14 +267,47 @@ export const useFilterStore = create<FilterStore>()(
 						q.not(
 							"category_id",
 							"in",
-							values.map(x => x.id).join(","),
+							"(" + values.map(x => x.id).join(",") + ")",
 						);
 					} else if (operation === "is empty") {
 						q.is("category_id", null);
 					}
 				}
+
+				const page_size = Number(get().display_page_size);
+				q.limit(Number.isSafeInteger(page_size) ? page_size : 100);
+
 				return q;
 			},
+
+			display_page_size: "100",
+			display_group_by: "month",
+
+			display_visibility_state: {},
+			display_row_selection_state: {},
+
+			set_display_visibility_state: e => {
+				set(s => {
+					const ns =
+						typeof e === "function" ?
+							e(s.display_visibility_state)
+						:	e;
+					return { ...s, display_visibility_state: ns };
+				});
+			},
+
+			set_display_row_selection_state: e => {
+				set(s => {
+					const ns =
+						typeof e === "function" ?
+							e(s.display_row_selection_state)
+						:	e;
+					return { ...s, display_row_selection_state: ns };
+				});
+			},
+
+			settings_date_format: "MMM dd, yyyy",
+			settings_relative_dates: false,
 		}),
 		{ name: "tr::filters" },
 	),

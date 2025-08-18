@@ -1,5 +1,7 @@
-import { QueryKey } from "@tanstack/react-query";
+import { QueryKey, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { authClient } from "./auth-client";
+import { db } from "./db";
 
 export const entriesQueryFn = async ({ queryKey }: { queryKey: QueryKey }) => {
 	if (
@@ -27,4 +29,22 @@ export const deleteEntriesMutationFn = (data?: any[]) => {
 			ids,
 		},
 	});
+};
+
+export const useCategories = () => {
+	const { data } = authClient.useSession();
+	const query = useQuery({
+		queryKey: ["cat", "get", data?.user?.id],
+		queryFn: async () => {
+			if (!data || !data.user.id) return [];
+			const res = await db
+				.from("categories")
+				.select("*")
+				.eq("user_id", data.user.id)
+				.order("name");
+			if (res.error) return [];
+			return res.data;
+		},
+	});
+	return query;
 };

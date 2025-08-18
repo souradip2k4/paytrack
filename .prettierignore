@@ -1,5 +1,6 @@
 .turbo
 .git
+.next
 node_modules
 dist
 build
