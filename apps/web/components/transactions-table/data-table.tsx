@@ -51,7 +51,7 @@ export function EntriesTable() {
             if (!authData?.user) return [];
 
             const res = await applyFilter(
-                db(bearerHeader()).from("transactions").select("*").order("transaction_date", {
+                db(await bearerHeader()).from("transactions").select("*").order("transaction_date", {
                     ascending: false,
                 }),
             );

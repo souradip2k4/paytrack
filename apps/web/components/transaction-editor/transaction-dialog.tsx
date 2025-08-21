@@ -42,6 +42,7 @@ import { CategoryPicker } from "./category-picker";
 import { CurrencyPicker } from "./currency-picker";
 import { TransactionDatePicker } from "./transaction-date-picker";
 import { bearerHeader } from "@/lib/bearer";
+import { authClient } from "@/lib/auth-client";
 
 const IS_SERVER = typeof window === "undefined";
 
@@ -92,14 +93,17 @@ export function StatusBadge({ status }: { status: string }) {
 
 export function TransactionDialog() {
     const queryClient = useQueryClient();
+    const { data: authData } = authClient.useSession();
 
     const { mutateAsync, isPending } = useMutation({
         mutationKey: ["tr", "post"],
         mutationFn: async (data: FieldValues) => {
+            if (!authData || !authData.user || !authData.user.id) return;
             const { transaction_date, ...rest } = data;
-            const res = await db(bearerHeader()).from("transactions").insert({
+            const res = await db(await bearerHeader()).from("transactions").insert({
                 ...rest,
                 transaction_date: transaction_date?.toISOString(),
+                user_id: authData.user.id,
             });
             if (res.error) throw res.error;
             return res.data;

@@ -21,21 +21,21 @@ BEGIN
 INSERT INTO
 	categories (name, user_id)
 VALUES
-	('Utilities', '2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
-	('Rent', '2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
-	('Transport', '2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+	('Utilities', 'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
+	('Rent', 'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
+	('Transport', 'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 	(
 		'Entertainment',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'
 	),
-	('Dining Out', '2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
-	('Shopping', '2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
-	('Health', '2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+	('Dining Out', 'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
+	('Shopping', 'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
+	('Health', 'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 	(
 		'Personal Care',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'
 	),
-	('Salary', '2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv');
+	('Salary', 'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw');
 
 INSERT INTO
 	transactions (
@@ -53,8 +53,8 @@ VALUES
 	(
 		50000,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-SLR-001',
 		'Monthly Salary',
 		'Monthly salary deposit.',
@@ -64,8 +64,8 @@ VALUES
 	(
 		350,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-DIN-001',
 		'Coffee Shop',
 		'Morning coffee and a snack.',
@@ -75,8 +75,8 @@ VALUES
 	(
 		-1500,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-GRO-001',
 		'Supermarket Bill',
 		'Weekly groceries at City Mart.',
@@ -86,8 +86,8 @@ VALUES
 	(
 		12000,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-RNT-001',
 		'Rent Payment',
 		'Monthly house rent.',
@@ -97,8 +97,8 @@ VALUES
 	(
 		-850,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-UTL-001',
 		'Electricity Bill',
 		'Monthly electricity bill payment.',
@@ -108,8 +108,8 @@ VALUES
 	(
 		7500,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-ENT-001',
 		'Movie Tickets',
 		'Tickets for a new movie release.',
@@ -119,8 +119,8 @@ VALUES
 	(
 		-400,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-TRN-001',
 		'Fuel Refill',
 		'Petrol for the car.',
@@ -130,8 +130,8 @@ VALUES
 	(
 		2500,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-SHP-001',
 		'New T-shirt',
 		'Purchased clothing from an online store.',
@@ -141,8 +141,8 @@ VALUES
 	(
 		-950,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-MED-001',
 		'Pharmacy Bill',
 		'Purchased medicines.',
@@ -152,8 +152,8 @@ VALUES
 	(
 		600,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-PER-001',
 		'Haircut',
 		'Haircut at a local salon.',
@@ -163,8 +163,8 @@ VALUES
 	(
 		1500,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-UTL-002',
 		'Internet Bill',
 		'Monthly internet subscription.',
@@ -174,8 +174,8 @@ VALUES
 	(
 		-3500,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-DIN-002',
 		'Restaurant Lunch',
 		'Lunch with friends at a new restaurant.',
@@ -185,8 +185,8 @@ VALUES
 	(
 		1200,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-GRO-002',
 		'Weekly Vegetables',
 		'Purchased fresh vegetables from a local market.',
@@ -196,8 +196,8 @@ VALUES
 	(
 		750,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-TRN-002',
 		'Metro Card Recharge',
 		'Topping up the metro card for daily commute.',
@@ -207,8 +207,8 @@ VALUES
 	(
 		500,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-ENT-002',
 		'Netflix Subscription',
 		'Monthly subscription for streaming service.',
@@ -218,8 +218,8 @@ VALUES
 	(
 		-4000,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-SHP-002',
 		'New Headphones',
 		'Purchased headphones from an electronics store.',
@@ -229,8 +229,8 @@ VALUES
 	(
 		15000,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-MED-002',
 		'Doctor''s Visit',
 		'Consultation fee for a general checkup.',
@@ -240,8 +240,8 @@ VALUES
 	(
 		700,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-PER-002',
 		'Skincare Products',
 		'Purchased face wash and moisturizer.',
@@ -251,8 +251,8 @@ VALUES
 	(
 		2500,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-UTL-003',
 		'Water Bill',
 		'Quarterly water bill payment.',
@@ -262,8 +262,8 @@ VALUES
 	(
 		-800,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-DIN-003',
 		'Dinner with Family',
 		'Family dinner at a fine dining restaurant.',
@@ -273,8 +273,8 @@ VALUES
 	(
 		1800,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-GRO-003',
 		'Monthly Ration',
 		'Bulk purchases for a month.',
@@ -284,8 +284,8 @@ VALUES
 	(
 		1500,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-TRN-003',
 		'Uber Ride',
 		'Ride from home to office.',
@@ -295,8 +295,8 @@ VALUES
 	(
 		-1000,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-ENT-003',
 		'Concert Ticket',
 		'Ticket for a live music concert.',
@@ -306,8 +306,8 @@ VALUES
 	(
 		3000,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-SHP-003',
 		'Gift for friend',
 		'Purchased a birthday gift.',
@@ -317,8 +317,8 @@ VALUES
 	(
 		1200,
 		'INR',
-		'2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv',
-		get_random_category ('2m4TdzHEtN9F7ZzRSd83TPmLBJCKziOv'),
+		'ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw',
+		get_random_category ('ZOtqlAP5YAZPU4WnV2lWDtVxzSH7obWw'),
 		'TRN-MED-003',
 		'Dental Checkup',
 		'Routine dental checkup.',

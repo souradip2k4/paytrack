@@ -34,7 +34,7 @@ export function CategoryPicker({
     const { data } = useQuery({
         queryKey: ["cat", "get"],
         queryFn: async () => {
-            const res = await db(bearerHeader()).from("categories").select("*").order("name");
+            const res = await db(await bearerHeader()).from("categories").select("*").order("name");
             if (res.error) {
                 toast.error("Failed to get categories");
                 return;
@@ -52,7 +52,7 @@ export function CategoryPicker({
         useMutation({
             mutationKey: ["cat", "post"],
             mutationFn: async (data: string) => {
-                const res = await db(bearerHeader()).from("categories").insert({
+                const res = await db(await bearerHeader()).from("categories").insert({
                     name: data,
                 });
                 if (res.error) {

@@ -17,22 +17,35 @@ REVOKE TRIGGER, TRUNCATE ON ALL TABLES IN SCHEMA public FROM authenticated;
 /* ========================================================================== */
 CREATE OR REPLACE FUNCTION jwt() RETURNS jsonb SECURITY DEFINER AS $$
 BEGIN
-  SELECT current_setting('request.jwt.claims', true)::jsonb;
+  RETURN current_setting('request.jwt.claims', true)::jsonb;
 END
 $$ LANGUAGE plpgsql STABLE;
 
 CREATE OR REPLACE FUNCTION uid() RETURNS text SECURITY DEFINER AS $$
 BEGIN
-  SELECT COALESCE(
+  RETURN COALESCE(
     current_setting('request.jwt.claims', true)::jsonb ->> 'sub',
     current_setting('request.jwt.claims', true)::jsonb ->> 'user_id'
   );
 END
 $$ LANGUAGE plpgsql STABLE;
 
+CREATE OR REPLACE FUNCTION uid() RETURNS text SECURITY DEFINER AS $$
+DECLARE
+    user_id text;
+BEGIN
+  user_id := COALESCE(
+    current_setting('request.jwt.claims', true)::jsonb ->> 'sub',
+    current_setting('request.jwt.claims', true)::jsonb ->> 'user_id'
+  );
+  RAISE NOTICE 'user_id: %', user_id;
+  RETURN user_id;
+END
+$$ LANGUAGE plpgsql STABLE;
+
 CREATE OR REPLACE FUNCTION org_id() RETURNS text SECURITY DEFINER AS $$
 BEGIN
-    SELECT COALESCE(
+    RETURN COALESCE(
       current_setting('request.jwt.claims', true)::jsonb ->> 'claims' ->> 'organization_id'
     );
 END
@@ -40,7 +53,7 @@ $$ LANGUAGE plpgsql STABLE;
 
 CREATE OR REPLACE FUNCTION org_role() RETURNS text SECURITY DEFINER AS $$
 BEGIN
-    SELECT COALESCE(
+    RETURN COALESCE(
       current_setting('request.jwt.claims', true)::jsonb ->> 'claims' ->> 'organization_role'
     );
 END
@@ -113,15 +126,15 @@ alter table categories enable row level security;
 alter table tags enable row level security;
 alter table transactions enable row level security;
 
-CREATE POLICY limit_categories ON categories AS RESTRICTIVE FOR ALL TO authenticated
+CREATE POLICY limit_categories ON categories FOR ALL TO authenticated
 USING (user_id = uid())
 WITH CHECK (user_id = uid());
 
-CREATE POLICY limit_tags ON tags AS RESTRICTIVE FOR ALL TO authenticated
+CREATE POLICY limit_tags ON tags FOR ALL TO authenticated
 USING (user_id = uid())
 WITH CHECK (user_id = uid());
 
-CREATE POLICY limit_transactions ON transactions AS RESTRICTIVE FOR ALL TO authenticated
+CREATE POLICY limit_transactions ON transactions FOR ALL TO authenticated
 USING (user_id = uid())
 WITH CHECK (user_id = uid());
 
@@ -174,7 +187,7 @@ ELSE
 END IF;
 
 END
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql STABLE;
 
 CREATE OR REPLACE FUNCTION get_tranasction_debit_summary(
     params transaction_query_params,
@@ -210,7 +223,7 @@ ELSE
 END IF;
 
 END
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql STABLE;
 
 REVOKE ALL ON FUNCTION get_tranasction_credit_summary (transaction_query_params, BOOLEAN, INTEGER) FROM anon, authenticated;
 REVOKE ALL ON FUNCTION get_tranasction_debit_summary (transaction_query_params, BOOLEAN, INTEGER) FROM anon, authenticated;
@@ -238,7 +251,7 @@ BEGIN
     AND (tr.organization_id = params.organization_id OR tr.organization_id IS NULL)
     GROUP BY ca.id;
 END
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql STABLE;
 
 REVOKE ALL ON FUNCTION get_transaction_by_category (transaction_query_params)
 FROM
@@ -284,7 +297,7 @@ LEFT JOIN categories c ON c.id = t.category_id
 ORDER BY t.day;
 
 END
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql STABLE;
 
 REVOKE ALL ON FUNCTION get_transaction_distribution_by_category (transaction_query_params)
 FROM
@@ -322,7 +335,7 @@ AND (tr.organization_id = params.organization_id OR tr.organization_id IS NULL)
 GROUP BY DATE (tr.transaction_date), tr.status;
 
 END
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql STABLE;
 
 REVOKE ALL ON FUNCTION get_transaction_distribution_by_status (transaction_query_params)
 FROM

@@ -42,7 +42,7 @@ export function CategoriesPieChart() {
     const { data: chartData, isLoading } = useQuery({
         queryKey: ["chart", "by-cat"],
         queryFn: async () => {
-            const res = await db(bearerHeader()).rpc("get_transaction_by_category", {
+            const res = await db(await bearerHeader()).rpc("get_transaction_by_category", {
                 start_date: "2023-01-01",
                 end_date: "2023-06-30",
             });

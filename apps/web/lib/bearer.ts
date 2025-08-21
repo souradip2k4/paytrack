@@ -1,5 +1,12 @@
-export const bearerHeader = () => {
+import { authClient } from "./auth-client";
+
+export const bearerHeader = async () => {
+	let token = "";
+	const res = await authClient.token();
+	if (res.data) {
+		token = res.data.token;
+	}
 	return {
-		Authorization: `Bearer ${localStorage.getItem("bearer_token")}`,
+		Authorization: `Bearer ${token}`,
 	};
 };

@@ -36,7 +36,7 @@ export function StatusLineChart() {
     const { data, isLoading } = useQuery({
         queryKey: ["tr", "agg:status"],
         queryFn: async () => {
-            const res = await db(bearerHeader()).rpc("get_transaction_distribution_by_status", {
+            const res = await db(await bearerHeader()).rpc("get_transaction_distribution_by_status", {
                 start_date: "2025-08-01",
                 end_date: "2025-08-31",
                 user_id: "s350kzENPqoPvpKylkcY41fFqUoKeJvj",

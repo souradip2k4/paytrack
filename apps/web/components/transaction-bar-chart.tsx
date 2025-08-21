@@ -129,7 +129,7 @@ export function TransactionBarChart() {
     const { data, isLoading } = useQuery({
         queryKey: ["tr", "agg"],
         queryFn: async () => {
-            const res = await db(bearerHeader()).rpc("get_transaction_distribution");
+            const res = await db(await bearerHeader()).rpc("get_transaction_distribution");
             if (res.error) {
                 throw res.error;
             }

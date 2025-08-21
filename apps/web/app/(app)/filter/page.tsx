@@ -1,16 +1,12 @@
-import { auth } from "@/lib/auth";
+"use client"
+
+import { bearerHeader } from "@/lib/bearer";
 import { db } from "@/lib/db";
-import { headers } from "next/headers";
 
-export default async function Page() {
-	const tok = await auth.api.getToken({
-		headers: await headers(),
-	});
-
-	const res = await db.from("dummy").select("*");
-
-	if (res.error) console.error(res.error);
-	if (res.data) console.log(res.data);
-
-	return <div></div>;
+export default function Page() {
+    bearerHeader().then(x => {
+        console.log(x);
+        db(x).from("transactions").select("*").then(console.log);
+    })
+    return <div></div>;
 }
