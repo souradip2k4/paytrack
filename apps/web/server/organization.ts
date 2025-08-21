@@ -1,11 +1,12 @@
 "use server";
 
 import { db } from "@/lib/db";
+import { headers } from "next/headers";
 
 export async function getActiveOrganization(userId: string) {
-	const { data, error } = await db
+	const { data, error } = await db(await headers())
 		.from("members")
-		.select("organizationId")
+		.select("organization_id")
 		.eq("user_id", userId)
 		.order("createdAt", {
 			ascending: true,
@@ -16,5 +17,5 @@ export async function getActiveOrganization(userId: string) {
 		console.error(error);
 		return null;
 	}
-	return data.organizationId;
+	return data.organization_id;
 }

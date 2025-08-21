@@ -1,8 +1,16 @@
 import { resetPassword, verificationLink } from "@/lib/emails";
 import { getActiveOrganization } from "@/server/organization";
+import {
+	checkout,
+	polar,
+	portal,
+	usage,
+	webhooks,
+} from "@polar-sh/better-auth";
+import { Polar } from "@polar-sh/sdk";
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
-import { organization } from "better-auth/plugins";
+import { bearer, jwt, organization } from "better-auth/plugins";
 import { Pool } from "pg";
 import { Resend } from "resend";
 
@@ -11,6 +19,11 @@ if (!process.env.RESEND_API_KEY)
 	throw new Error("env: RESEND_API_KEY is not set");
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
+
+const polarClient = new Polar({
+	accessToken: process.env.POLAR_ACCESS_TOKEN,
+	server: "sandbox",
+});
 
 export const auth = betterAuth({
 	database: new Pool({
@@ -164,6 +177,57 @@ export const auth = betterAuth({
 				},
 			},
 		}),
+
+		polar({
+			client: polarClient,
+			createCustomerOnSignUp: false,
+			use: [
+				checkout({
+					products: [
+						{
+							productId: process.env.POLAR_PRODUCT_ID!,
+							slug: "pro",
+						},
+					],
+					successUrl: "/success?checkout_id={CHECKOUT_ID}",
+					authenticatedUsersOnly: true,
+				}),
+				portal(),
+				usage(),
+				webhooks({
+					secret: process.env.POLAR_WHSEC!,
+				}),
+			],
+		}),
+
+		jwt({
+			jwt: {
+				definePayload: ({ user, session }) => ({
+					sub: user.id,
+					user_id: user.id,
+					role: "authenticated",
+					email: user.email,
+					claims: {
+						organization_id: session.activeOrganizationId,
+					},
+				}),
+				issuer: process.env.BASE_URL || "http://localhost:3000",
+				audience: process.env.BASE_URL || "http://localhost:3000",
+				expirationTime: "1h",
+			},
+			schema: {
+				jwks: {
+					fields: {
+						publicKey: "public_key",
+						privateKey: "private_key",
+						createdAt: "created_at",
+					},
+				},
+			},
+		}),
+
+		bearer(),
+
 		nextCookies(),
 	],
 });

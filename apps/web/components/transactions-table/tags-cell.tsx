@@ -62,4 +62,4 @@ export const TagsCell = ({ row }: { row: Row<Entry> }) => {
     );
 };*/
 
-export const TagCell = () => <></>
+export const TagCell = () => <></>;

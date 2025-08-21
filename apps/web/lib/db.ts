@@ -1,4 +1,6 @@
 import { PostgrestClient } from "@supabase/postgrest-js";
 
-// export const db = new PostgrestClient(process.env.REST_URL!);
-export const db = new PostgrestClient("http://173.212.212.118:4001");
+export const db = (headers: HeadersInit) => {
+	if (!process.env.REST_URL) throw new Error("env: REST_URL is not set");
+	return new PostgrestClient(process.env.REST_URL, { headers });
+};
