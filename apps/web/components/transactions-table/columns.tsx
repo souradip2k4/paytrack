@@ -9,6 +9,7 @@ import { ArrowDown, ArrowUp } from "lucide-react";
 import { StatusBadge } from "@/components/status-badge";
 import { CategoryCell } from "./category-cell";
 import { DateCell } from "./date-cell";
+import { CreatorCell } from "./creator-cell";
 
 export const columns: ColumnDef<any>[] = [
     {
@@ -109,14 +110,7 @@ export const columns: ColumnDef<any>[] = [
     {
         accessorKey: "user_id",
         header: "Creator",
-        cell: ({ row }) => {
-            return (
-                <Badge variant="secondary">
-                    <img className="h-4 w-4" src={avatarUrl(null)} /> sammaji
-                    (you)
-                </Badge>
-            );
-        },
+        cell: CreatorCell,
     },
 
     /*

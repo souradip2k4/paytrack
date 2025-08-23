@@ -34,7 +34,7 @@ import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon, PlusIcon } from "lucide-react";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -102,12 +102,7 @@ export function TransactionDialog() {
             amount: 0,
             status: "paid",
             transaction_date: new Date().toISOString(),
-            currency: (() => {
-                if (localStorage) {
-                    return localStorage.getItem("last_used_currency") || "USD";
-                }
-                return "USD";
-            })(),
+            currency: "USD",
         },
     });
 
@@ -129,7 +124,10 @@ export function TransactionDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button size="sm">Add transaction</Button>
+                <Button size="sm">
+                    <span className="hidden md:block">Add transaction</span>
+                    <PlusIcon className="h-4 w-4" />
+                </Button>
             </DialogTrigger>
             <DialogContent className="md:min-w-4xl gap-0 p-0 md:max-w-4xl">
                 <DialogHeader className="border-b p-6 pb-3">

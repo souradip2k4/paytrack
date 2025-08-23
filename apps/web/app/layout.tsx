@@ -58,7 +58,7 @@ export default function RootLayout({
                 <link rel="apple-touch-icon" href="/favicon.ico" />
             </head>
             <body className={cn(`${inter.className}`)}>
-                <GoogleAnalytics gaId={process.env.GA_ID as string} />
+                <GoogleAnalytics gaId={process.env.GOOGLE_ANALYTICS_ID!} />
                 <Providers>
                     {children}
                     <Toaster />
