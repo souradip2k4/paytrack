@@ -1,8 +1,10 @@
 import { DeleteButton } from "@/components/delete-button";
-import { DisplayDropdown } from "@/components/display";
-import { FilterDialog } from "@/components/filter";
-import { FilterClear } from "@/components/filter/filter-clear";
-import { FilterPills } from "@/components/filter/filter-pills";
+import { DisplayDropdown } from "@/components/transaction-display-dropdown";
+import {
+	FilterClear,
+	FilterDialog,
+	FilterPills,
+} from "@/components/transaction-filter-dropdown";
 import { EntriesTable } from "@/components/transactions-table";
 
 export default function Page() {

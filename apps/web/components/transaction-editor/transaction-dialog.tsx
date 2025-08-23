@@ -26,6 +26,8 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import { authClient } from "@/lib/auth-client";
+import { bearerHeader } from "@/lib/bearer";
 import currenciesJson from "@/lib/currencies.json";
 import { db } from "@/lib/db";
 import { useStore } from "@/lib/store";
@@ -41,10 +43,7 @@ import { Label } from "../ui/label";
 import { CategoryPicker } from "./category-picker";
 import { CurrencyPicker } from "./currency-picker";
 import { TransactionDatePicker } from "./transaction-date-picker";
-import { bearerHeader } from "@/lib/bearer";
-import { authClient } from "@/lib/auth-client";
-
-const IS_SERVER = typeof window === "undefined";
+import { StatusBadge } from "@/components/status-badge";
 
 const schema = z.object({
     name: z.string().max(50).optional(),
@@ -57,40 +56,6 @@ const schema = z.object({
 
 type FieldValues = z.infer<typeof schema>;
 
-export function StatusBadge({ status }: { status: string }) {
-    const statusMap: Record<
-        string,
-        {
-            color: string;
-            title: string;
-        }
-    > = {
-        paid: {
-            color: "bg-emerald-500",
-            title: "Paid",
-        },
-        pending: {
-            color: "bg-amber-500",
-            title: "Pending",
-        },
-        overdue: {
-            color: "bg-red-500",
-            title: "Overdue",
-        },
-    };
-    return (
-        <Badge variant="outline" className="gap-1.5">
-            <span
-                className={cn(
-                    "size-1.5 rounded-full",
-                    statusMap[status]?.color,
-                )}
-                aria-hidden="true"></span>
-            {statusMap[status]?.title}
-        </Badge>
-    );
-}
-
 export function TransactionDialog() {
     const queryClient = useQueryClient();
     const { data: authData } = authClient.useSession();
@@ -100,11 +65,13 @@ export function TransactionDialog() {
         mutationFn: async (data: FieldValues) => {
             if (!authData || !authData.user || !authData.user.id) return;
             const { transaction_date, ...rest } = data;
-            const res = await db(await bearerHeader()).from("transactions").insert({
-                ...rest,
-                transaction_date: transaction_date?.toISOString(),
-                user_id: authData.user.id,
-            });
+            const res = await db(await bearerHeader())
+                .from("transactions")
+                .insert({
+                    ...rest,
+                    transaction_date: transaction_date?.toISOString(),
+                    user_id: authData.user.id,
+                });
             if (res.error) throw res.error;
             return res.data;
         },
@@ -136,7 +103,7 @@ export function TransactionDialog() {
             status: "paid",
             transaction_date: new Date().toISOString(),
             currency: (() => {
-                if (!IS_SERVER) {
+                if (localStorage) {
                     return localStorage.getItem("last_used_currency") || "USD";
                 }
                 return "USD";

@@ -1,6 +1,5 @@
 "use client";
 
-import { PayButton } from "@/app/(public)/(default)/appl/pay";
 import {
 	Card,
 	CardContent,
@@ -9,21 +8,65 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { authClient } from "@/lib/auth-client";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React from "react";
+import { toast } from "sonner";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Switch } from "../ui/switch";
-import { PricingOption, formatPrice } from "./pricing";
+import { PricingOption } from "./pricing";
 
 export function PricingCard({ option }: { option: PricingOption }) {
-	const isFree =
-		typeof option.price !== "string" && option.price.amount === 0;
+	const switchId = React.useId();
+	const router = useRouter();
+
+	const isFree = option.price === null;
 	const yearlyBilling = useStore(s => s.yearly_billing);
 	const setYearlyBilling = useStore(s => s.set_yearly_billing);
+	const price =
+		option.price ?
+			"$" +
+			(yearlyBilling ?
+				option.price.yearly.amount
+			:	option.price.monthly.amount) +
+			" per month"
+		:	"$0";
 
-	const switchId = React.useId();
+	const [pending, startTransition] = React.useTransition();
+
+	const { data, isLoading } = authClient.useSession();
+
+	const handleBuy = () => {
+		startTransition(async () => {
+			if (!data || !data.user || !data.user.id) {
+				router.push(
+					`/login?redirect=${encodeURIComponent("/pricing")}`,
+				);
+				return;
+			}
+
+			if (!option.price) return;
+
+			const res = await authClient.checkout({
+				slug:
+					yearlyBilling ?
+						option.price.yearly.price_slug
+					:	option.price.monthly.price_slug,
+			});
+			if (res.error) {
+				toast.error("Failed to checkout, please try again later.");
+				return;
+			}
+			if (res.data.redirect) {
+				router.push(res.data.url);
+			}
+		});
+	};
 
 	return (
 		<Card
@@ -36,7 +79,12 @@ export function PricingCard({ option }: { option: PricingOption }) {
 					{option.title}
 				</CardTitle>
 				<CardDescription className="mt-2">
-					{formatPrice(option.price)}
+					{price}{" "}
+					{option.highlight && (
+						<Badge className="rounded-full">
+							Save {option.price?.yearly.percent_off}%
+						</Badge>
+					)}
 				</CardDescription>
 			</CardHeader>
 
@@ -71,10 +119,14 @@ export function PricingCard({ option }: { option: PricingOption }) {
 				</ul>
 			</CardContent>
 			<CardFooter>
-				<PayButton
-					disabled={option.disabled}
-					highlight={option.highlight}
-				/>
+				<Button
+					disabled={isLoading}
+					isLoading={pending}
+					variant={option.highlight ? "default" : "secondary"}
+					onClick={handleBuy}
+					className="w-full">
+					{option.price ? "Choose" : "Get started"}
+				</Button>
 			</CardFooter>
 		</Card>
 	);

@@ -28,7 +28,7 @@ import { toast } from "sonner";
 export function NavUser() {
 	const { isMobile } = useSidebar();
 
-	const { data, isLoading } = useQuery({
+	const { data } = useQuery({
 		queryKey: ["session"],
 		queryFn: async () => {
 			const { data, error } = await authClient.getSession();
@@ -41,20 +41,22 @@ export function NavUser() {
 		},
 	});
 
+	const { isPending: isSessionLoading } = authClient.useSession();
+
 	const initial = React.useMemo(() => {
 		let [fn, ln] = data?.user?.name?.split(" ") ?? [];
 		return `${fn?.at(0)?.toUpperCase() || ""}${ln?.at(0)?.toUpperCase() || ""}`;
 	}, [data]);
 
 	return (
-		<SidebarMenu>
+		<SidebarMenu suppressHydrationWarning>
 			<SidebarMenuItem>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<SidebarMenuButton
 							size="lg"
 							className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-							{isLoading ?
+							{isSessionLoading ?
 								<Skeleton className="bg-secondary-foreground/20 h-8 w-8 rounded-full" />
 							:	<Avatar className="h-8 w-8 rounded-lg">
 									<AvatarImage
@@ -68,13 +70,13 @@ export function NavUser() {
 							}
 
 							<div className="grid flex-1 text-left text-sm leading-tight">
-								{isLoading ?
+								{isSessionLoading ?
 									<Skeleton className="bg-secondary-foreground/20 h-3 w-12" />
 								:	<span className="truncate">
 										{data?.user.name}
 									</span>
 								}
-								{isLoading ?
+								{isSessionLoading ?
 									<Skeleton className="bg-secondary-foreground/20 mt-1 h-3 w-full" />
 								:	<span className="text-muted-foreground truncate text-xs">
 										{data?.user.email}
@@ -91,7 +93,7 @@ export function NavUser() {
 						sideOffset={4}>
 						<DropdownMenuLabel className="p-0 font-normal">
 							<div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-								{isLoading ?
+								{isSessionLoading ?
 									<Skeleton className="bg-secondary-foreground/20 h-8 w-8 rounded-full" />
 								:	<Avatar className="h-8 w-8 rounded-lg">
 										<AvatarImage
@@ -104,13 +106,13 @@ export function NavUser() {
 									</Avatar>
 								}
 								<div className="grid flex-1 text-left text-sm leading-tight">
-									{isLoading ?
+									{isSessionLoading ?
 										<Skeleton className="bg-secondary-foreground/20 h-3 w-12" />
 									:	<span className="truncate">
 											{data?.user.name}
 										</span>
 									}
-									{isLoading ?
+									{isSessionLoading ?
 										<Skeleton className="bg-secondary-foreground/20 mt-1 h-3 w-full" />
 									:	<span className="text-muted-foreground truncate text-xs">
 											{data?.user.email}

@@ -59,7 +59,7 @@ const blocks: FooterBlock[] = [
 
 export function Footer() {
 	return (
-		<div className="grid gap-8 px-36 text-sm lg:grid-cols-6">
+		<div className="grid gap-8 px-4 text-sm md:px-16 lg:grid-cols-6 lg:px-36">
 			<div className="col-span-3 flex justify-between lg:flex-col">
 				<div className="inline-flex flex-col items-start gap-1">
 					<Link href="/" className="flex items-center gap-2">

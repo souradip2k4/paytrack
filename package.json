@@ -4,14 +4,18 @@
 	"description": "Accounting software for non-accountants",
 	"main": "index.js",
 	"scripts": {
-		"format": "prettier --write \"**/*.{ts,tsx,json,md,mdx,css,yaml,sql}\"",
+		"format": "prettier --write \"**/*.{ts,tsx,json,md,mdx,css,yaml}\"",
 		"format:ts": "prettier --write \"**/*.{ts,tsx}\"",
 		"format:sql": "prettier --write \"**/*.sql\"",
 		"format:md": "prettier --write \"**/*.md\"",
 		"format:json": "prettier --write \"**/*.json\""
 	},
-	"keywords": [],
-	"author": "",
+	"keywords": [
+		"Budgeting",
+		"Accounting",
+		"Expense tracker"
+	],
+	"author": "Samyabrata Maji <samyabratamaji334@gmail.com>",
 	"license": "ISC",
 	"packageManager": "pnpm@10.11.0",
 	"devDependencies": {

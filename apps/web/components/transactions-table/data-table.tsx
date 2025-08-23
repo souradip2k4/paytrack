@@ -1,6 +1,18 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetDescription,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from "@/components/ui/sheet";
 import {
     Table,
     TableBody,
@@ -10,6 +22,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { authClient } from "@/lib/auth-client";
+import { bearerHeader } from "@/lib/bearer";
 import { db } from "@/lib/db";
 import { useFilterStore, useStore } from "@/lib/store";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -26,7 +39,6 @@ import axios from "axios";
 import React from "react";
 import { toast } from "sonner";
 import { columns } from "./columns";
-import { bearerHeader } from "@/lib/bearer";
 
 export function EntriesTable() {
     /** CLIENT STATES */
@@ -51,9 +63,12 @@ export function EntriesTable() {
             if (!authData?.user) return [];
 
             const res = await applyFilter(
-                db(await bearerHeader()).from("transactions").select("*").order("transaction_date", {
-                    ascending: false,
-                }),
+                db(await bearerHeader())
+                    .from("transactions")
+                    .select("*")
+                    .order("transaction_date", {
+                        ascending: false,
+                    }),
             );
 
             if (res.error) {
@@ -87,7 +102,7 @@ export function EntriesTable() {
             rowSelection,
             columnFilters,
         },
-        manualPagination: true,
+        // manualPagination: true,
         // rowCount: pagination.total,
         // pageCount: pagination.page,
     });
@@ -207,8 +222,52 @@ export function EntriesTable() {
                     }
                 </TableBody>
             </Table>
+
         </div>
     );
+}
+
+function Sh() {
+    return (
+        <Sheet>
+            <SheetTrigger asChild>
+                <Button variant="outline">Open</Button>
+            </SheetTrigger>
+            <SheetContent>
+                <SheetHeader>
+                    <SheetTitle>Edit profile</SheetTitle>
+                    <SheetDescription>
+                        Make changes to your profile here. Click save when
+                        you&apos;re done.
+                    </SheetDescription>
+                </SheetHeader>
+                <div className="grid flex-1 auto-rows-min gap-6 px-4">
+                    <div className="grid gap-3">
+                        <Label htmlFor="sheet-demo-name">Name</Label>
+                        <Input
+                            id="sheet-demo-name"
+                            defaultValue="Pedro Duarte"
+                        />
+                    </div>
+                    <div className="grid gap-3">
+                        <Label htmlFor="sheet-demo-username">
+                            Username
+                        </Label>
+                        <Input
+                            id="sheet-demo-username"
+                            defaultValue="@peduarte"
+                        />
+                    </div>
+                </div>
+                <SheetFooter>
+                    <Button type="submit">Save changes</Button>
+                    <SheetClose asChild>
+                        <Button variant="outline">Close</Button>
+                    </SheetClose>
+                </SheetFooter>
+            </SheetContent>
+        </Sheet>
+    )
 }
 
 /*

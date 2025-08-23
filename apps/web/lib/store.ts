@@ -1,32 +1,13 @@
-import { type Entry } from "@/app/api/[[...route]]/server";
 import { PostgrestFilterBuilder } from "@supabase/postgrest-js";
 import {
 	OnChangeFn,
 	VisibilityState,
 	type RowSelectionState,
 } from "@tanstack/react-table";
-import { addDays } from "date-fns";
-import { nanoid } from "nanoid";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export type Store = {
-	fields: string[];
-	addField: () => void;
-	removeField: (index: number) => void;
-
-	filters: FilterState;
-	existsFilter: (field: FilterFields, value: string) => boolean;
-	resetAllFilters: () => void;
-	toggleFilter: (field: FilterFields, value: string) => void;
-
-	filter_date_to: Date;
-	filter_date_from: Date;
-	set_filter_date_from: (date: Date) => void;
-	set_filter_date_to: (date: Date) => void;
-
-	data_entries: Entry[];
-	set_data_entries: (data_entries: Entry[]) => void;
 	row_selection_entries: RowSelectionState;
 	set_row_selection_entries: (row_selection: RowSelectionState) => void;
 
@@ -45,66 +26,6 @@ export type Store = {
 export const today = new Date();
 
 export const useStore = create<Store>((set, get) => ({
-	fields: [nanoid()],
-	addField: () =>
-		set(s => ({
-			fields: [...s.fields, nanoid()],
-		})),
-	removeField: (i: number) =>
-		set(s => ({
-			fields: s.fields.toSpliced(i, 1),
-		})),
-
-	filters: {
-		category: [],
-		tag: [],
-	},
-	existsFilter: (field: FilterFields, value: string) =>
-		get().filters[field].includes(value),
-
-	resetAllFilters: () => {
-		set({
-			filters: {
-				category: [],
-				tag: [],
-			},
-		});
-	},
-
-	toggleFilter: (name: FilterFields, value: string) => {
-		const filters = get().filters;
-		const f = [...(filters[name] || [])];
-		let x: FilterState =
-			f.includes(value) ?
-				{
-					...filters,
-					[name]: f.filter(item => item !== value),
-				}
-			:	{
-					...filters,
-					[name]: [...f, value],
-				};
-		set({
-			filters: x,
-		});
-	},
-
-	filter_date_from: addDays(today, -30),
-	filter_date_to: addDays(today, 2),
-	set_filter_date_from: (date: Date) =>
-		set({
-			filter_date_from: date,
-		}),
-	set_filter_date_to: (date: Date) =>
-		set({
-			filter_date_to: date,
-		}),
-
-	data_entries: [],
-	set_data_entries: data_entries =>
-		set({
-			data_entries,
-		}),
 	row_selection_entries: {},
 	set_row_selection_entries: row_selection_entries =>
 		set({
@@ -162,11 +83,13 @@ export let display_fields: DisplayFields[] = [
 ];
 
 export type FilterState = Record<FilterFields, string[]>;
-export type FilterFields = "categories" | "status";
+export type FilterFields = "amount" | "categories" | "status";
 export type FilterOperations =
 	| "is" // also, is-any-of when there are multiple values
 	| "is not" // also, is-not-any-of when there are multiple values
-	| "is empty";
+	| "is empty"
+	| "greater than"
+	| "less than";
 export type FilterValue = { id: string; label: string };
 export type FilterStackItem = {
 	id: string;
@@ -252,6 +175,7 @@ export const useFilterStore = create<FilterStore>()(
 
 			apply_filter: q => {
 				const property_map: Record<FilterFields, string> = {
+					amount: "amount",
 					categories: "category_id",
 					status: "status",
 				};

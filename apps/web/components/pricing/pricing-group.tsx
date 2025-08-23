@@ -4,7 +4,7 @@ import { PricingCard } from "./pricing-card";
 
 export function PricingCardGroup() {
 	return (
-		<div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+		<div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-[360px_360px_360px]">
 			{options.map((option, index) => (
 				<React.Fragment key={index}>
 					<PricingCard option={option} />
@@ -19,7 +19,7 @@ export function PricingSection() {
 		<div
 			id="pricing"
 			className="flex flex-col items-center justify-center gap-2 px-8 py-8 lg:space-y-8 lg:px-32 lg:py-24">
-			<h1 className="text-secondary-foreground text-2xl lg:text-5xl">
+			<h1 className="text-secondary-foreground mb-4 text-2xl lg:text-5xl">
 				Pricing
 			</h1>
 			<PricingCardGroup />

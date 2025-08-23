@@ -119,6 +119,17 @@ create table transaction_line_items (
 );
 
 
+create table app_subscriptions (
+    id text not null primary key,
+    amount_paid numeric(10, 2),
+    period_start date not null,
+    period_end date not null,
+    product_id text not null,
+    user_id text references users (id),
+    organization_id text references organizations (id)
+);
+
+
 /* ========================================================================== */
 /* RLS POLICIES */
 /* ========================================================================== */
@@ -149,7 +160,7 @@ CREATE TYPE transaction_query_params AS (
 );
 
 /* ========================================================================== */
-/* Returns the highest or lowest credit for the user */
+/* Returns the highest or lowest credit or debit for the user */
 DROP FUNCTION IF EXISTS get_tranasction_credit_summary(transaction_query_params, BOOLEAN, INTEGER);
 DROP FUNCTION IF EXISTS get_tranasction_debit_summary(transaction_query_params, BOOLEAN, INTEGER);
 

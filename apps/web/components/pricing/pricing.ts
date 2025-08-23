@@ -1,14 +1,18 @@
 export type PricingOption = {
 	title: string;
-	price:
-		| string
-		| {
-				amount: number;
-				validity: "monthly" | "lifetime" | "yearly";
-		  };
+	price: {
+		monthly: {
+			amount: number;
+			price_slug: string;
+		};
+		yearly: {
+			amount: number;
+			price_slug: string;
+			percent_off: number;
+		};
+	} | null;
 	description: string;
 	perks: string[];
-	redirect?: string;
 	highlight?: boolean;
 	disabled?: boolean;
 };
@@ -16,67 +20,53 @@ export type PricingOption = {
 export const options: PricingOption[] = [
 	{
 		title: "Free",
-		price: {
-			amount: 0,
-			validity: "monthly",
-		},
+		price: null,
 		description: "Basic features for individual use.",
-		perks: [
-			"1 user",
-			"1 project",
-			"10k entries per month",
-			"Non-commercial use",
-		],
+		perks: ["Single user", "Unlimited entries", "Personal use"],
 	},
 	{
 		title: "Pro",
 		price: {
-			amount: 8,
-			validity: "monthly",
+			monthly: {
+				amount: 8,
+				price_slug: "pro",
+			},
+			yearly: {
+				amount: 12,
+				price_slug: "pro-yearly",
+				percent_off: 33,
+			},
 		},
 		description: "More advanced features (coming soon)",
 		perks: [
 			"Everthing in Free tier",
-			"5 users",
-			"3 projects",
-			"Unlimited entries",
-			"API access",
-			"24/7 support",
-			"Third-party integrations (coming soon)",
+			"Sync with Excel or Google Sheets",
+			"Third-party integrations",
+			"AI Features",
+			"Zapier, n8n, make.com intgration",
 			"Commercial use",
 		],
-		disabled: true,
-	},
-	{
 		highlight: true,
-		title: "Lifetime",
-		price: {
-			amount: 79,
-			validity: "lifetime",
-		},
-		description: "Limited time plan for lifetime usage.",
-		perks: [
-			"Unlimited entries",
-			"1 users",
-			"1 workspace",
-			"API access",
-			"24/7 support",
-			"Third-party integrations (coming soon)",
-			"Commercial use",
-		],
-		disabled: true,
 	},
 	{
-		title: "Unlimited",
-		price: "Custom Pricing",
-		description: "Custom solution for large enterprises.",
+		title: "Business",
+		price: {
+			monthly: {
+				amount: 36,
+				price_slug: "teams",
+			},
+			yearly: {
+				amount: 30,
+				price_slug: "teams-yearly",
+				percent_off: 33,
+			},
+		},
+		description: "More advanced features (coming soon)",
 		perks: [
 			"Everything in Pro tier",
-			"Unlimited users",
-			"Unlimited projects",
-			// "Custom integrations",
+			"Organization features",
+			"API access",
 		],
-		disabled: true,
 	},
 ];
 
@@ -89,16 +79,5 @@ export const formatPrice = (price: PricingOption["price"]) => {
 		minimumFractionDigits: 0,
 	});
 
-	const formattedAmount = formatter.format(price.amount);
-
-	switch (price.validity) {
-		case "monthly":
-			return `${formattedAmount} per month`;
-		case "yearly":
-			return `${formattedAmount} per year`;
-		case "lifetime":
-			return `${formattedAmount} one-time`;
-		default:
-			return formattedAmount;
-	}
+	return "10";
 };

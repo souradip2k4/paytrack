@@ -69,7 +69,7 @@ export function Navbar() {
 			)}
 
 			{!isDesktop && (
-				<DropdownMenu modal>
+				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button size="icon" variant="outline">
 							<Menu className="size-4" />

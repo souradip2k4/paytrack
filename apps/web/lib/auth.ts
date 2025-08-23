@@ -1,5 +1,9 @@
 import { resetPassword, verificationLink } from "@/lib/emails";
-import { getActiveOrganization } from "@/server/organization";
+import {
+	getActiveOrganization,
+	getActiveSubscription,
+	upsertSubscription,
+} from "@/server/organization";
 import {
 	checkout,
 	polar,
@@ -11,6 +15,7 @@ import { Polar } from "@polar-sh/sdk";
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 import { bearer, jwt, organization } from "better-auth/plugins";
+import { addDays } from "date-fns";
 import { Pool } from "pg";
 import { Resend } from "resend";
 
@@ -122,10 +127,15 @@ export const auth = betterAuth({
 					const activeOrganizationId = await getActiveOrganization(
 						session.userId,
 					);
+					const subscription = await getActiveSubscription(
+						session.userId,
+						activeOrganizationId,
+					);
 					return {
 						data: {
 							...session,
 							activeOrganizationId,
+							subscription,
 						},
 					};
 				},
@@ -185,34 +195,62 @@ export const auth = betterAuth({
 				checkout({
 					products: [
 						{
-							productId: process.env.POLAR_PRODUCT_ID!,
+							productId: process.env.POLAR_PRODUCT_PRO!,
 							slug: "pro",
 						},
+						{
+							productId: process.env.POLAR_PRODUCT_PRO_YEARLY!,
+							slug: "pro-yearly",
+						},
 					],
-					successUrl: "/success?checkout_id={CHECKOUT_ID}",
+					successUrl: "/welcome?id={CHECKOUT_ID}",
 					authenticatedUsersOnly: true,
 				}),
 				portal(),
 				usage(),
 				webhooks({
 					secret: process.env.POLAR_WHSEC!,
+					onCustomerStateChanged: async payload => {
+						if (payload.data.activeSubscriptions.length <= 0)
+							return;
+						const subscription =
+							payload.data.activeSubscriptions[0];
+
+						await upsertSubscription({
+							amount_paid: subscription.amount,
+							period_start:
+								subscription.currentPeriodStart.toISOString(),
+							period_end:
+								subscription.currentPeriodEnd?.toISOString() ||
+								addDays(
+									subscription.currentPeriodStart,
+									30,
+								).toISOString(), // TODO: fix this
+							email: payload.data.email,
+							subscription_id: subscription.id,
+							product_id: subscription.productId,
+						});
+					},
 				}),
 			],
 		}),
 
 		jwt({
 			jwt: {
-				definePayload: ({ user, session }) => ({
-					sub: user.id,
-					user_id: user.id,
-					role: "authenticated",
-					email: user.email,
-					claims: {
-						organization_id: session.activeOrganizationId,
-					},
-				}),
-				issuer: process.env.BASE_URL || "http://localhost:3000",
-				audience: process.env.BASE_URL || "http://localhost:3000",
+				definePayload: ({ user, session }) => {
+					return {
+						sub: user.id,
+						user_id: user.id,
+						role: "authenticated",
+						email: user.email,
+						claims: {
+							organization_id: session.activeOrganizationId,
+							subscription: session.subscription,
+						},
+					};
+				},
+				issuer: process.env.APP_URL || "http://localhost:3000",
+				audience: process.env.APP_URL || "http://localhost:3000",
 				expirationTime: "1h",
 			},
 			schema: {
