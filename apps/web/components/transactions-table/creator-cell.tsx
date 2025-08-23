@@ -15,7 +15,7 @@ export const CreatorCell = () => {
         <React.Fragment>
             {isPending ? <Skeleton className="h-4 w-16" /> :
                 <Badge variant="secondary" className="rounded-full">
-                    <img className="h-4 w-4" src={avatarUrl(data?.user.image)} /> {data?.user.name} (you)
+                    <img className="h-4 w-4 rounded-full" src={avatarUrl(data?.user.image)} /> {data?.user.name} (you)
                 </Badge>
             }
         </React.Fragment>
