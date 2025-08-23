@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { db } from "@/lib/db";
 import { bearerHeader } from "@/lib/bearer";
 import { useForm, Controller } from "react-hook-form";
+import { StatusBadge } from "../status-badge";
 
 export function EditSheet({ open, onOpenChange, transaction }) {
     const { control, handleSubmit, watch } = useForm({
@@ -68,7 +69,7 @@ export function EditSheet({ open, onOpenChange, transaction }) {
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent className="flex flex-col">
                 <SheetHeader>
-                    <SheetTitle>Edit transaction</SheetTitle>
+                    <SheetTitle className="font-normal">Edit transaction</SheetTitle>
                     <SheetDescription>
                         Make changes to your transaction here. Click save when
                         you&apos;re done.
@@ -118,7 +119,9 @@ export function EditSheet({ open, onOpenChange, transaction }) {
                             control={control}
                             render={({ field }) => (
                                 <StatusPicker {...field}>
-                                    <Button variant="secondary">Select Status</Button>
+                                    <Button variant="secondary">
+                                        {field.value ? <StatusBadge variant="ghost" status={field.value} /> : "Select status"}
+                                    </Button>
                                 </StatusPicker>
                             )}
                         />
