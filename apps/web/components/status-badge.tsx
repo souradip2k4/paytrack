@@ -1,7 +1,31 @@
 import { cn } from "@/lib/utils";
 import { Badge } from "./ui/badge";
+import { cva, type VariantProps } from "class-variance-authority";
+import React from "react";
 
-export function StatusBadge({ status }: { status: string }) {
+const statusBadgeVariants = cva(
+    "",
+    {
+        variants: {
+            variant: {
+                outline: "",
+                primary: "",
+                secondary: "",
+                ghost: "border-transparent bg-transparent hover:bg-accent text-foreground",
+            },
+        },
+        defaultVariants: {
+            variant: "outline",
+        },
+    }
+);
+
+export interface StatusBadgeProps extends VariantProps<typeof statusBadgeVariants> {
+    status: string;
+    className?: string;
+}
+
+export function StatusBadge({ status, variant, className }: StatusBadgeProps) {
     const statusMap: Record<
         string,
         {
@@ -22,8 +46,17 @@ export function StatusBadge({ status }: { status: string }) {
             title: "Overdue",
         },
     };
+
+    const baseBadgeVariant =
+        variant === 'primary' ? 'default'
+        : variant === 'secondary' ? 'secondary'
+        : 'outline';
+
     return (
-        <Badge variant="outline" className="gap-1.5 rounded-full">
+        <Badge
+            variant={baseBadgeVariant}
+            className={cn("gap-1.5 rounded-full", statusBadgeVariants({ variant }), className)}
+        >
             <span
                 className={cn(
                     "size-1.5 rounded-full",

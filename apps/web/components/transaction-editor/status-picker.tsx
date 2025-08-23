@@ -15,6 +15,7 @@ import {
 import { useStore } from "@/lib/store";
 import { CheckIcon } from "lucide-react";
 import React from "react";
+import { StatusBadge } from "../status-badge";
 
 type OnChange = (value: string) => void;
 
@@ -51,7 +52,7 @@ export function StatusPicker({
                                         onChange(e);
                                         setOpen(false);
                                     }}>
-                                    {key}
+                                    <StatusBadge status={key} variant="ghost" />
                                     {value === key && (
                                         <CheckIcon
                                             size={16}
