@@ -32,7 +32,7 @@ import {
 } from "date-fns";
 import { LoaderCircle, Settings2 } from "lucide-react";
 import * as React from "react";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ReferenceLine } from "recharts";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
@@ -51,79 +51,11 @@ const chartConfig = {
     },
 } satisfies ChartConfig;
 
-const generateColor = (index: number) => {
-    const colors = [
-        "#60a5fa", // Blue
-        "#f87171", // Red
-        "#34d399", // Green
-        "#a78bfa", // Purple
-        "#fb923c", // Orange
-        "#f472b6", // Pink
-        "#2dd4bf", // Teal
-        "#818cf8", // Indigo
-        "#facc15", // Yellow
-        "#fb7185", // Rose
-        "#10b981", // Emerald
-        "#8b5cf6", // Violet
-        "#f59e0b", // Amber
-        "#22d3ee", // Cyan
-        "#e879f9", // Fuchsia
-        "#84cc16", // Lime
-        "#38bdf8", // Sky
-        "#94a3b8", // Slate
-        "#a8a29e", // Stone
-        "#a1a1aa", // Zinc
-    ];
-    return colors[index % colors.length];
+const statusColors: Record<"paid" | "pending" | "overdue", string> = {
+    paid: "#10b981",
+    pending: "#f59e0b",
+    overdue: "#ef4444",
 };
-
-// Light mode colors
-const lightColors = [
-    "#3b82f6", // Blue
-    "#ef4444", // Red
-    "#10b981", // Green
-    "#8b5cf6", // Purple
-    "#f97316", // Orange
-    "#ec4899", // Pink
-    "#14b8a6", // Teal
-    "#6366f1", // Indigo
-    "#eab308", // Yellow
-    "#f43f5e", // Rose
-    "#059669", // Emerald
-    "#7c3aed", // Violet
-    "#d97706", // Amber
-    "#0891b2", // Cyan
-    "#c026d3", // Fuchsia
-    "#65a30d", // Lime
-    "#0284c7", // Sky
-    "#475569", // Slate
-    "#57534e", // Stone
-    "#52525b", // Zinc
-];
-
-// Dark mode colors
-const darkColors = [
-    "#60a5fa", // Blue
-    "#f87171", // Red
-    "#34d399", // Green
-    "#a78bfa", // Purple
-    "#fb923c", // Orange
-    "#f472b6", // Pink
-    "#2dd4bf", // Teal
-    "#818cf8", // Indigo
-    "#facc15", // Yellow
-    "#fb7185", // Rose
-    "#10b981", // Emerald
-    "#8b5cf6", // Violet
-    "#f59e0b", // Amber
-    "#22d3ee", // Cyan
-    "#e879f9", // Fuchsia
-    "#84cc16", // Lime
-    "#38bdf8", // Sky
-    "#94a3b8", // Slate
-    "#a8a29e", // Stone
-    "#a1a1aa", // Zinc
-];
 
 type TransactionDistribution = {
     day: string;
@@ -323,6 +255,11 @@ export function StatusBarChart() {
                             reverseStackOrder={reverse_order}
                         >
                             <CartesianGrid vertical={false} />
+                            <YAxis
+                                tickLine={false}
+                                axisLine={false}
+                                tickMargin={8}
+                                />
                             <XAxis
                                 dataKey="day"
                                 tickLine={false}
@@ -354,6 +291,7 @@ export function StatusBarChart() {
                                     />
                                 }
                             />
+                            <ReferenceLine y={0} strokeWidth={2} stroke="hsl(var(--primary))" />
 
                             {statuses.map((status, i) => {
                                 return (
@@ -365,7 +303,7 @@ export function StatusBarChart() {
                                         radius={4}
                                         overflow="visible"
                                         className="stroke-card"
-                                        fill={generateColor(i + 1)}
+                                        fill={statusColors[status as keyof typeof statusColors]}
                                         strokeWidth={1}
                                     />
                                 );
