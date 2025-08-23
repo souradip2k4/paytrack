@@ -130,8 +130,7 @@ type TransactionDistribution = {
     debit: number;
     credit: number;
     balance: number;
-    name: string;
-    category_id: string;
+    status: "paid" | "pending" | "overdue";
 };
 
 const periodOptions = [
@@ -191,30 +190,19 @@ export function StatusBarChart() {
         },
     });
 
-    const categories = React.useMemo(() => ["paid", "pending", "overdue"], []);
+    const statuses = React.useMemo(() => ["paid", "pending", "overdue"], []);
 
     const chartData: Record<string, string | number>[] = React.useMemo(() => {
-        if (!data || !categories) return [];
+        if (!data || !statuses) return [];
 
         const startDate = new Date(start_date);
         const endDate = new Date(end_date);
-
-        const categoryMap: Record<string, string> = categories.reduce(
-            (acc, cat) => {
-                acc[cat] = cat;
-                return acc;
-            },
-            {} as Record<string, string>,
-        );
 
         const dataByDate: Record<string, Record<string, number>> = data.reduce(
             (acc, item) => {
                 const key = format(new Date(item.day), "yyyy-MM-dd");
                 if (!acc[key]) acc[key] = {};
-                const name =
-                    categoryMap[item.category_id] ||
-                    item.name ||
-                    "Uncategorized";
+                const name = item.status;
                 if (acc[key][name]) acc[key][name] += item[metric] || 0;
                 else acc[key][name] = item[metric] || 0;
                 return acc;
@@ -222,8 +210,8 @@ export function StatusBarChart() {
             {} as Record<string, Record<string, number>>,
         );
 
-        const allCategories = new Set<string>();
-        categories.forEach(cat => allCategories.add(cat));
+        const allStatuses = new Set<string>();
+        statuses.forEach(status => allStatuses.add(status));
 
         const days = Array.from(
             { length: differenceInDays(endDate, startDate) + 1 },
@@ -231,13 +219,13 @@ export function StatusBarChart() {
                 const day = addDays(startDate, i);
                 const dayKey = format(day, "yyyy-MM-dd");
                 let res: Record<string, any> = { day: dayKey };
-                allCategories.forEach(c => {
-                    res[c] = 0;
+                allStatuses.forEach(s => {
+                    res[s] = 0;
                 });
                 if (dataByDate[dayKey]) {
                     Object.entries(dataByDate[dayKey]).forEach(
-                        ([category, value]) => {
-                            res[category] = value;
+                        ([status, value]) => {
+                            res[status] = value;
                         },
                     );
                 }
@@ -245,7 +233,7 @@ export function StatusBarChart() {
             },
         );
         return days;
-    }, [data, categories, start_date, end_date, metric]);
+    }, [data, statuses, start_date, end_date, metric]);
 
     return (
         <Card className="py-0">
@@ -367,13 +355,13 @@ export function StatusBarChart() {
                                 }
                             />
 
-                            {categories.map((c, i) => {
+                            {statuses.map((status, i) => {
                                 return (
                                     <Bar
-                                        key={c}
-                                        name={c}
+                                        key={status}
+                                        name={status}
                                         stackId="a"
-                                        dataKey={c}
+                                        dataKey={status}
                                         radius={4}
                                         overflow="visible"
                                         className="stroke-card"
