@@ -1,0 +1,138 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetDescription,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
+} from "@/components/ui/sheet";
+import { CategoryPicker } from "../transaction-editor/category-picker";
+import { CurrencyPicker } from "../transaction-editor/currency-picker";
+import { StatusPicker } from "../transaction-editor/status-picker";
+import { TransactionDatePicker } from "../transaction-editor/transaction-date-picker";
+import React from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { db } from "@/lib/db";
+import { bearerHeader } from "@/lib/bearer";
+import { useForm, Controller } from "react-hook-form";
+
+export function EditSheet({ open, onOpenChange, transaction }) {
+    const { control, handleSubmit, watch } = useForm({
+        defaultValues: {
+            name: transaction?.name,
+            amount: transaction?.amount,
+            currency: transaction?.currency,
+            category_id: transaction?.category_id,
+            status: transaction?.status,
+            transaction_date: transaction?.transaction_date,
+        },
+    });
+
+    const queryClient = useQueryClient();
+
+    const { mutate: updateTransaction, isPending } = useMutation({
+        mutationFn: async (data) => {
+            if (!transaction?.id) return;
+
+            const res = await db(await bearerHeader())
+                .from("transactions")
+                .update(data)
+                .eq("id", transaction.id);
+
+            if (res.error) {
+                toast.error("Failed to update transaction");
+                return;
+            }
+
+            return res.data;
+        },
+        onSuccess: () => {
+            toast.success("Transaction updated successfully");
+            queryClient.invalidateQueries({ queryKey: ["tr", "get"] });
+            onOpenChange(false);
+        }
+    });
+
+    const onSubmit = (data) => {
+        updateTransaction(data);
+    };
+
+    return (
+        <Sheet open={open} onOpenChange={onOpenChange}>
+            <SheetContent className="flex flex-col">
+                <SheetHeader>
+                    <SheetTitle>Edit transaction</SheetTitle>
+                    <SheetDescription>
+                        Make changes to your transaction here. Click save when
+                        you&apos;re done.
+                    </SheetDescription>
+                </SheetHeader>
+                <form onSubmit={handleSubmit(onSubmit)} className="grid flex-1 auto-rows-min gap-6 px-4">
+                    <div className="grid gap-3">
+                        <Label>Name</Label>
+                        <Controller
+                            name="name"
+                            control={control}
+                            render={({ field }) => <Input {...field} />}
+                        />
+                    </div>
+                    <div className="grid gap-3">
+                        <Label>Amount</Label>
+                        <Controller
+                            name="amount"
+                            control={control}
+                            render={({ field }) => <Input type="number" {...field} />}
+                        />
+                    </div>
+                    <div className="grid gap-3">
+                        <Label>Currency</Label>
+                        <Controller
+                            name="currency"
+                            control={control}
+                            render={({ field }) => <CurrencyPicker {...field} />}
+                        />
+                    </div>
+                    <div className="grid gap-3">
+                        <Label>Category</Label>
+                        <Controller
+                            name="category_id"
+                            control={control}
+                            render={({ field }) => <CategoryPicker {...field} />}
+                        />
+                    </div>
+                    <div className="grid gap-3">
+                        <Label>Status</Label>
+                        <Controller
+                            name="status"
+                            control={control}
+                            render={({ field }) => <StatusPicker {...field} />}
+                        />
+                    </div>
+                    <div className="grid gap-3">
+                        <Label>Transaction Date</Label>
+                        <Controller
+                            name="transaction_date"
+                            control={control}
+                            render={({ field }) => <TransactionDatePicker date={new Date(field.value)} onDateChange={(d) => field.onChange(d.toISOString())} />}
+                        />
+                    </div>
+                </form>
+                <SheetFooter>
+                    <Button type="submit" onClick={handleSubmit(onSubmit)} disabled={isPending}>
+                        {isPending ? "Saving..." : "Save changes"}
+                    </Button>
+                    <SheetClose asChild>
+                        <Button variant="outline">Close</Button>
+                    </SheetClose>
+                </SheetFooter>
+            </SheetContent>
+        </Sheet>
+    )
+}

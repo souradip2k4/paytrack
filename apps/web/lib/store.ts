@@ -17,10 +17,12 @@ export type Store = {
 	popover_transaction_dialog_open: boolean;
 	popover_category_picker_open: boolean;
 	popover_currency_picker_open: boolean;
+	popover_status_picker_open: boolean;
 
 	popover_transaction_dialog_set_open: (s: boolean) => void;
 	popover_category_picker_set_open: (s: boolean) => void;
 	popover_currency_picker_set_open: (s: boolean) => void;
+	popover_status_picker_set_open: (s: boolean) => void;
 };
 
 export const today = new Date();
@@ -41,6 +43,7 @@ export const useStore = create<Store>((set, get) => ({
 	popover_transaction_dialog_open: false,
 	popover_category_picker_open: false,
 	popover_currency_picker_open: false,
+	popover_status_picker_open: false,
 
 	popover_transaction_dialog_set_open: (s: boolean) =>
 		set({
@@ -53,6 +56,10 @@ export const useStore = create<Store>((set, get) => ({
 	popover_currency_picker_set_open: (s: boolean) =>
 		set({
 			popover_currency_picker_open: s,
+		}),
+	popover_status_picker_set_open: (s: boolean) =>
+		set({
+			popover_status_picker_open: s,
 		}),
 }));
 

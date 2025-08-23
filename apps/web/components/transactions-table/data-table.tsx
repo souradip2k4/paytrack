@@ -39,6 +39,7 @@ import axios from "axios";
 import React from "react";
 import { toast } from "sonner";
 import { columns } from "./columns";
+import { EditSheet } from "./edit-sheet";
 
 export function EntriesTable() {
     /** CLIENT STATES */
@@ -85,6 +86,13 @@ export function EntriesTable() {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] =
         React.useState<ColumnFiltersState>([]);
+    const [isSheetOpen, setIsSheetOpen] = React.useState(false);
+    const [selectedTransaction, setSelectedTransaction] = React.useState(null);
+
+    const handleRowClick = (row) => {
+        setSelectedTransaction(row.original);
+        setIsSheetOpen(true);
+    };
 
     const table = useReactTable({
         data,
@@ -150,80 +158,92 @@ export function EntriesTable() {
     };*/
 
     return (
-        <div className="border-input rounded-md border">
-            <Table>
-                <TableHeader className="bg-muted">
-                    {data &&
-                        table.getHeaderGroups().map(headerGroup => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map(header => {
-                                    return (
-                                        <TableHead
-                                            key={header.id}
-                                            className="not-last:border-r first:border-none">
-                                            {header.isPlaceholder ? null : (
-                                                flexRender(
-                                                    header.column.columnDef
-                                                        .header,
-                                                    header.getContext(),
-                                                )
-                                            )}
-                                        </TableHead>
-                                    );
-                                })}
-                            </TableRow>
-                        ))}
-                </TableHeader>
-                <TableBody>
-                    {data && table.getRowModel().rows?.length ?
-                        table.getRowModel().rows.map(row => {
-                            return (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={
-                                        row.getIsSelected() && "selected"
-                                    }>
-                                    {row.getVisibleCells().map(cell => (
-                                        <TableCell
-                                            className="not-last:border-r first:border-none"
-                                            key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext(),
-                                            )}
-                                        </TableCell>
-                                    ))}
+        <>
+            <div className="border-input rounded-md border">
+                <Table>
+                    <TableHeader className="bg-muted">
+                        {data &&
+                            table.getHeaderGroups().map(headerGroup => (
+                                <TableRow key={headerGroup.id}>
+                                    {headerGroup.headers.map(header => {
+                                        return (
+                                            <TableHead
+                                                key={header.id}
+                                                className="not-last:border-r first:border-none">
+                                                {header.isPlaceholder ? null : (
+                                                    flexRender(
+                                                        header.column.columnDef
+                                                            .header,
+                                                        header.getContext(),
+                                                    )
+                                                )}
+                                            </TableHead>
+                                        );
+                                    })}
                                 </TableRow>
-                            );
-                        })
-                        : <TableRow>
-                            <TableCell
-                                colSpan={columns.length}
-                                className="space-y-4 py-16 text-center">
-                                <h1 className="text-lg">No transactions</h1>
-                                <p className="text-muted-foreground mb-4 text-balance">
-                                    Click {`\"New transaction\"`} to add one.
-                                    <br />
-                                    You can also import from a csv or excel file
-                                    {"."}
-                                </p>
-                                <div className="flex items-center justify-center gap-2">
-                                    <Button
-                                        onClick={() =>
-                                            useStore.setState({
-                                                popover_transaction_dialog_open: true,
-                                            })
-                                        }>
-                                        Add transaction
-                                    </Button>
-                                </div>
-                            </TableCell>
-                        </TableRow>
-                    }
-                </TableBody>
-            </Table>
+                            ))}
+                    </TableHeader>
+                    <TableBody>
+                        {data && table.getRowModel().rows?.length ?
+                            table.getRowModel().rows.map(row => {
+                                return (
+                                    <TableRow
+                                        key={row.id}
+                                        data-state={
+                                            row.getIsSelected() && "selected"
+                                        }
+                                        onClick={() => handleRowClick(row)}
+                                        className="cursor-pointer"
+                                    >
+                                        {row.getVisibleCells().map(cell => (
+                                            <TableCell
+                                                className="not-last:border-r first:border-none"
+                                                key={cell.id}>
+                                                {flexRender(
+                                                    cell.column.columnDef.cell,
+                                                    cell.getContext(),
+                                                )}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                );
+                            })
+                            : <TableRow>
+                                <TableCell
+                                    colSpan={columns.length}
+                                    className="space-y-4 py-16 text-center">
+                                    <h1 className="text-lg">No transactions</h1>
+                                    <p className="text-muted-foreground mb-4 text-balance">
+                                        Click {`\"New transaction\"`} to add one.
+                                        <br />
+                                        You can also import from a csv or excel file
+                                        {"."}
+                                    </p>
+                                    <div className="flex items-center justify-center gap-2">
+                                        <Button
+                                            onClick={() =>
+                                                useStore.setState({
+                                                    popover_transaction_dialog_open: true,
+                                                })
+                                            }>
+                                            Add transaction
+                                        </Button>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
 
-        </div>
+            </div>
+            {selectedTransaction && (
+                <EditSheet
+                    open={isSheetOpen}
+                    onOpenChange={setIsSheetOpen}
+                    transaction={selectedTransaction}
+                />
+            )}
+        </>
     );
 }
 
