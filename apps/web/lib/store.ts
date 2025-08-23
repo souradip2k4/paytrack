@@ -223,7 +223,7 @@ export const useFilterStore = create<FilterStore>()(
 						typeof e === "function" ?
 							e(s.display_visibility_state)
 						:	e;
-					return { ...s, display_visibility_state: ns };
+					return { display_visibility_state: ns };
 				});
 			},
 
@@ -233,7 +233,7 @@ export const useFilterStore = create<FilterStore>()(
 						typeof e === "function" ?
 							e(s.display_row_selection_state)
 						:	e;
-					return { ...s, display_row_selection_state: ns };
+					return { display_row_selection_state: ns };
 				});
 			},
 
