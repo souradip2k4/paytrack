@@ -25,9 +25,11 @@ type OnChange = (value: string) => void;
 export function CategoryPicker({
 	value,
 	onChange,
+	children,
 }: {
 	value: string;
 	onChange: OnChange;
+	children?: React.ReactNode;
 }) {
 	const queryClient = useQueryClient();
 
@@ -91,8 +93,8 @@ export function CategoryPicker({
 
 	return (
 		<Popover open={open} onOpenChange={setOpen} modal>
-			<PopoverTrigger>
-				<Badge variant="outline">{name ? name : "Category"}</Badge>
+			<PopoverTrigger asChild>
+				{children ? children : <Badge variant="outline">{name ? name : "Category"}</Badge>}
 			</PopoverTrigger>
 			<PopoverContent
 				className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"

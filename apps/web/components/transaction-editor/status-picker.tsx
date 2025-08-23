@@ -21,17 +21,19 @@ type OnChange = (value: string) => void;
 export function StatusPicker({
     value,
     onChange,
+    children,
 }: {
     value: string;
     onChange: OnChange;
+    children?: React.ReactNode;
 }) {
     const open = useStore(s => s.popover_status_picker_open);
     const setOpen = useStore(s => s.popover_status_picker_set_open);
 
     return (
         <Popover open={open} onOpenChange={setOpen} modal>
-            <PopoverTrigger>
-                <Badge variant="outline">{value || "Status"}</Badge>
+            <PopoverTrigger asChild>
+                {children ? children : <Badge variant="outline">{value || "Status"}</Badge>}
             </PopoverTrigger>
             <PopoverContent
                 className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"

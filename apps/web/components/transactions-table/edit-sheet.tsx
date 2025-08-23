@@ -74,7 +74,7 @@ export function EditSheet({ open, onOpenChange, transaction }) {
                         you&apos;re done.
                     </SheetDescription>
                 </SheetHeader>
-                <form onSubmit={handleSubmit(onSubmit)} className="grid flex-1 auto-rows-min gap-6 px-4">
+                <form id="edit-transaction-form" onSubmit={handleSubmit(onSubmit)} className="grid flex-1 auto-rows-min gap-6 px-4">
                     <div className="grid gap-3">
                         <Label>Name</Label>
                         <Controller
@@ -104,7 +104,11 @@ export function EditSheet({ open, onOpenChange, transaction }) {
                         <Controller
                             name="category_id"
                             control={control}
-                            render={({ field }) => <CategoryPicker {...field} />}
+                            render={({ field }) => (
+                                <CategoryPicker {...field}>
+                                    <Button variant="secondary">Select Category</Button>
+                                </CategoryPicker>
+                            )}
                         />
                     </div>
                     <div className="grid gap-3">
@@ -112,7 +116,11 @@ export function EditSheet({ open, onOpenChange, transaction }) {
                         <Controller
                             name="status"
                             control={control}
-                            render={({ field }) => <StatusPicker {...field} />}
+                            render={({ field }) => (
+                                <StatusPicker {...field}>
+                                    <Button variant="secondary">Select Status</Button>
+                                </StatusPicker>
+                            )}
                         />
                     </div>
                     <div className="grid gap-3">
@@ -125,8 +133,8 @@ export function EditSheet({ open, onOpenChange, transaction }) {
                     </div>
                 </form>
                 <SheetFooter>
-                    <Button type="submit" onClick={handleSubmit(onSubmit)} disabled={isPending}>
-                        {isPending ? "Saving..." : "Save changes"}
+                    <Button form="edit-transaction-form" type="submit" isLoading={isPending}>
+                        Save changes
                     </Button>
                     <SheetClose asChild>
                         <Button variant="outline">Close</Button>
