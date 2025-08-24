@@ -10,13 +10,13 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { useFilterStore } from "@/lib/store";
+import { useDisplayStore } from "@/lib/store";
 import { Trash2 } from "lucide-react";
 import React from "react";
 import { Button } from "./ui/button";
 
 export function DeleteButton() {
-	const rowSelection = useFilterStore(s => s.display_row_selection_state);
+	const rowSelection = useDisplayStore(s => s.display_row_selection_state);
 	const keys = React.useMemo(
 		() => Object.keys(rowSelection).filter(x => rowSelection[x]),
 		[rowSelection],

@@ -34,7 +34,7 @@ The bulk edit feature allows users to edit multiple transactions directly within
 
 **Impact:** Medium
 
-- **Payload Size:** The `handleSave` function sends all *changed* rows to the server. If a user edits a large number of rows, the request payload could be large, potentially leading to slower network requests.
+- **Payload Size:** The `handleSave` function sends all _changed_ rows to the server. If a user edits a large number of rows, the request payload could be large, potentially leading to slower network requests.
 - **Number of Requests:** The current implementation sends one request per updated row using `Promise.all`. While this is parallelized, for a very large number of updates, it could still be slow and might hit server rate limits.
 
 **Mitigation:**

@@ -94,7 +94,9 @@ export function CategoryPicker({
 	return (
 		<Popover open={open} onOpenChange={setOpen} modal>
 			<PopoverTrigger asChild>
-				{children ? children : <Badge variant="outline">{name ? name : "Category"}</Badge>}
+				{children ?
+					children
+				:	<Badge variant="outline">{name ? name : "Category"}</Badge>}
 			</PopoverTrigger>
 			<PopoverContent
 				className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"

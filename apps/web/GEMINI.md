@@ -33,14 +33,17 @@ The `db()` is similar to supabase client. Infact it uses `@supabase/supabase-js`
 Here's some examples:
 
 ```ts
-"use client"
+"use client";
 
-import { db } from '@/lib/db'
-import { bearerHeaders } from '@/lib/bearer-headers'
+import { db } from "@/lib/db";
+import { bearerHeaders } from "@/lib/bearer-headers";
 
 // bearerHeaders() returns a headers object with the bearer token, can only be called in client components
 // for server components, use await headers() instead (from next/headers)
-const { data, error } = await db(await bearerHeaders()).from('transactions').select('*').eq('id', id)
+const { data, error } = await db(await bearerHeaders())
+	.from("transactions")
+	.select("*")
+	.eq("id", id);
 ```
 
 ### auth client
@@ -50,23 +53,27 @@ We are using `better-auth` for authentication.
 You can use the `authClient` to access sessions, tokens, subscription intents, etc.
 
 ```ts
-import { authClient } from '@/lib/auth-client'
+import { authClient } from "@/lib/auth-client";
 
-const {data: {session, user}, error, isPending} = authClient.useSession()
+const {
+	data: { session, user },
+	error,
+	isPending,
+} = authClient.useSession();
 ```
 
 For server side, you can use `auth` object to access sessions, tokens, subscription intents, etc.
 
 ```ts
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
-const {data, error} = await auth.api.session.getSession({
-    headers: await headers()
-})
+const { data, error } = await auth.api.session.getSession({
+	headers: await headers(),
+});
 ```
 
-Better auth uses plugins. 
+Better auth uses plugins.
 
 We are using these plugins:
 

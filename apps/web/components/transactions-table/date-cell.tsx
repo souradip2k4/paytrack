@@ -1,6 +1,6 @@
 "use client";
 
-import { useFilterStore } from "@/lib/store";
+import { useLocalSettingsStore } from "@/lib/store";
 import { Column, Row } from "@tanstack/react-table";
 import { differenceInDays, format, formatDistanceToNow } from "date-fns";
 
@@ -19,8 +19,8 @@ export const DateCell = ({
 	column: Column<any>;
 }) => {
 	const date = row.getValue(column.id) as string;
-	const dateFormat = useFilterStore(s => s.settings_date_format);
-	const relativeDates = useFilterStore(s => s.settings_relative_dates);
+	const dateFormat = useLocalSettingsStore(s => s.settings_date_format);
+	const relativeDates = useLocalSettingsStore(s => s.settings_relative_dates);
 	return (
 		<div>
 			<p className="text-muted-foreground">
