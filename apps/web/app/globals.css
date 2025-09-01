@@ -350,12 +350,14 @@ body {
 }
 
 /** TYPOGRAPGY */
-p {
-	@apply text-sm;
-}
+@layer typography {
+	p {
+		@apply text-sm;
+	}
 
-a {
-	@apply text-sm;
+	a {
+		@apply text-sm;
+	}
 }
 
 /** EFFECTS */
@@ -448,5 +450,18 @@ a {
 	}
 	body {
 		@apply bg-background text-foreground;
+	}
+}
+
+/* --- DayPicker --- */
+@layer datepicker {
+	.rdp {
+		@apply overflow-hidden rounded-xl border;
+	}
+	.rdp-table {
+		@apply size-full;
+	}
+	.rdp-cell {
+		@apply h-24 border-b border-r border-t;
 	}
 }

@@ -20,19 +20,18 @@ export async function getActiveOrganization(userId: string) {
 	return data.organization_id;
 }
 
-export async function getActiveSubscription(
-	userId: string,
-	activeOrganizationId?: string,
-) {
+export async function getActiveSubscription(userId: string) {
 	const { data, error } = await db(await headers())
 		.from("app_subscriptions")
 		.select("id")
 		.eq("user_id", userId)
-		.eq("organization_id", activeOrganizationId)
 		.gte("period_start", new Date().toISOString())
 		.lte("period_end", new Date().toISOString())
 		.limit(1)
 		.single();
+
+	console.log("data: ", data);
+	console.log("error: ", error);
 
 	if (error) {
 		console.log("ERROR: failed to get active organization:", error);

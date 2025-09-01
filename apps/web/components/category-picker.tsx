@@ -14,8 +14,9 @@ import {
 } from "@/components/ui/popover";
 import { bearerHeader } from "@/lib/bearer";
 import { db } from "@/lib/db";
+import { useCategories } from "@/lib/query";
 import { useStore } from "@/lib/store";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckIcon, Plus } from "lucide-react";
 import React from "react";
 import { toast } from "sonner";
@@ -24,34 +25,21 @@ type OnChange = (value: string) => void;
 
 export function CategoryPicker({
 	value,
+	trigger,
 	onChange,
-	children,
 }: {
 	value: string;
+	trigger?: (name: string, value: string) => React.JSX.Element;
 	onChange: OnChange;
-	children?: React.ReactNode;
 }) {
 	const queryClient = useQueryClient();
 
-	const { data } = useQuery({
-		queryKey: ["cat", "get"],
-		queryFn: async () => {
-			const res = await db(await bearerHeader())
-				.from("categories")
-				.select("*")
-				.order("name");
-			if (res.error) {
-				toast.error("Failed to get categories");
-				return;
-			}
-			return res.data;
-		},
-	});
+	const { data: categories } = useCategories();
 
 	const name = React.useMemo(() => {
-		if (!data) return;
-		return data.find(c => c.id === value)?.name;
-	}, [data, value]);
+		if (!categories) return;
+		return categories.find(c => c.id === value)?.name;
+	}, [categories, value]);
 
 	const { mutateAsync: createCategory, isPending: isCreatingCategory } =
 		useMutation({
@@ -82,9 +70,9 @@ export function CategoryPicker({
 	const [search, setSearch] = React.useState("");
 
 	const exists = React.useMemo(() => {
-		if (typeof data === "undefined") return false;
-		return data.findIndex(c => c.name === search) !== -1;
-	}, [search, data]);
+		if (typeof categories === "undefined") return false;
+		return categories.findIndex(c => c.name === search) !== -1;
+	}, [search, categories]);
 
 	const open = useStore(s => s.popover_category_picker_open);
 	const setOpen = useStore(s => s.popover_category_picker_set_open);
@@ -94,8 +82,8 @@ export function CategoryPicker({
 	return (
 		<Popover open={open} onOpenChange={setOpen} modal>
 			<PopoverTrigger asChild>
-				{children ?
-					children
+				{trigger ?
+					trigger(name, value)
 				:	<Badge variant="outline">{name ? name : "Category"}</Badge>}
 			</PopoverTrigger>
 			<PopoverContent
@@ -110,7 +98,7 @@ export function CategoryPicker({
 					<CommandList>
 						{/* categories */}
 						<CommandGroup>
-							{data?.map((c, i) => (
+							{categories?.map((c, i) => (
 								<CommandItem
 									key={i}
 									value={c.id}

@@ -17,6 +17,10 @@ export type Store = {
 	popover_category_picker_set_open: (s: boolean) => void;
 	popover_currency_picker_set_open: (s: boolean) => void;
 	popover_status_picker_set_open: (s: boolean) => void;
+
+	modal_subscription_open: boolean;
+
+	modal_upgrade_plan_open: boolean;
 };
 
 export const today = new Date();
@@ -55,4 +59,8 @@ export const useStore = create<Store>((set, get) => ({
 		set({
 			popover_status_picker_open: s,
 		}),
+
+	modal_subscription_open: false,
+
+	modal_upgrade_plan_open: false,
 }));

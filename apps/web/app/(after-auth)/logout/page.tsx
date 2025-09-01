@@ -55,7 +55,7 @@ export default function SignoutPage() {
 				<Button
 					variant="outline"
 					className="ml-auto"
-					onClick={() => router.push("/app")}>
+					onClick={() => router.push("/transactions")}>
 					Back
 				</Button>
 				<Button

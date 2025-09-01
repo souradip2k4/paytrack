@@ -1,5 +1,7 @@
 import { AppHeader } from "@/components/app-header";
+import { Keypress } from "@/components/keypress";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { SignedIn } from "@/components/signed-in";
 import {
 	SidebarInset,
 	SidebarProvider,
@@ -24,9 +26,12 @@ export default async function Layout({
 							<AppHeader />
 						</div>
 					</header>
-					<div className="flex-1 overflow-y-auto">{children}</div>
+					<div className="flex-1 overflow-y-auto">
+						<SignedIn>{children}</SignedIn>
+					</div>
 				</SidebarInset>
 			</SidebarProvider>
+			<Keypress />
 		</React.Fragment>
 	);
 }

@@ -1,18 +1,6 @@
 /* NOTE: Run the better auth migrations first */
 
 /* ========================================================================== */
-/* AUTH ROLES */
-/* ========================================================================== */
-CREATE ROLE anon NOLOGIN;
-CREATE ROLE authenticated NOLOGIN;
-
-GRANT USAGE ON SCHEMA public TO anon, authenticated;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO authenticated;
-
-REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA public FROM anon;
-REVOKE TRIGGER, TRUNCATE ON ALL TABLES IN SCHEMA public FROM authenticated;
-
-/* ========================================================================== */
 /* AUTH FUNCTIONS */
 /* ========================================================================== */
 CREATE OR REPLACE FUNCTION jwt() RETURNS jsonb SECURITY DEFINER AS $$
@@ -118,17 +106,60 @@ create table transaction_line_items (
     line_item_id uuid references line_items (id) not null
 );
 
+create type subscription_status as enum ('active', 'paused', 'canceled');
+create type subscription_period as enum ('monthly', 'yearly', 'quarterly', 'semi-annually', 'weekly', 'daily');
+
+create table subscriptions (
+    id uuid primary key default gen_random_uuid(),
+    amount numeric(10, 2),
+    title varchar(255) not null,
+    description varchar(1000),
+    logo_url varchar(255),
+    period subscription_period,
+    interval_in_days integer,
+    user_id text references users (id),
+    organization_id text references organizations (id)
+);
+
+
+create type app_subscriptions_status as enum ('sub_active','sub_inactive');
 
 create table app_subscriptions (
     id text not null primary key,
+    status app_subscriptions_status default 'sub_inactive',
     amount_paid numeric(10, 2),
+    starts_at date,
+    ends_at date,
     period_start date not null,
-    period_end date not null,
+    period_end date,
     product_id text not null,
     user_id text references users (id),
     organization_id text references organizations (id)
 );
 
+
+/* ========================================================================== */
+/* AUTH ROLES */
+/* Some of these roles are created in separate scripts */
+/* Make sure to run them first */
+/* ========================================================================== */
+CREATE ROLE anon NOLOGIN;
+CREATE ROLE authenticated NOLOGIN;
+
+GRANT USAGE ON SCHEMA public TO anon, authenticated, subscription_admin;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO authenticated;
+
+REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA public FROM anon;
+REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA public FROM subscription_admin;
+REVOKE TRIGGER, TRUNCATE ON ALL TABLES IN SCHEMA public FROM authenticated;
+
+/* Subscription admin role is already created via create_subscription_admin_role.sh */
+GRANT SELECT ON users TO subscription_admin;
+GRANT ALL PRIVILEGES ON app_subscriptions TO subscription_admin;
+
+/* Allow authenticated users to read subscriptions */
+REVOKE ALL PRIVILEGES ON app_subscriptions FROM authenticated;
+GRANT SELECT ON app_subscriptions TO authenticated;
 
 /* ========================================================================== */
 /* RLS POLICIES */

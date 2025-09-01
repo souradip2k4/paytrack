@@ -1,5 +1,6 @@
 "use client";
 
+import { CategoryPicker } from "@/components/category-picker";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,6 @@ import {
 	Dialog,
 	DialogClose,
 	DialogContent,
-	DialogDescription,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
@@ -40,7 +40,6 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 import { Label } from "../ui/label";
-import { CategoryPicker } from "./category-picker";
 import { CurrencyPicker } from "./currency-picker";
 import { TransactionDatePicker } from "./transaction-date-picker";
 
@@ -133,7 +132,6 @@ export function TransactionDialog() {
 					<DialogTitle className="font-normal">
 						New transaction
 					</DialogTitle>
-					<DialogDescription></DialogDescription>
 				</DialogHeader>
 
 				<form
@@ -141,7 +139,7 @@ export function TransactionDialog() {
 					onSubmit={handleSubmit(onSubmit)}>
 					<div className="space-y-2">
 						<div>
-							<Label htmlFor={amountId}>Transaction name</Label>
+							<Label htmlFor={amountId}>Transaction amount</Label>
 							<Label
 								htmlFor={amountId}
 								className="text-muted-foreground inline-flex flex-wrap leading-[0.5rem]">

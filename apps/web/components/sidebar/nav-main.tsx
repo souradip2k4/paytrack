@@ -8,10 +8,13 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 import {
 	ArrowUpRight,
+	BellPlus,
 	Bolt,
 	Command,
+	DiamondPercent,
 	Home,
 	MessageCircleQuestion,
 	ReceiptCent,
@@ -19,6 +22,7 @@ import {
 	type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React from "react";
 
 interface NavMainItem {
@@ -27,6 +31,7 @@ interface NavMainItem {
 		title: string;
 		url: string;
 		icon?: LucideIcon;
+		shortcutKey?: string;
 	}[];
 }
 
@@ -37,22 +42,26 @@ export const navs: NavMainItem[] = [
 				title: "Home",
 				url: "/home",
 				icon: Home,
+				shortcutKey: "h",
 			},
 			{
 				title: "Transactions",
-				url: "/app",
+				url: "/transactions",
 				icon: ReceiptCent,
+				shortcutKey: "t",
 			},
-			/*{
-                title: "Subscriptions",
-                url: "/sub",
-                icon: BellPlus
-            },
-            {
-                title: "Budgets",
-                url: "/budget",
-                icon: DiamondPercent
-            }*/
+			{
+				title: "Subscriptions",
+				url: "/subscriptions",
+				icon: BellPlus,
+				shortcutKey: "s",
+			},
+			{
+				title: "Budgets",
+				url: "/budgets",
+				icon: DiamondPercent,
+				shortcutKey: "b",
+			},
 		],
 	},
 	{
@@ -62,11 +71,13 @@ export const navs: NavMainItem[] = [
 				title: "Settings",
 				url: "/settings",
 				icon: Bolt,
+				shortcutKey: "x",
 			},
 			{
 				title: "Your account",
 				url: "/accounts",
 				icon: UserCircle,
+				shortcutKey: "a",
 			},
 			{
 				title: "Help",
@@ -83,6 +94,7 @@ export const navs: NavMainItem[] = [
 ];
 
 export function NavMain() {
+	const pathname = usePathname();
 	return (
 		<React.Fragment>
 			{navs.map((x, i) => (
@@ -96,10 +108,17 @@ export function NavMain() {
 						<SidebarGroupContent>
 							<SidebarMenu>
 								{x.items.map((item, i) => {
+									const isActive = pathname.startsWith(
+										item.url,
+									);
 									return (
 										<SidebarMenuItem key={i}>
 											<SidebarMenuButton
 												size="sm"
+												className={cn({
+													"bg-accent hover:bg-accent":
+														isActive,
+												})}
 												asChild>
 												<Link href={item.url}>
 													{item.icon && (
@@ -110,6 +129,18 @@ export function NavMain() {
 														item.title ===
 															"Shortcuts") && (
 														<ArrowUpRight className="size-4" />
+													)}
+													{item.shortcutKey && (
+														<kbd
+															className={cn(
+																"bg-muted text-muted-foreground relative ml-auto rounded px-[0.3rem] py-0 font-mono text-xs brightness-125",
+																{
+																	"bg-accent":
+																		isActive,
+																},
+															)}>
+															{item.shortcutKey}
+														</kbd>
 													)}
 												</Link>
 											</SidebarMenuButton>

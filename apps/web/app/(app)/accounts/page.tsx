@@ -1,5 +1,6 @@
 import { DeleteAccountConfirmationModal } from "@/components/accounts/delete-account-confirmation-modal";
 import { EditProfile } from "@/components/accounts/edit-profile";
+import { SessionsList } from "@/components/accounts/sessions-list";
 import {
 	Card,
 	CardDescription,
@@ -16,6 +17,12 @@ export default function AccountPage() {
 				<h3>Profile</h3>
 			</div>
 			<EditProfile />
+			<Separator className="col-span-2 my-4" />
+
+			<div className="col-span-2">
+				<SessionsList />
+			</div>
+
 			<Separator className="col-span-2 my-4" />
 
 			<Card className="bg-destructive/10 border-destructive/25 col-span-2">

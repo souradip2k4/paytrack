@@ -17,6 +17,9 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { authClient } from "@/lib/auth-client";
+import { TUseSession } from "@/lib/query";
+import { useStore } from "@/lib/store";
 import Link from "next/link";
 import { options, PricingCard } from "../pricing";
 import {
@@ -31,6 +34,9 @@ import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+	const { data: authData } = authClient.useSession() as TUseSession;
+	const upgradePlanOpen = useStore(s => s.modal_upgrade_plan_open);
+
 	return (
 		<Sidebar variant="inset" {...props}>
 			<SidebarHeader>
@@ -52,20 +58,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				<NavMain />
 			</SidebarContent>
 			<SidebarFooter>
-				<Dialog>
+				<Dialog
+					open={upgradePlanOpen}
+					onOpenChange={s =>
+						useStore.setState({ modal_upgrade_plan_open: s })
+					}>
 					<DialogTrigger asChild>
-						<Card className="mb-2">
-							<CardHeader>
-								<CardTitle className="font-normal">
-									Upgrade to pro ✨
-								</CardTitle>
-								<CardDescription>
-									Unlock ai features, teams, commerical
-									license and priority support while also
-									supporting the devs.
-								</CardDescription>
-							</CardHeader>
-						</Card>
+						{!authData?.subscription?.isSubscribed && (
+							<Card className="mb-2">
+								<CardHeader>
+									<CardTitle className="font-normal">
+										Upgrade to pro ✨
+									</CardTitle>
+									<CardDescription>
+										Unlock ai features, teams, commerical
+										license and priority support while also
+										supporting the devs.
+									</CardDescription>
+								</CardHeader>
+							</Card>
+						)}
 					</DialogTrigger>
 
 					<DialogContent className="min-w-fit max-w-fit">

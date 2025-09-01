@@ -1,9 +1,6 @@
 import { resetPassword, verificationLink } from "@/lib/emails";
-import {
-	getActiveOrganization,
-	getActiveSubscription,
-	upsertSubscription,
-} from "@/server/organization";
+import { polarClient } from "@/lib/polar";
+import { resend } from "@/lib/resend";
 import {
 	checkout,
 	polar,
@@ -11,30 +8,31 @@ import {
 	usage,
 	webhooks,
 } from "@polar-sh/better-auth";
-import { Polar } from "@polar-sh/sdk";
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
-import { bearer, jwt, organization } from "better-auth/plugins";
-import { addDays } from "date-fns";
+import { bearer, customSession, jwt, organization } from "better-auth/plugins";
 import { Pool } from "pg";
-import { Resend } from "resend";
+import { checkEnv } from "./check-env";
 
-if (!process.env.RESEND_MAIL) throw new Error("env: RESEND_MAIL is not set");
-if (!process.env.RESEND_API_KEY)
-	throw new Error("env: RESEND_API_KEY is not set");
+checkEnv("APP_URL");
+checkEnv("API_URL");
+checkEnv("GOOGLE_CLIENT_ID");
+checkEnv("GOOGLE_CLIENT_SECRET");
+checkEnv("POSTGRES_AUTH_ADMIN_DATABASE_URL");
+checkEnv("POSTGRES_SUBSCRIPTION_ADMIN_DATABASE_URL");
 
-const resend = new Resend(process.env.RESEND_API_KEY!);
+const authAdminClient = new Pool({
+	connectionString: process.env.POSTGRES_AUTH_ADMIN_DATABASE_URL,
+});
 
-const polarClient = new Polar({
-	accessToken: process.env.POLAR_ACCESS_TOKEN,
-	server: "sandbox",
+const subscriptionAdminClient = new Pool({
+	connectionString: process.env.POSTGRES_SUBSCRIPTION_ADMIN_DATABASE_URL,
 });
 
 export const auth = betterAuth({
-	database: new Pool({
-		connectionString: process.env.DATABASE_URL,
-	}),
+	database: authAdminClient,
 	appName: "Budgetbee",
+	trustedOrigins: ["http://192.168.0.155:3000"], // TODO: remove this
 	emailAndPassword: {
 		enabled: true,
 		requireEmailVerification: true,
@@ -120,29 +118,27 @@ export const auth = betterAuth({
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
 		},
 	},
-	databaseHooks: {
-		session: {
-			create: {
-				before: async session => {
-					const activeOrganizationId = await getActiveOrganization(
-						session.userId,
-					);
-					const subscription = await getActiveSubscription(
-						session.userId,
-						activeOrganizationId,
-					);
-					return {
-						data: {
-							...session,
-							activeOrganizationId,
-							subscription,
-						},
-					};
-				},
-			},
-		},
-	},
 	plugins: [
+		customSession(async ({ session, user }) => {
+			const subscription = `select product_id from app_subscriptions where user_id = $1 and period_start <= now() and period_end >= now()`;
+			const subscriptionRes = await authAdminClient.query(subscription, [
+				user.id,
+			]);
+			const isSubscribed =
+				subscriptionRes &&
+				subscriptionRes.rows &&
+				subscriptionRes.rows.length > 0 &&
+				subscriptionRes.rows[0].product_id;
+			return {
+				user,
+				session,
+				subscription: {
+					isSubscribed,
+					productId: subscriptionRes.rows[0].product_id,
+				},
+			};
+		}),
+
 		organization({
 			autoCreateOrganizationOnSignUp: true,
 			cancelPendingInvitationsOnReInvite: true,
@@ -209,27 +205,93 @@ export const auth = betterAuth({
 				portal(),
 				usage(),
 				webhooks({
-					secret: process.env.POLAR_WHSEC!,
-					onCustomerStateChanged: async payload => {
-						if (payload.data.activeSubscriptions.length <= 0)
-							return;
-						const subscription =
-							payload.data.activeSubscriptions[0];
+					secret: process.env.POLAR_WEBHOOK_SECRET!,
+					onSubscriptionActive: async payload => {
+						console.log(
+							"> subscription request: ",
+							payload.data.id,
+							payload.data.customer.externalId,
+							payload.data.customer.organizationId,
+							payload.data.productId,
+						);
 
-						await upsertSubscription({
-							amount_paid: subscription.amount,
-							period_start:
-								subscription.currentPeriodStart.toISOString(),
-							period_end:
-								subscription.currentPeriodEnd?.toISOString() ||
-								addDays(
-									subscription.currentPeriodStart,
-									30,
-								).toISOString(), // TODO: fix this
-							email: payload.data.email,
-							subscription_id: subscription.id,
-							product_id: subscription.productId,
-						});
+						const query = `
+    INSERT INTO app_subscriptions (
+      id,
+      status,
+      amount_paid,
+      starts_at,
+      ends_at,
+      period_start,
+      period_end,
+      product_id,
+      user_id
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    ON CONFLICT (id) DO UPDATE SET
+      status = EXCLUDED.status,
+      starts_at = EXCLUDED.starts_at,
+      ends_at = EXCLUDED.ends_at,
+      period_start = EXCLUDED.period_start,
+      period_end = EXCLUDED.period_end,
+      amount_paid = EXCLUDED.amount_paid,
+      product_id = EXCLUDED.product_id;
+  `;
+
+						const values = [
+							payload.data.id,
+							"sub_active",
+							payload.data.amount,
+							payload.data.startedAt?.toISOString(),
+							payload.data.endedAt?.toISOString(),
+							payload.data.currentPeriodStart.toISOString(),
+							payload.data.currentPeriodEnd?.toISOString(),
+							payload.data.productId,
+							payload.data.customer.externalId,
+						];
+
+						try {
+							const res = await subscriptionAdminClient.query(
+								query,
+								values,
+							);
+							console.log(
+								"> Subscription set successfully: ",
+								res.rowCount,
+							);
+						} catch (e) {
+							console.error("err: Subscription set failed: ", e);
+							// throw an error to notify webhook provider
+							throw new Error();
+						}
+					},
+					onSubscriptionRevoked: async payload => {
+						console.log(
+							"> subscription revoked request: ",
+							payload.data.id,
+							payload.data.customer.externalId,
+							payload.data.customer.organizationId,
+							payload.data.productId,
+						);
+
+						const query = `DELETE FROM app_subscriptions WHERE id = $1`;
+
+						try {
+							const res = await subscriptionAdminClient.query(
+								query,
+								[payload.data.id],
+							);
+							console.log(
+								"> Subscription revoked: ",
+								res.rowCount,
+							);
+						} catch (e) {
+							console.error(
+								"err: Subscription delete failed: ",
+								e,
+							);
+							// throw an error to notify webhook provider
+							throw new Error();
+						}
 					},
 				}),
 			],

@@ -18,35 +18,33 @@ import {
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { authClient } from "@/lib/auth-client";
+import { TUseSession } from "@/lib/query";
+import { useStore } from "@/lib/store";
 import { avatarUrl } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
-import { ChevronsUpDown, LogOut, Sparkles } from "lucide-react";
+import { ChevronsUpDown, LogOut, ReceiptCent, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
 
 export function NavUser() {
 	const { isMobile } = useSidebar();
 
-	const { data } = useQuery({
-		queryKey: ["session"],
-		queryFn: async () => {
-			const { data, error } = await authClient.getSession();
-			console.log(data);
-			if (error) {
-				toast.error("Failed to get session");
-				return null;
-			}
-			return data;
-		},
-	});
-
-	const { isPending: isSessionLoading } = authClient.useSession();
+	const { data: authData, isPending: isSessionLoading } =
+		authClient.useSession() as TUseSession;
 
 	const initial = React.useMemo(() => {
-		let [fn, ln] = data?.user?.name?.split(" ") ?? [];
+		let [fn, ln] = authData?.user?.name?.split(" ") ?? [];
 		return `${fn?.at(0)?.toUpperCase() || ""}${ln?.at(0)?.toUpperCase() || ""}`;
-	}, [data]);
+	}, [authData]);
+
+	const router = useRouter();
+
+	const handlePortalRedirect = async () => {
+		const portal = await authClient.customer.portal();
+		if (portal.error) return toast.error("Failed to redirect to portal");
+		router.push(portal.data.url);
+	};
 
 	return (
 		<SidebarMenu suppressHydrationWarning>
@@ -60,8 +58,8 @@ export function NavUser() {
 								<Skeleton className="bg-secondary-foreground/20 h-8 w-8 rounded-full" />
 							:	<Avatar className="h-8 w-8 rounded-lg">
 									<AvatarImage
-										src={avatarUrl(data?.user.image)}
-										alt={data?.user.name}
+										src={avatarUrl(authData?.user.image)}
+										alt={authData?.user.name}
 									/>
 									<AvatarFallback className="rounded-lg">
 										{initial}
@@ -73,13 +71,13 @@ export function NavUser() {
 								{isSessionLoading ?
 									<Skeleton className="bg-secondary-foreground/20 h-3 w-12" />
 								:	<span className="truncate">
-										{data?.user.name}
+										{authData?.user.name}
 									</span>
 								}
 								{isSessionLoading ?
 									<Skeleton className="bg-secondary-foreground/20 mt-1 h-3 w-full" />
 								:	<span className="text-muted-foreground truncate text-xs">
-										{data?.user.email}
+										{authData?.user.email}
 									</span>
 								}
 							</div>
@@ -97,8 +95,10 @@ export function NavUser() {
 									<Skeleton className="bg-secondary-foreground/20 h-8 w-8 rounded-full" />
 								:	<Avatar className="h-8 w-8 rounded-lg">
 										<AvatarImage
-											src={avatarUrl(data?.user.image)}
-											alt={data?.user.name}
+											src={avatarUrl(
+												authData?.user.image,
+											)}
+											alt={authData?.user.name}
 										/>
 										<AvatarFallback className="rounded-lg">
 											{initial}
@@ -109,13 +109,13 @@ export function NavUser() {
 									{isSessionLoading ?
 										<Skeleton className="bg-secondary-foreground/20 h-3 w-12" />
 									:	<span className="truncate">
-											{data?.user.name}
+											{authData?.user.name}
 										</span>
 									}
 									{isSessionLoading ?
 										<Skeleton className="bg-secondary-foreground/20 mt-1 h-3 w-full" />
 									:	<span className="text-muted-foreground truncate text-xs">
-											{data?.user.email}
+											{authData?.user.email}
 										</span>
 									}
 								</div>
@@ -123,12 +123,22 @@ export function NavUser() {
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 						<DropdownMenuGroup>
-							<DropdownMenuItem asChild>
-								<Link href="/pricing">
+							{authData?.subscription?.isSubscribed ?
+								<DropdownMenuItem
+									onClick={() => handlePortalRedirect()}>
+									<ReceiptCent />
+									View billing portal
+								</DropdownMenuItem>
+							:	<DropdownMenuItem
+									onClick={() =>
+										useStore.setState({
+											modal_upgrade_plan_open: true,
+										})
+									}>
 									<Sparkles />
 									Upgrade to Pro
-								</Link>
-							</DropdownMenuItem>
+								</DropdownMenuItem>
+							}
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem variant="destructive" asChild>

@@ -11,7 +11,7 @@ export default async function AuthLayout({
 		headers: await headers(),
 	});
 	if (session) {
-		redirect("/app");
+		redirect("/transactions");
 	}
 	return (
 		<div className="bg-accent flex min-h-[100dvh] items-center justify-center px-2 py-8">

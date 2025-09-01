@@ -32,7 +32,7 @@ export function AppHeader() {
 				<h1 className="text-muted-foreground m-0">{match?.title}</h1>
 			</div>
 
-			{pathname.startsWith("/app") && (
+			{pathname.startsWith("/transactions") && (
 				<div className="ml-auto flex gap-2">
 					<TransactionDialog />
 				</div>

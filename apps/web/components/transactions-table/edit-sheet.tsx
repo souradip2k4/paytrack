@@ -1,5 +1,6 @@
 "use client";
 
+import { CategoryPicker } from "@/components/category-picker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +19,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { StatusBadge } from "../status-badge";
-import { CategoryPicker } from "../transaction-editor/category-picker";
 import { CurrencyPicker } from "../transaction-editor/currency-picker";
 import { StatusPicker } from "../transaction-editor/status-picker";
 import { TransactionDatePicker } from "../transaction-editor/transaction-date-picker";
@@ -108,17 +108,20 @@ export function EditSheet({ open, onOpenChange, transaction }) {
 							)}
 						/>
 					</div>
-					<div className="grid gap-3">
+					<div className="grid grid-cols-2 gap-3">
 						<Label>Category</Label>
 						<Controller
 							name="category_id"
 							control={control}
 							render={({ field }) => (
-								<CategoryPicker {...field}>
-									<Button variant="secondary">
-										Select Category
-									</Button>
-								</CategoryPicker>
+								<CategoryPicker
+									{...field}
+									trigger={name => (
+										<Button variant="secondary" size="sm">
+											{name ? name : "Select category"}
+										</Button>
+									)}
+								/>
 							)}
 						/>
 					</div>

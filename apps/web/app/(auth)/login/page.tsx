@@ -55,7 +55,7 @@ export default function LoginPage() {
 				return setError(res.error.message);
 			}
 			if (res.data) {
-				router.push("/app");
+				router.push("/transactions");
 			}
 		});
 	};
@@ -67,11 +67,11 @@ export default function LoginPage() {
 		startTransition(async () => {
 			const res = await authClient.signIn.social({
 				provider: "google",
-				callbackURL: "/app",
+				callbackURL: "/transactions",
 			});
 			if (res.error) setError(res.error.message);
 			if (res.data && res.data.redirect) {
-				router.push(res.data.url || "/app");
+				router.push(res.data.url || "/transactions");
 			}
 		});
 	};

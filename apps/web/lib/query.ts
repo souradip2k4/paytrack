@@ -5,6 +5,35 @@ import { useChartStore, useDisplayStore, useFilterStore } from "@/lib/store";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+type TAuthClientSession = ReturnType<typeof authClient.useSession>;
+type TDataFromSession = TAuthClientSession["data"];
+export type TUseSession = Omit<TAuthClientSession, "data"> & {
+	data: TDataFromSession & {
+		subscription: {
+			isSubscribed: boolean;
+			productId: string | null | undefined;
+		};
+	};
+};
+
+export const useSubscriptions = () => {
+	const { data } = authClient.useSession();
+	const query = useQuery({
+		queryKey: ["subscriptions", "get", data?.user?.id],
+		queryFn: async () => {
+			if (!data || !data.user.id) return [];
+			const res = await db(await bearerHeader())
+				.from("subscriptions")
+				.select("*")
+				.eq("user_id", data.user.id)
+				.order("name");
+			if (res.error) return [];
+			return res.data;
+		},
+	});
+	return query;
+};
+
 export const useCategories = () => {
 	const { data } = authClient.useSession();
 	const query = useQuery({
