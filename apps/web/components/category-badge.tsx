@@ -39,7 +39,7 @@ export function CategoryBadge({ category }: { category: string }) {
     return (
         <div
             className={cn(
-                "inline-flex items-center gap-2 rounded-full px-2 py-1",
+                "inline-flex items-center gap-2 rounded-full w-fit px-2 py-1",
                 variants[hashStr(category || "", variants.length)],
             )}>
             <pre className="text-xs">{category}</pre>

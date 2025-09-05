@@ -18,9 +18,7 @@ export default function GradientHero() {
     return (
         <main>
             <div className="flex flex-col justify-center gap-4 px-8 py-24 lg:items-center"
-                style={{
-                    background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(16, 185, 129, 0.25), transparent 70%), transparent",
-                }}
+
             >
                 <h1 className="text-accent-foreground hidden items-center text-2xl lg:flex lg:text-5xl">
                     Seemlessly track your

@@ -40,7 +40,7 @@ export const columns: ColumnDef<any>[] = [
         header: () => <div>Amount</div>,
         cell: ({ row }) => {
             const amount = parseFloat(row.getValue("amount"));
-            const formatted = formatMoney(amount);
+            const formatted = formatMoney(amount, row.original.currency);
             const color =
                 amount > 0 ? "text-emerald-500"
                     : amount < 0 ? "text-red-500"
