@@ -19,6 +19,9 @@ export type Store = {
 	popover_status_picker_set_open: (s: boolean) => void;
 
 	modal_subscription_open: boolean;
+	modal_subscription_set_open: (s: boolean) => void;
+	modal_subscription_date: Date | null;
+	modal_subscription_set_date: (d: Date | null) => void;
 
 	modal_upgrade_plan_open: boolean;
 };
@@ -61,6 +64,15 @@ export const useStore = create<Store>((set, get) => ({
 		}),
 
 	modal_subscription_open: false,
+	modal_subscription_set_open: (s: boolean) =>
+		set({
+			modal_subscription_open: s,
+		}),
+	modal_subscription_date: null,
+	modal_subscription_set_date: (d: Date | null) =>
+		set({
+			modal_subscription_date: d,
+		}),
 
 	modal_upgrade_plan_open: false,
 }));

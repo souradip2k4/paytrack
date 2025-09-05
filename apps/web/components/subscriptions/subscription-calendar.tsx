@@ -1,19 +1,22 @@
 "use client";
 
-import { useStore } from "@/lib/store";
+import { useStore } from "@/lib/store/store";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import { CategoriesDialog } from "../categories-dialog";
+import { SubscriptionDialog } from "./subscription-dialog";
 
 export function SubscriptionCalendar() {
-	const openSubscriptionModal = () => {
-		useStore.setState(s => ({
-			modal_subscription_open: !s.modal_subscription_open,
-		}));
+	const { modal_subscription_set_open, modal_subscription_set_date } =
+		useStore();
+	const openSubscriptionModal = (date: Date) => {
+		modal_subscription_set_open(true);
+		modal_subscription_set_date(date);
 	};
 	return (
 		<div className="p-8">
+			<SubscriptionDialog />
 			<CategoriesDialog />
 			<DayPicker
 				captionLayout="dropdown"
@@ -54,7 +57,7 @@ export function SubscriptionCalendar() {
 									"bg-background h-full w-full p-2 hover:brightness-125",
 									isOutside ? "bg-muted/20" : "",
 								)}
-								onClick={openSubscriptionModal}>
+								onClick={() => openSubscriptionModal(date)}>
 								<p
 									className={cn(
 										"w-full text-right",
