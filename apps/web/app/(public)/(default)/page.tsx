@@ -1,242 +1,88 @@
 "use client";
 
+import { PricingSection } from "@/components/pricing";
+import { BentoGrid } from "@/components/section/bento-grid";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import BudgetbeeDashboardImg from "@/public/images/budgetbee_dashboard.png";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 const heroFeatures = [
-	"Intuitive",
-	"End-to-end encryption",
-	"Audit logs",
-	"Third party integrations",
+    "Intuitive",
+    "End-to-end encryption",
+    "Audit logs",
+    "Third party integrations",
 ];
 
 export default function GradientHero() {
-	return (
-		<main>
-			<div className="bg-background relative w-full overflow-hidden">
-				{/* Background gradient */}
-				<div className="absolute inset-0 z-0">
-					<div className="from-primary/20 via-background to-background absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]"></div>
-					<div className="bg-primary/5 absolute left-1/2 top-0 -z-10 h-[1000px] w-[1000px] -translate-x-1/2 rounded-full blur-3xl"></div>
-				</div>
-				<div className="bg-[liA modern UI component library designed to help developers create stunning web applications with minimal effort. Fully customizable, responsive, and accessible.near-gradient(to_right,#8882_1px,transparent_1px),linear-gradient(to_bottom,#8882_1px,transparent_1px)] absolute inset-0 bg-[size:16px_16px] opacity-15"></div>
-
-				<div className="container relative z-10 mx-auto px-4 py-24 sm:px-6 lg:px-8 lg:py-32">
-					<div className="mx-auto max-w-5xl">
-						{/* Badge */}
-						{/*<motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5 }}
-                            className="mx-auto mb-6 flex justify-center">
-                            <div className="border-border bg-background/80 inline-flex items-center rounded-full border px-3 py-1 text-sm backdrop-blur-sm">
-                                <span className="bg-primary mr-2 rounded-full px-2 py-0.5 text-xs font-semibold text-white">
-                                    New
-                                </span>
-                                <span className="text-muted-foreground">
-                                    Introducing our latest component library
-                                </span>
-                                <ChevronRight className="text-muted-foreground ml-1 h-4 w-4" />
-                            </div>
-                        </motion.div>*/}
-
-						{/* Heading */}
-						<motion.h1
-							initial={{
-								opacity: 0,
-								y: 20,
-							}}
-							animate={{
-								opacity: 1,
-								y: 0,
-							}}
-							transition={{
-								duration: 0.5,
-								delay: 0.1,
-							}}
-							className="from-primary/10 via-foreground/85 to-foreground/50 text-balance bg-gradient-to-tl bg-clip-text text-center text-4xl tracking-tighter text-transparent sm:text-5xl md:text-6xl lg:text-7xl">
-							Accounting Software for Non-accountants.
-						</motion.h1>
-
-						{/* Description */}
-						<motion.p
-							initial={{
-								opacity: 0,
-								y: 20,
-							}}
-							animate={{
-								opacity: 1,
-								y: 0,
-							}}
-							transition={{
-								duration: 0.5,
-								delay: 0.2,
-							}}
-							className="text-muted-foreground mx-auto mt-6 max-w-2xl text-center text-lg">
-							Budgetbee is a simple accounting tool to help you
-							manage your income, expenses, subscriptions,
-							inventory and more.
-						</motion.p>
-
-						<div className="mt-8 flex flex-wrap items-center justify-center gap-4 md:flex-row">
-							{heroFeatures.map((hf, i) => (
-								<div
-									className="flex items-center gap-2"
-									key={i}>
-									<svg
-										className="text-primary h-5 w-5"
-										fill="none"
-										stroke="currentColor"
-										viewBox="0 0 24 24"
-										xmlns="http://www.w3.org/2000/svg">
-										<path
-											strokeLinecap="round"
-											strokeLinejoin="round"
-											strokeWidth="2"
-											d="M5 13l4 4L19 7"></path>
-									</svg>
-									<span>{hf}</span>
-								</div>
-							))}
-						</div>
-
-						{/* CTA Buttons */}
-						<motion.div
-							initial={{
-								opacity: 0,
-								y: 20,
-							}}
-							animate={{
-								opacity: 1,
-								y: 0,
-							}}
-							transition={{
-								duration: 0.5,
-								delay: 0.3,
-							}}
-							className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-							<Button
-								size="lg"
-								className="bg-primary text-primary-foreground hover:shadow-primary/30 group relative overflow-hidden rounded-full px-6 shadow-lg transition-all duration-300"
-								asChild>
-								<Link href="/login">
-									<span className="relative z-10 flex items-center">
-										Get Started
-										<ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-									</span>
-									<span className="from-primary via-primary/90 to-primary/80 absolute inset-0 z-0 bg-gradient-to-r opacity-0 transition-opacity duration-300 group-hover:opacity-100"></span>
-								</Link>
-							</Button>
-
-							{/*<Button
-                                variant="outline"
-                                size="lg"
-                                className="border-border bg-background/50 flex items-center gap-2 rounded-full backdrop-blur-sm">
-                                <Github className="h-4 w-4" />
-                                Star on GitHub
-                            </Button>*/}
-						</motion.div>
-
-						{/* Feature Image */}
-						<motion.div
-							initial={{
-								opacity: 0,
-								y: 40,
-							}}
-							animate={{
-								opacity: 1,
-								y: 0,
-							}}
-							transition={{
-								duration: 0.8,
-								delay: 0.5,
-								type: "spring",
-								stiffness: 50,
-							}}
-							className="relative mx-auto mt-16 max-w-4xl">
-							<div className="border-border/40 bg-background/50 overflow-hidden rounded-xl border shadow-xl backdrop-blur-sm">
-								<div className="border-border/40 bg-muted/50 flex h-10 items-center border-b px-4">
-									<div className="flex space-x-2">
-										<div className="h-3 w-3 rounded-full bg-red-500"></div>
-										<div className="h-3 w-3 rounded-full bg-yellow-500"></div>
-										<div className="h-3 w-3 rounded-full bg-green-500"></div>
-									</div>
-									<div className="bg-background/50 text-muted-foreground mx-auto flex items-center rounded-md px-3 py-1 text-xs">
-										https://budgetbee.site
-									</div>
-								</div>
-								<div className="relative">
-									<img
-										src="/images/budgetbee_dashboard.webp"
-										alt="Dashboard Preview"
-										className="w-full"
-									/>
-									<div className="from-background absolute inset-0 bg-gradient-to-t to-transparent opacity-0"></div>
-								</div>
-							</div>
-
-							{/* Floating elements for visual interest */}
-							<div className="border-border/40 bg-background/80 absolute -right-6 -top-6 h-12 w-12 rounded-lg border p-3 shadow-lg backdrop-blur-md">
-								<div className="bg-primary/20 h-full w-full rounded-md"></div>
-							</div>
-							<div className="border-border/40 bg-background/80 absolute -bottom-4 -left-4 h-8 w-8 rounded-full border shadow-lg backdrop-blur-md"></div>
-							<div className="border-border/40 bg-background/80 absolute -bottom-6 right-12 h-10 w-10 rounded-lg border p-2 shadow-lg backdrop-blur-md">
-								<div className="h-full w-full rounded-md bg-green-500/20"></div>
-							</div>
-						</motion.div>
-					</div>
-				</div>
-			</div>
-
-			{/* CTA */}
-			{/*
-            <div className="mx-auto my-16 relative w-full max-w-4xl overflow-hidden rounded-[40px] bg-primary p-6 sm:p-10 md:p-20">
-                <div className="absolute inset-0 hidden h-full w-full overflow-hidden md:block">
-                    <div className="absolute right-[-45%] top-1/2 aspect-square h-[800px] w-[800px] -translate-y-1/2">
-                        <div className="absolute inset-0 rounded-full bg-emerald-400 opacity-30"></div>
-                        <div className="absolute inset-0 scale-[0.8] rounded-full bg-emerald-300 opacity-30"></div>
-                        <div className="absolute inset-0 scale-[0.6] rounded-full bg-emerald-200 opacity-30"></div>
-                        <div className="absolute inset-0 scale-[0.4] rounded-full bg-emerald-100 opacity-30"></div>
-                        <div className="absolute inset-0 scale-[0.2] rounded-full bg-emerald-50 opacity-30"></div>
-                        <div className="absolute inset-0 scale-[0.1] rounded-full bg-white/50 opacity-30"></div>
-                    </div>
+    return (
+        <main>
+            <div className="flex flex-col justify-center gap-4 px-8 py-24 lg:items-center"
+                style={{
+                    background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(16, 185, 129, 0.25), transparent 70%), transparent",
+                }}
+            >
+                <h1 className="text-accent-foreground hidden items-center text-2xl lg:flex lg:text-5xl">
+                    Seemlessly track your
+                    <span className="text-slider text-primary">
+                        <span className="text-slider__word">finances</span>
+                        <span className="text-slider__word">expense</span>
+                        <span className="text-slider__word">subscriptions</span>
+                    </span>
+                </h1>
+                <h1 className="text-2xl lg:hidden">
+                    Seemlessly track your finances
+                </h1>
+                <h2 className="text-xl leading-relaxed text-muted-foreground lg:w-1/2 lg:text-center">
+                    Do you find managing your finances{" "}
+                    <span className="text-accent-foreground">tedious</span> and{" "}
+                    <span className="text-accent-foreground">difficult</span>? With
+                    budgetbee you can track your spendings and gain valuable{" "}
+                    <span className="text-accent-foreground">insights</span>.
+                </h2>
+                <div className="mt-4 lg:flex">
+                    <Button asChild>
+                        <Link href="/join">Get started<ArrowRight /></Link>
+                    </Button>
+                    {/*<Button variant="secondary" className="ml-2" asChild>
+                            <Link href="/blogs/getting-started">
+                                Learn more
+                            </Link>
+                        </Button>*/}
                 </div>
 
-                <div className="relative z-10">
-                    <h1 className="mb-3 text-3xl font-bold text-white sm:text-4xl md:mb-4 md:text-5xl">
-                        Let&apos;s Get In Touch.
-                    </h1>
-                    <p className="mb-6 max-w-md text-base text-white sm:text-lg md:mb-8">
-                        Your laboratory instruments should serve you, not the other way
-                        around. We&apos;re happy to help you.
-                    </p>
-
-                    <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
-                        <button className="flex w-full items-center justify-between rounded-full bg-black px-5 py-3 text-white sm:w-[240px]">
-                            <span className="font-medium">Book a discovery call</span>
-                            <span className="h-5 w-5 flex-shrink-0 rounded-full bg-white"></span>
-                        </button>
-                        <button className="flex w-full items-center justify-between rounded-full bg-black px-5 py-3 text-white sm:w-[240px]">
-                            <span className="font-medium">Test Your Samples</span>
-                            <span className="h-5 w-5 flex-shrink-0 rounded-full bg-white"></span>
-                        </button>
-                    </div>
+                <div className="mt-8 w-full rounded-xl bg-primary/10 p-2 lg:w-2/3">
+                    <img
+                        src={BudgetbeeDashboardImg.src}
+                        className="h-auto w-full rounded-xl [background:linear-gradient(45deg,#0d542b,theme(colors.slate.800)_50%,#0d542b)_padding-box,conic-gradient(from_var(--border-angle),theme(colors.slate.600/.48)_80%,_#00bc7d_86%,_#8ff0a4_90%,_#00bc7d_94%,_theme(colors.slate.600/.48))_border-box] border border-transparent border-2 animate-border"
+                    />
                 </div>
             </div>
-            */}
-		</main>
-	);
+
+            {/** BENTO GRID SECTION **/}
+            <BentoGrid />
+
+            <PricingSection />
+        </main>);
 }
 
 {
-	/*
+    /*
 'use client';
  
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ArrowRight } from 'lucide-react';
+
+<div className="min-h-screen w-full relative bg-black">
+    <div
+      className="absolute inset-0 z-0"
+      style={{
+        background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(16, 185, 129, 0.25), transparent 70%), #000000",
+      }}
+    />
+  
+  </div>
  
 export default function NotebookHero() {
   return (

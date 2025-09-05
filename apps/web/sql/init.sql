@@ -117,6 +117,7 @@ create table subscriptions (
     logo_url varchar(255),
     period subscription_period,
     interval_in_days integer,
+	category_id uuid references categories (id),
     user_id text references users (id),
     organization_id text references organizations (id)
 );
