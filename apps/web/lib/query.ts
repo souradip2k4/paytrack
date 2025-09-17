@@ -57,7 +57,7 @@ export const useTransactions = () => {
 
 	const filterStack = useFilterStore(s => s.filter_stack);
 	const pageSize = useDisplayStore(s => s.display_page_size);
-	const applyFilter = useFilterStore(s => s.apply_filter);
+	const applyFilter = useFilterStore(s => s.filter_apply);
 	const applyDisplay = useDisplayStore(s => s.apply_display);
 
 	const query = useQuery<any>({

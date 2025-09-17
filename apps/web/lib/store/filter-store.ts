@@ -8,13 +8,19 @@ export type FilterOperations =
 	| "is" // also, is-any-of when there are multiple values
 	| "is not" // also, is-not-any-of when there are multiple values
 	| "is empty";
+
+// predicate values (not every filter will have a value, eg, is-empty)
 export type FilterValue = { id: string; label: string };
 export type FilterStackItem = {
+	// unique id for each filter applied
+	// we don't the id much, generally the idx (index) is used
 	id: string;
 	field: FilterFields;
 	operation: FilterOperations;
 	values: FilterValue[];
 };
+
+export const MAX_FILTER_STACK_SIZE = 255;
 
 export type FilterStore = {
 	filter_stack: FilterStackItem[];
@@ -32,7 +38,9 @@ export type FilterStore = {
 		id: string,
 	) => void;
 	filter_clear: () => void;
-	apply_filter: (
+
+	// helper function to apply the filters to a db query using @supabase/postgrest-js
+	filter_apply: (
 		query: PostgrestFilterBuilder<
 			{ PostgrestVersion: "12" },
 			any,
@@ -79,14 +87,13 @@ export const useFilterStore = create<FilterStore>()(
 			},
 			filter_clear: () => set({ filter_stack: [] }),
 
-			apply_filter: q => {
+			filter_apply: q => {
 				const property_map: Record<FilterFields, string> = {
 					categories: "category_id",
 					status: "status",
 				};
 				for (const { field, operation, values } of get().filter_stack) {
 					if (values.length <= 0) continue;
-
 					const mapped_field = property_map[field];
 					if (operation === "is") {
 						const x = values.map(x => x.id);

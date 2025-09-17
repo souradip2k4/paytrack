@@ -269,7 +269,7 @@ export function StatusBarChart() {
                     <LoaderCircle className="mx-auto animate-spin" />
                     : <ChartContainer
                         config={chartConfig}
-                        className="aspect-auto h-[250px] w-full">
+                        className="w-full">
                         <BarChart
                             accessibilityLayer
                             data={chartData}
