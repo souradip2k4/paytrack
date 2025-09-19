@@ -60,6 +60,12 @@ const queryMock = {
 	is: vi.fn().mockReturnThis(),
 };
 
+const localStorageMock = {
+	getItem: vi.fn().mockReturnValue(null),
+	setItem: vi.fn().mockReturnValue(null),
+	clear: vi.fn().mockReturnValue(null),
+};
+
 // ============================================================================
 // FILTERSTORE TESTS
 // ============================================================================
@@ -67,6 +73,7 @@ describe("useFilterStore", () => {
 	beforeEach(() => {
 		act(() => {
 			vi.clearAllMocks();
+			vi.stubGlobal("localStorage", localStorageMock);
 			useFilterStore.setState({
 				...initialState,
 				filter_stack: structuredClone(filterStack),
