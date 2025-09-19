@@ -45,3 +45,5 @@ logs/
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+coverage/

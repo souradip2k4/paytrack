@@ -8,64 +8,67 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 const heroFeatures = [
-    "Intuitive",
-    "End-to-end encryption",
-    "Audit logs",
-    "Third party integrations",
+	"Intuitive",
+	"End-to-end encryption",
+	"Audit logs",
+	"Third party integrations",
 ];
 
 export default function GradientHero() {
-    return (
-        <main>
-            <div className="flex flex-col justify-center gap-4 px-8 py-24 lg:items-center"
-
-            >
-                <h1 className="text-accent-foreground hidden items-center text-2xl lg:flex lg:text-5xl">
-                    Seemlessly track your
-                    <span className="text-slider text-primary">
-                        <span className="text-slider__word">finances</span>
-                        <span className="text-slider__word">expense</span>
-                        <span className="text-slider__word">subscriptions</span>
-                    </span>
-                </h1>
-                <h1 className="text-2xl lg:hidden">
-                    Seemlessly track your finances
-                </h1>
-                <h2 className="text-xl leading-relaxed text-muted-foreground lg:w-1/2 lg:text-center">
-                    Do you find managing your finances{" "}
-                    <span className="text-accent-foreground">tedious</span> and{" "}
-                    <span className="text-accent-foreground">difficult</span>? With
-                    budgetbee you can track your spendings and gain valuable{" "}
-                    <span className="text-accent-foreground">insights</span>.
-                </h2>
-                <div className="mt-4 lg:flex">
-                    <Button asChild>
-                        <Link href="/join">Get started<ArrowRight /></Link>
-                    </Button>
-                    {/*<Button variant="secondary" className="ml-2" asChild>
+	return (
+		<main>
+			<div className="flex flex-col justify-center gap-4 px-8 py-24 lg:items-center">
+				<h1 className="text-accent-foreground hidden items-center text-2xl lg:flex lg:text-5xl">
+					Seemlessly track your
+					<span className="text-slider text-primary">
+						<span className="text-slider__word">finances</span>
+						<span className="text-slider__word">expense</span>
+						<span className="text-slider__word">subscriptions</span>
+					</span>
+				</h1>
+				<h1 className="text-2xl lg:hidden">
+					Seemlessly track your finances
+				</h1>
+				<h2 className="text-muted-foreground text-xl leading-relaxed lg:w-1/2 lg:text-center">
+					Do you find managing your finances{" "}
+					<span className="text-accent-foreground">tedious</span> and{" "}
+					<span className="text-accent-foreground">difficult</span>?
+					With budgetbee you can track your spendings and gain
+					valuable{" "}
+					<span className="text-accent-foreground">insights</span>.
+				</h2>
+				<div className="mt-4 lg:flex">
+					<Button asChild>
+						<Link href="/join">
+							Get started
+							<ArrowRight />
+						</Link>
+					</Button>
+					{/*<Button variant="secondary" className="ml-2" asChild>
                             <Link href="/blogs/getting-started">
                                 Learn more
                             </Link>
                         </Button>*/}
-                </div>
+				</div>
 
-                <div className="mt-8 w-full rounded-xl bg-primary/10 p-2 lg:w-2/3">
-                    <img
-                        src={BudgetbeeDashboardImg.src}
-                        className="h-auto w-full rounded-xl [background:linear-gradient(45deg,#0d542b,theme(colors.slate.800)_50%,#0d542b)_padding-box,conic-gradient(from_var(--border-angle),theme(colors.slate.600/.48)_80%,_#00bc7d_86%,_#8ff0a4_90%,_#00bc7d_94%,_theme(colors.slate.600/.48))_border-box] border border-transparent border-2 animate-border"
-                    />
-                </div>
-            </div>
+				<div className="bg-primary/10 mt-8 w-full rounded-xl p-2 lg:w-2/3">
+					<img
+						src={BudgetbeeDashboardImg.src}
+						className="animate-border h-auto w-full rounded-xl border border-2 border-transparent [background:linear-gradient(45deg,#0d542b,theme(colors.slate.800)_50%,#0d542b)_padding-box,conic-gradient(from_var(--border-angle),theme(colors.slate.600/.48)_80%,_#00bc7d_86%,_#8ff0a4_90%,_#00bc7d_94%,_theme(colors.slate.600/.48))_border-box]"
+					/>
+				</div>
+			</div>
 
-            {/** BENTO GRID SECTION **/}
-            <BentoGrid />
+			{/** BENTO GRID SECTION **/}
+			<BentoGrid />
 
-            <PricingSection />
-        </main>);
+			<PricingSection />
+		</main>
+	);
 }
 
 {
-    /*
+	/*
 'use client';
  
 import { buttonVariants } from '@/components/ui/button';
