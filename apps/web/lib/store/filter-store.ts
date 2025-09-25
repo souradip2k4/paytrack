@@ -23,6 +23,16 @@ export type FilterOperations =
 	| "to"
 	| "between";
 
+export const allowed_operations_map: Record<FilterFields, FilterOperations[]> =
+	{
+		amount: ["eq", "gt", "gte", "lt", "lte"],
+		categories: ["is", "is not", "is empty"],
+		status: ["is", "is not", "is empty"],
+		created_at: ["from", "to", "between"],
+		updated_at: ["from", "to", "between"],
+		transaction_date: ["from", "to", "between"],
+	};
+
 /**
  * @param id - Unique id for each filter applied. No redundancy is checked, make sure your ids are unique.
  * @param value - Predicate values are not deep cloned, so make sure you don't mutate them. Not every filter will have a value, eg, is-empty)
@@ -110,6 +120,7 @@ export const useFilterStore = create<FilterStore>()(
 				const idx = get().filter_stack.findIndex(x => x.id === id);
 				if (idx < 0)
 					return get().filter_add(field, operation, [value], id);
+				let original_operation = get().filter_stack[idx].operation;
 				let values = get().filter_stack[idx].values;
 				const idx2 = values.findIndex(x => x.id === value.id);
 				if (idx2 < 0) values = [...values, value];
@@ -118,7 +129,12 @@ export const useFilterStore = create<FilterStore>()(
 						...values.slice(0, idx2),
 						...values.slice(idx2 + 1),
 					];
-				return get().filter_add(field, operation, [...values], id);
+				return get().filter_add(
+					field,
+					original_operation,
+					[...values],
+					id,
+				);
 			},
 
 			filter_clear: () => set({ filter_stack: [] }),
@@ -131,18 +147,6 @@ export const useFilterStore = create<FilterStore>()(
 					created_at: "created_at",
 					updated_at: "updated_at",
 					transaction_date: "transaction_date",
-				};
-
-				const allowed_operations_map: Record<
-					FilterFields,
-					FilterOperations[]
-				> = {
-					amount: ["eq", "gt", "gte", "lt", "lte"],
-					categories: ["is", "is not", "is empty"],
-					status: ["is", "is not", "is empty"],
-					created_at: ["from", "to", "between"],
-					updated_at: ["from", "to", "between"],
-					transaction_date: ["from", "to", "between"],
 				};
 
 				for (const { field, operation, values } of get().filter_stack) {
