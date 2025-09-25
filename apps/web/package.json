@@ -55,7 +55,7 @@
 		"cmdk": "^1.0.0",
 		"date-fns": "^4.1.0",
 		"fz-datetime": "workspace:*",
-		"hono": "^4.7.7",
+		"hono": "^4.9.7",
 		"ioredis": "^5.6.1",
 		"jwt-decode": "^4.0.0",
 		"lucide-react": "^0.501.0",
