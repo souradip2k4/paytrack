@@ -1,0 +1,47 @@
+{
+  "name": "fz-datetime",
+  "version": "0.0.1",
+  "description": "Zero dependency library that parses string into a date-time object.",
+  "main": "./index.ts",
+  "keywords": [
+    "date",
+    "time",
+    "parser"
+  ],
+  "author": "Samyabrata Maji <samyabratamaji334@gmail.com>",
+  "license": "ISC",
+  "scripts": {
+    "test": "vitest run",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:all": "npm run test:run && npm run benchmark:all",
+    "bench": "vitest bench",
+    "bench:run": "vitest bench --run",
+    "bench:watch": "vitest bench --watch",
+    "bench:reporter": "vitest bench --reporter=verbose",
+    "bench:json": "vitest bench --reporter=json --outputFile=./benchmark-results.json",
+    "bench:compare": "vitest bench --reporter=verbose --compare",
+    "perf:store": "vitest bench --config vitest.config.performance.ts --run src/**/*.bench.ts",
+    "perf:memory": "vitest bench --config vitest.config.performance.ts --run --reporter=verbose src/**/memory.bench.ts",
+    "perf:load": "vitest bench --config vitest.config.performance.ts --run --reporter=verbose src/**/load.bench.ts",
+    "profile": "node --inspect-brk ./node_modules/.bin/vitest bench --config vitest.config.performance.ts",
+    "profile:cpu": "node --prof ./node_modules/.bin/vitest bench --config vitest.config.performance.ts --run",
+    "profile:heap": "node --inspect --expose-gc ./node_modules/.bin/vitest bench --config vitest.config.performance.ts --run",
+    "ci:test": "vitest run --coverage --reporter=verbose",
+    "ci:perf": "vitest bench --run --reporter=json --outputFile=./ci-benchmark-results.json",
+    "ci:perf:threshold": "vitest bench --run --reporter=verbose --config vitest.config.performance.ts",
+    "benchmark:all": "npm run bench:run && npm run perf:store && npm run perf:memory",
+    "benchmark:ci": "npm run ci:perf",
+    "benchmark:compare-baseline": "vitest bench --run --reporter=json --outputFile=./baseline-results.json",
+    "benchmark:regression": "node scripts/compare-benchmarks.js",
+    "analyze": "npm run profile:heap",
+    "analyze:bundle": "npm run build && npx vite-bundle-analyzer dist/stats.html"
+  },
+  "packageManager": "pnpm@10.11.0",
+  "devDependencies": {
+    "@types/node": "^22.18.1",
+    "date-fns": "^4.1.0",
+    "tsx": "^4.20.5",
+    "vitest": "^3.2.4"
+  }
+}

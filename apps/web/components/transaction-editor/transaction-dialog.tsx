@@ -1,32 +1,20 @@
 "use client";
 
 import { CategoryPicker } from "@/components/category-picker";
-import { StatusBadge } from "@/components/status-badge";
+import { DatePicker } from "@/components/date-picker";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
-} from "@/components/ui/command";
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
 import { bearerHeader } from "@/lib/bearer";
 import currenciesJson from "@/lib/currencies.json";
@@ -35,237 +23,242 @@ import { useStore } from "@/lib/store/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { CheckIcon, PlusIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
-import { DatePicker } from "@/components/date-picker";
-import { Label } from "@/components/ui/label";
 import { CurrencyPicker } from "./currency-picker";
 import { StatusPicker } from "./status-picker";
 
 const schema = z.object({
-    name: z.string().max(50).optional(),
-    currency: z.string().length(3),
-    amount: z.number("*Required"),
-    transaction_date: z.coerce.date().optional(),
-    status: z.enum(["paid", "pending", "overdue"]).default("paid"),
-    category_id: z.string().optional(),
+	name: z.string().max(50).optional(),
+	currency: z.string().length(3),
+	amount: z.number("*Required"),
+	transaction_date: z.coerce.date().optional(),
+	status: z.enum(["paid", "pending", "overdue"]).default("paid"),
+	category_id: z.string().optional(),
 });
 
 type FieldValues = z.infer<typeof schema>;
 
 export function TransactionDialog() {
-    const queryClient = useQueryClient();
-    const { data: authData } = authClient.useSession();
+	const queryClient = useQueryClient();
+	const { data: authData } = authClient.useSession();
 
-    const { mutateAsync, isPending } = useMutation({
-        mutationKey: ["tr", "post"],
-        mutationFn: async (data: FieldValues) => {
-            if (!authData || !authData.user || !authData.user.id) return;
-            const { transaction_date, ...rest } = data;
-            const res = await db(await bearerHeader())
-                .from("transactions")
-                .insert({
-                    ...rest,
-                    transaction_date: transaction_date?.toISOString(),
-                    user_id: authData.user.id,
-                });
-            if (res.error) throw res.error;
-            return res.data;
-        },
-        onError: () => toast.error("Failed to create transaction"),
-        onSuccess: () => {
-            toast.success("Transaction created successfully");
-            queryClient.invalidateQueries({
-                queryKey: ["tr", "get"],
-                exact: false,
-            });
-            queryClient.refetchQueries({
-                queryKey: ["tr", "get"],
-                exact: false,
-            });
-        },
-    });
+	const { mutateAsync, isPending } = useMutation({
+		mutationKey: ["tr", "post"],
+		mutationFn: async (data: FieldValues) => {
+			if (!authData || !authData.user || !authData.user.id) return;
+			const { transaction_date, ...rest } = data;
+			const res = await db(await bearerHeader())
+				.from("transactions")
+				.insert({
+					...rest,
+					transaction_date: transaction_date?.toISOString(),
+					user_id: authData.user.id,
+				});
+			if (res.error) throw res.error;
+			return res.data;
+		},
+		onError: () => toast.error("Failed to create transaction"),
+		onSuccess: () => {
+			toast.success("Transaction created successfully");
+			queryClient.invalidateQueries({
+				queryKey: ["tr", "get"],
+				exact: false,
+			});
+			queryClient.refetchQueries({
+				queryKey: ["tr", "get"],
+				exact: false,
+			});
+		},
+	});
 
-    const {
-        handleSubmit,
-        register,
-        reset,
-        control,
-        watch,
-        formState: { isValid },
-    } = useForm({
-        resolver: zodResolver(schema),
-        defaultValues: {
-            amount: 0,
-            status: "paid",
-            transaction_date: new Date().toISOString(),
-            currency: "USD",
-        },
-    });
+	const {
+		handleSubmit,
+		register,
+		reset,
+		control,
+		watch,
+		formState: { isValid },
+	} = useForm({
+		resolver: zodResolver(schema),
+		defaultValues: {
+			amount: 0,
+			status: "paid",
+			transaction_date: new Date().toISOString(),
+			currency: "USD",
+		},
+	});
 
-    const currency = watch("currency");
+	const currency = watch("currency");
 
-    const onSubmit = async (e: FieldValues) => {
-        await mutateAsync(e);
-        reset();
-    };
+	const onSubmit = async (e: FieldValues) => {
+		await mutateAsync(e);
+		reset();
+	};
 
-    const nameId = React.useId();
-    const amountId = React.useId();
+	const nameId = React.useId();
+	const amountId = React.useId();
 
-    const open = useStore(s => s.popover_transaction_dialog_open);
-    const setOpen = useStore(s => s.popover_transaction_dialog_set_open);
+	const open = useStore(s => s.popover_transaction_dialog_open);
+	const setOpen = useStore(s => s.popover_transaction_dialog_set_open);
 
-    const [statusPopoverOpen, setStatusPopoverOpen] = React.useState(false);
+	const [statusPopoverOpen, setStatusPopoverOpen] = React.useState(false);
 
-    return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button size="sm">
-                    <span className="hidden md:block">Add transaction</span>
-                    <PlusIcon className="h-4 w-4" />
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="md:min-w-4xl gap-0 p-0 md:max-w-4xl">
-                <DialogHeader className="border-b p-6 pb-3">
-                    <DialogTitle className="font-normal">
-                        New transaction
-                    </DialogTitle>
-                </DialogHeader>
+	return (
+		<Dialog open={open} onOpenChange={setOpen}>
+			<DialogTrigger asChild>
+				<Button size="sm">
+					<span className="hidden md:block">Add transaction</span>
+					<PlusIcon className="h-4 w-4" />
+				</Button>
+			</DialogTrigger>
+			<DialogContent className="md:min-w-4xl gap-0 p-0 md:max-w-4xl">
+				<DialogHeader className="border-b p-6 pb-3">
+					<DialogTitle className="font-normal">
+						New transaction
+					</DialogTitle>
+				</DialogHeader>
 
-                <form
-                    className="flex flex-col gap-3 p-6"
-                    onSubmit={handleSubmit(onSubmit)}>
-                    <div className="space-y-2">
-                        <div>
-                            <Label htmlFor={amountId}>Transaction amount</Label>
-                            <Label
-                                htmlFor={amountId}
-                                className="text-muted-foreground inline-flex flex-wrap leading-[0.5rem]">
-                                Use minus (-) sign to indicate{" "}
-                                <span className="text-red-400">debit</span>{" "}
-                                (e.g., -521.60).
-                            </Label>
-                        </div>
+				<form
+					className="flex flex-col gap-3 p-6"
+					onSubmit={handleSubmit(onSubmit)}>
+					<div className="space-y-2">
+						<div>
+							<Label htmlFor={amountId}>Transaction amount</Label>
+							<Label
+								htmlFor={amountId}
+								className="text-muted-foreground inline-flex flex-wrap leading-[0.5rem]">
+								Use minus (-) sign to indicate{" "}
+								<span className="text-red-400">debit</span>{" "}
+								(e.g., -521.60).
+							</Label>
+						</div>
 
-                        <div className="relative">
-                            <Input
-                                id={amountId}
-                                className="peer pe-12 ps-12"
-                                placeholder="Transaction amount (eg, -57.21)"
-                                type="text"
-                                {...register("amount", {
-                                    valueAsNumber: true,
-                                    required: true,
-                                })}
-                            />
+						<div className="relative">
+							<Input
+								id={amountId}
+								className="peer pe-12 ps-12"
+								placeholder="Transaction amount (eg, -57.21)"
+								type="text"
+								{...register("amount", {
+									valueAsNumber: true,
+									required: true,
+								})}
+							/>
 
-                            <span className="text-muted-foreground pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-sm peer-disabled:opacity-50">
-                                {/* @ts-ignore */}
-                                {currenciesJson.data[currency].symbol}
-                            </span>
+							<span className="text-muted-foreground pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-sm peer-disabled:opacity-50">
+								{/* @ts-ignore */}
+								{currenciesJson.data[currency].symbol}
+							</span>
 
-                            <span className="text-muted-foreground pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-sm peer-disabled:opacity-50">
-                                {/* @ts-ignore */}
-                                {currenciesJson.data[currency].code}
-                            </span>
-                        </div>
-                    </div>
+							<span className="text-muted-foreground pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-sm peer-disabled:opacity-50">
+								{/* @ts-ignore */}
+								{currenciesJson.data[currency].code}
+							</span>
+						</div>
+					</div>
 
-                    <div className="mt-4 space-y-2">
-                        <Label htmlFor={nameId}>Title (optional)</Label>
-                        <Input
-                            id={nameId}
-                            placeholder="Title (eg, Groceries)"
-                            {...register("name", {
-                                required: true,
-                            })}
-                        />
-                    </div>
+					<div className="mt-4 space-y-2">
+						<Label htmlFor={nameId}>Title (optional)</Label>
+						<Input
+							id={nameId}
+							placeholder="Title (eg, Groceries)"
+							{...register("name", {
+								required: true,
+							})}
+						/>
+					</div>
 
-                    <div className="mt-4 flex w-full gap-2">
-                        <Controller
-                            name="currency"
-                            control={control}
-                            render={({ field: { value, onChange } }) => (
-                                <CurrencyPicker
-                                    value={value}
-                                    onChange={onChange}
-                                />
-                            )}
-                        />
+					<div className="mt-4 flex w-full gap-2">
+						<Controller
+							name="currency"
+							control={control}
+							render={({ field: { value, onChange } }) => (
+								<CurrencyPicker
+									value={value}
+									onChange={onChange}
+								/>
+							)}
+						/>
 
-                        <Controller
-                            name="transaction_date"
-                            control={control}
-                            render={({ field: { value, onChange } }) => {
-                                const date =
-                                    value ?
-                                        value instanceof Date ?
-                                            value
-                                            : new Date(value as string)
-                                        : undefined;
-                                const formatedDate = date ? format(date, "dd MMM yyyy") : "Pick a date";
-                                return (
-                                    <DatePicker
-                                        modal
-                                        date={date}
-                                        onDateChange={d => onChange(d)}
-                                        asChild
-                                    >
-                                        <Badge variant="outline" className="gap-1.5 rounded-full">
-                                            {formatedDate}
-                                        </Badge>
-                                    </DatePicker>
-                                );
-                            }}
-                        />
+						<Controller
+							name="transaction_date"
+							control={control}
+							render={({ field: { value, onChange } }) => {
+								const date =
+									value ?
+										value instanceof Date ?
+											value
+										:	new Date(value as string)
+									:	undefined;
+								const formatedDate =
+									date ?
+										format(date, "dd MMM yyyy")
+									:	"Pick a date";
+								return (
+									<DatePicker
+										modal
+										date={date}
+										onDateChange={d => onChange(d)}
+										asChild>
+										<Badge
+											variant="outline"
+											className="gap-1.5 rounded-full">
+											{formatedDate}
+										</Badge>
+									</DatePicker>
+								);
+							}}
+						/>
 
-                        <Controller
-                            name="status"
-                            control={control}
-                            render={({ field: { value, onChange } }) => (
-                                <React.Fragment>
-                                    <StatusPicker value={value ?? "paid"} onChange={onChange} />
-                                </React.Fragment>
-                            )}
-                        />
+						<Controller
+							name="status"
+							control={control}
+							render={({ field: { value, onChange } }) => (
+								<React.Fragment>
+									<StatusPicker
+										value={value ?? "paid"}
+										onChange={onChange}
+									/>
+								</React.Fragment>
+							)}
+						/>
 
-                        <Controller
-                            name="category_id"
-                            control={control}
-                            render={({ field: { value, onChange } }) => (
-                                <CategoryPicker
-                                    value={value as string}
-                                    onChange={onChange}
-                                />
-                            )}
-                        />
-                    </div>
-                </form>
+						<Controller
+							name="category_id"
+							control={control}
+							render={({ field: { value, onChange } }) => (
+								<CategoryPicker
+									value={value as string}
+									onChange={onChange}
+								/>
+							)}
+						/>
+					</div>
+				</form>
 
-                <DialogFooter className="border-t p-3">
-                    <DialogClose asChild>
-                        <Button
-                            variant="secondary"
-                            size="sm"
-                            onClick={() => reset()}>
-                            Cancel
-                        </Button>
-                    </DialogClose>
-                    <Button
-                        disabled={!isValid}
-                        isLoading={isPending}
-                        onClick={handleSubmit(onSubmit)}
-                        size="sm"
-                        type="submit">
-                        Save changes
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    );
+				<DialogFooter className="border-t p-3">
+					<DialogClose asChild>
+						<Button
+							variant="secondary"
+							size="sm"
+							onClick={() => reset()}>
+							Cancel
+						</Button>
+					</DialogClose>
+					<Button
+						disabled={!isValid}
+						isLoading={isPending}
+						onClick={handleSubmit(onSubmit)}
+						size="sm"
+						type="submit">
+						Save changes
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+	);
 }
