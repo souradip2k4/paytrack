@@ -483,5 +483,5 @@ body {
 }
 
 .animate-border {
-  animation: border 8s ease-in-out infinite;
+  animation: border 4s ease-in-out infinite;
 }

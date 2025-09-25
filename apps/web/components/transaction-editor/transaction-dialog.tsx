@@ -116,7 +116,7 @@ export function TransactionDialog() {
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="md:min-w-4xl gap-0 p-0 md:max-w-4xl">
-				<DialogHeader className="border-b p-6 pb-3">
+				<DialogHeader className="border-b p-4 px-6">
 					<DialogTitle className="font-normal">
 						New transaction
 					</DialogTitle>
@@ -126,21 +126,16 @@ export function TransactionDialog() {
 					className="flex flex-col gap-3 p-6"
 					onSubmit={handleSubmit(onSubmit)}>
 					<div className="space-y-2">
-						<div>
-							<Label htmlFor={amountId}>Transaction amount</Label>
-							<Label
-								htmlFor={amountId}
-								className="text-muted-foreground inline-flex flex-wrap leading-[0.5rem]">
-								Use minus (-) sign to indicate{" "}
-								<span className="text-red-400">debit</span>{" "}
-								(e.g., -521.60).
-							</Label>
-						</div>
+						<Label
+							htmlFor={amountId}
+							className="text-muted-foreground">
+							Transaction amount
+						</Label>
 
 						<div className="relative">
 							<Input
 								id={amountId}
-								className="peer pe-12 ps-12"
+								className="peer w-full pe-12 ps-12"
 								placeholder="Transaction amount (eg, -57.21)"
 								type="text"
 								{...register("amount", {
@@ -159,10 +154,24 @@ export function TransactionDialog() {
 								{currenciesJson.data[currency].code}
 							</span>
 						</div>
+
+						<div className="flex">
+							<Label
+								htmlFor={amountId}
+								className="text-muted-foreground ml-auto inline-flex flex-wrap text-xs leading-[0.5rem]">
+								Use minus (-) sign to indicate{" "}
+								<span className="text-red-400">debit</span>{" "}
+								(e.g., -521.60).
+							</Label>
+						</div>
 					</div>
 
 					<div className="mt-4 space-y-2">
-						<Label htmlFor={nameId}>Title (optional)</Label>
+						<Label
+							htmlFor={nameId}
+							className="text-muted-foreground">
+							Title (optional)
+						</Label>
 						<Input
 							id={nameId}
 							placeholder="Title (eg, Groceries)"
@@ -172,7 +181,7 @@ export function TransactionDialog() {
 						/>
 					</div>
 
-					<div className="mt-4 flex w-full gap-2">
+					<div className="mt-4 flex w-full flex-wrap gap-2">
 						<Controller
 							name="currency"
 							control={control}
