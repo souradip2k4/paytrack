@@ -1,17 +1,13 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth-client";
-
-type X = ReturnType<typeof authClient.useSession>["data"];
+import { DatePicker } from "@/components/date-picker";
+import React from "react";
 
 export default function Page() {
-	const data = authClient.getSession();
-	data.then(x => console.log("> session:", x));
-
+	const [date, setDate] = React.useState<Date>();
 	return (
 		<div className="p-24">
-			<Button>Refetch</Button>
+			<DatePicker modal date={date} onDateChange={setDate} />
 		</div>
 	);
 }
