@@ -149,7 +149,7 @@ export function TransactionDialog() {
                                 id={amountId}
                                 className="peer w-full pe-12 ps-12"
                                 placeholder="Transaction amount (eg, -57.21)"
-                                type="text"
+                                type="number"
                                 {...register("amount", {
                                     valueAsNumber: true,
                                     required: true,
