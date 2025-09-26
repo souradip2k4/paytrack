@@ -136,7 +136,7 @@ export function CategoryPicker({
                         {/* clear selection */}
                         <CommandGroup forceMount>
                             <CommandItem
-                                className="text-destructive-foreground hover:text-destructive-foreground hover:bg-destructive/10 dark:hover:bg-destructive/20"
+                                className="text-destructive data-[selected=true]:text-destructive data-[selected=true]:bg-destructive/10 data-[selected=true]:dark:bg-destructive/20"
                                 onSelect={e => {
                                     onChange(e);
                                     setOpen(false);
