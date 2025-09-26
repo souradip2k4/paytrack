@@ -65,6 +65,8 @@ export const useTransactions = () => {
 		queryFn: async () => {
 			if (authData === null) return [];
 
+			await new Promise(resolve => setTimeout(resolve, 10_000));
+
 			const res = await applyDisplay(
 				applyFilter(
 					db(await bearerHeader())

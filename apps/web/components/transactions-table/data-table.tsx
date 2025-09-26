@@ -30,6 +30,22 @@ export function TransactionsTable() {
 	const transactions = React.useMemo(() => data || [], [data]);
 
 	const columnVisibility = useDisplayStore(s => s.display_visibility_state);
+	const columnVisibleCount = Object.keys(columnVisibility).reduce(
+		(count, key) => {
+			if (columnVisibility[key] === true) return count + 1;
+			return count;
+		},
+		0,
+	);
+
+	React.useEffect(() => {
+		console.log(columnVisibility);
+	}, [columnVisibility]);
+
+	React.useEffect(() => {
+		console.log(columnVisibleCount);
+	}, [columnVisibleCount]);
+
 	const rowSelection = useDisplayStore(s => s.display_row_selection_state);
 	const setColumnVisibility = useDisplayStore(
 		s => s.set_display_visibility_state,
@@ -96,7 +112,10 @@ export function TransactionsTable() {
 						{isLoading ?
 							Array.from({ length: 30 }).map((_, i) => (
 								<TableRow key={`skeleton-${i}`}>
-									{columns.map((column, j) => (
+									{/* +1 for amount and +1 for checkbox */}
+									{Array.from({
+										length: columnVisibleCount + 2,
+									}).map((_, j) => (
 										<TableCell
 											key={`skeleton-cell-${j}`}
 											className="not-last:border-r first:border-none">
