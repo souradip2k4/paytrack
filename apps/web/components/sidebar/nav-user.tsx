@@ -21,7 +21,15 @@ import { authClient } from "@/lib/auth-client";
 import { TUseSession } from "@/lib/query";
 import { useStore } from "@/lib/store";
 import { avatarUrl } from "@/lib/utils";
-import { ChevronsUpDown, LogOut, ReceiptCent, Sparkles } from "lucide-react";
+import {
+	Activity,
+	ChevronsUpDown,
+	LogOut,
+	Logs,
+	MessageCircleQuestion,
+	ReceiptCent,
+	Sparkles,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -126,6 +134,22 @@ export function NavUser() {
 							{authData?.subscription?.isSubscribed ?
 								<DropdownMenuItem
 									onClick={() => handlePortalRedirect()}>
+									<MessageCircleQuestion />
+									Priority Support
+								</DropdownMenuItem>
+							:	<DropdownMenuItem
+									onClick={() =>
+										useStore.setState({
+											modal_upgrade_plan_open: true,
+										})
+									}>
+									<MessageCircleQuestion />
+									Support
+								</DropdownMenuItem>
+							}
+							{authData?.subscription?.isSubscribed ?
+								<DropdownMenuItem
+									onClick={() => handlePortalRedirect()}>
 									<ReceiptCent />
 									View billing portal
 								</DropdownMenuItem>
@@ -139,6 +163,14 @@ export function NavUser() {
 									Upgrade to Pro
 								</DropdownMenuItem>
 							}
+							<DropdownMenuItem>
+								<Logs />
+								Changelog
+							</DropdownMenuItem>
+							<DropdownMenuItem>
+								<Activity />
+								Status
+							</DropdownMenuItem>
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem variant="destructive" asChild>

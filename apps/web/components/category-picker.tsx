@@ -1,152 +1,184 @@
 import { Badge } from "@/components/ui/badge";
 import {
-    Command,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
-    CommandSeparator,
+	Command,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+	CommandSeparator,
 } from "@/components/ui/command";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
 } from "@/components/ui/popover";
 import { bearerHeader } from "@/lib/bearer";
 import { db } from "@/lib/db";
 import { useCategories } from "@/lib/query";
 import { useStore } from "@/lib/store";
+import { cn } from "@/lib/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckIcon, Plus } from "lucide-react";
+import { Popover as PopoverPrimitive } from "radix-ui";
 import React from "react";
 import { toast } from "sonner";
 import { CategoryBadge } from "./category-badge";
 
-type OnChange = (value: string) => void;
+type OnChange = (value?: string) => void;
+type CategoryPickerProps = React.ComponentProps<
+	typeof PopoverPrimitive.Trigger
+> & {
+	modal?: boolean;
+	open?: boolean;
+	onOpenChange?: (open: boolean) => void;
+	defaultOpen?: boolean;
 
-export function CategoryPicker({
-    value,
-    onChange,
-}: {
-    value: string;
-    onChange: OnChange;
-}) {
-    const queryClient = useQueryClient();
+	value?: string;
+	onValueChange: OnChange;
+	children?: React.ReactNode;
+};
 
-    const { data: categories } = useCategories();
+export function CategoryPicker(props: CategoryPickerProps) {
+	const {
+		modal = false,
+		open,
+		onOpenChange,
+		defaultOpen,
+		asChild = false,
+		children,
+		value,
+		onValueChange,
+		className,
+		...rest
+	} = props;
 
-    const name = React.useMemo(() => {
-        if (!categories) return;
-        return categories.find(c => c.id === value)?.name;
-    }, [categories, value]);
+	const queryClient = useQueryClient();
 
-    const { mutateAsync: createCategory, isPending: isCreatingCategory } =
-        useMutation({
-            mutationKey: ["cat", "post"],
-            mutationFn: async (data: string) => {
-                const res = await db(await bearerHeader())
-                    .from("categories")
-                    .insert({
-                        name: data,
-                    });
-                if (res.error) {
-                    toast.error("Failed to create category");
-                    return;
-                }
-                return res.data;
-            },
-            onSuccess: () => {
-                toast.success("Category created successfully");
-                queryClient.invalidateQueries({
-                    queryKey: ["cat", "get"],
-                });
-                queryClient.refetchQueries({
-                    queryKey: ["cat", "get"],
-                });
-            },
-        });
+	const { data: categories } = useCategories();
 
-    const [search, setSearch] = React.useState("");
+	const name = React.useMemo(() => {
+		if (!categories) return;
+		return categories.find(c => c.id === value)?.name;
+	}, [categories, value]);
 
-    const exists = React.useMemo(() => {
-        if (typeof categories === "undefined") return false;
-        return categories.findIndex(c => c.name === search) !== -1;
-    }, [search, categories]);
+	const { mutateAsync: createCategory, isPending: isCreatingCategory } =
+		useMutation({
+			mutationKey: ["cat", "post"],
+			mutationFn: async (data: string) => {
+				const res = await db(await bearerHeader())
+					.from("categories")
+					.insert({
+						name: data,
+					});
+				if (res.error) {
+					toast.error("Failed to create category");
+					return;
+				}
+				return res.data;
+			},
+			onSuccess: () => {
+				toast.success("Category created successfully");
+				queryClient.invalidateQueries({
+					queryKey: ["cat", "get"],
+				});
+				queryClient.refetchQueries({
+					queryKey: ["cat", "get"],
+				});
+			},
+		});
 
-    const open = useStore(s => s.popover_category_picker_open);
-    const setOpen = useStore(s => s.popover_category_picker_set_open);
+	const [search, setSearch] = React.useState("");
 
-    const createCategoryId = React.useId();
+	const exists = React.useMemo(() => {
+		if (typeof categories === "undefined") return false;
+		return categories.findIndex(c => c.name === search) !== -1;
+	}, [search, categories]);
 
-    return (
-        <Popover open={open} onOpenChange={setOpen} modal>
-            <PopoverTrigger className="[&>*]:h-full flex items-center justify-center">
-                <Badge variant="outline" className="gap-1.5 rounded-full">
-                    {name ? name : "Category"}
-                </Badge>
-            </PopoverTrigger>
-            <PopoverContent
-                className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"
-                align="start">
-                <Command>
-                    <CommandInput
-                        value={search}
-                        onValueChange={setSearch}
-                        placeholder="Search..."
-                    />
-                    <CommandList>
-                        {/* categories */}
-                        <CommandGroup>
-                            {categories?.map((c, i) => (
-                                <CommandItem
-                                    key={i}
-                                    value={c.id}
-                                    keywords={[c.name]}
-                                    onSelect={e => {
-                                        onChange(e);
-                                        setOpen(false);
-                                    }}>
-                                    <CategoryBadge category={c.name} />
-                                    {value === c.id && (
-                                        <CheckIcon
-                                            size={16}
-                                            className="ml-auto"
-                                        />
-                                    )}
-                                </CommandItem>
-                            ))}
-                        </CommandGroup>
-                        <CommandSeparator />
+	const createCategoryId = React.useId();
 
-                        {/* create new category button */}
-                        {search && search.length > 0 && !exists && (
-                            <CommandGroup forceMount>
-                                <CommandItem
-                                    disabled={isCreatingCategory}
-                                    value={createCategoryId}
-                                    onSelect={() => createCategory(search)}>
-                                    <Plus className="size-4" />{" "}
-                                    {isCreatingCategory ?
-                                        "Creating..."
-                                        : `Create "${search}"`}
-                                </CommandItem>
-                            </CommandGroup>
-                        )}
+	return (
+		<Popover
+			modal={modal}
+			open={open}
+			defaultOpen={defaultOpen}
+			onOpenChange={onOpenChange}>
+			<PopoverTrigger
+				{...rest}
+				className={cn(
+					"flex items-center justify-center [&>*]:h-full",
+					className,
+				)}>
+				{children ?
+					children
+				:	<Badge variant="outline" className="gap-1.5 rounded-full">
+						{name ? name : "Category"}
+					</Badge>
+				}
+			</PopoverTrigger>
+			<PopoverContent
+				className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"
+				align="start">
+				<Command>
+					<CommandInput
+						value={search}
+						onValueChange={setSearch}
+						placeholder="Search..."
+					/>
+					<CommandList>
+						{/* categories */}
+						<CommandGroup>
+							{categories?.map((c, i) => (
+								<CommandItem
+									key={i}
+									value={c.id}
+									keywords={[c.name]}
+									onSelect={e => {
+										onValueChange(e);
+										useStore.setState({
+											popover_category_picker_open: false,
+										});
+									}}>
+									<CategoryBadge category={c.name} />
+									{value === c.id && (
+										<CheckIcon
+											size={16}
+											className="ml-auto"
+										/>
+									)}
+								</CommandItem>
+							))}
+						</CommandGroup>
+						<CommandSeparator />
 
-                        {/* clear selection */}
-                        <CommandGroup forceMount>
-                            <CommandItem
-                                className="text-destructive data-[selected=true]:text-destructive data-[selected=true]:bg-destructive/10 data-[selected=true]:dark:bg-destructive/20"
-                                onSelect={e => {
-                                    onChange(e);
-                                    setOpen(false);
-                                }}>
-                                Clear category
-                            </CommandItem>
-                        </CommandGroup>
-                    </CommandList>
-                </Command>
-            </PopoverContent>
-        </Popover>
-    );
+						{/* create new category button */}
+						{search && search.length > 0 && !exists && (
+							<CommandGroup forceMount>
+								<CommandItem
+									disabled={isCreatingCategory}
+									value={createCategoryId}
+									onSelect={() => createCategory(search)}>
+									<Plus className="size-4" />{" "}
+									{isCreatingCategory ?
+										"Creating..."
+									:	`Create "${search}"`}
+								</CommandItem>
+							</CommandGroup>
+						)}
+
+						{/* clear selection */}
+						<CommandGroup forceMount>
+							<CommandItem
+								className="text-destructive data-[selected=true]:text-destructive data-[selected=true]:bg-destructive/10 data-[selected=true]:dark:bg-destructive/20"
+								onSelect={e => {
+									onChange(e);
+									setOpen(false);
+								}}>
+								Clear category
+							</CommandItem>
+						</CommandGroup>
+					</CommandList>
+				</Command>
+			</PopoverContent>
+		</Popover>
+	);
 }
