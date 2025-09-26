@@ -42,33 +42,29 @@ export function AppHeader() {
 
             {pathname.startsWith("/transactions") && (
                 <div className="ml-auto flex gap-2">
-                    <TooltipProvider delayDuration={0}>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button size="sm" className="border" variant="secondary"><SquarePen /> Edit</Button>
-                            </TooltipTrigger>
-                            <TooltipContent className="py-3 border shadow-xl bg-accent">
-                                <div className="gap-2 flex items-center justify-center">
-                                    <BadgeInfo className="size-4 text-muted-foreground" />
-                                    <p>Edit transactions.</p>
-                                </div>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
+                    <Tooltip delayDuration={750}>
+                        <TooltipTrigger asChild>
+                            <Button size="sm" className="border" variant="secondary"><SquarePen /> Edit</Button>
+                        </TooltipTrigger>
+                        <TooltipContent className="p-2 border shadow-xl bg-accent">
+                            <div className="gap-2 flex items-center justify-center">
+                                <BadgeInfo className="size-4 text-muted-foreground" />
+                                <p>Edit transactions.</p>
+                            </div>
+                        </TooltipContent>
+                    </Tooltip>
                     <TransactionDialog />
-                    <TooltipProvider delayDuration={0}>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button size="sm" className="size-8 border" variant="secondary"><ListPlus /></Button>
-                            </TooltipTrigger>
-                            <TooltipContent className="py-3 border shadow-xl bg-accent">
-                                <div className="gap-2 flex items-center justify-center">
-                                    <BadgeInfo className="size-4 text-muted-foreground" />
-                                    <p>Add multiple transactions.</p>
-                                </div>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
+                    <Tooltip delayDuration={750}>
+                        <TooltipTrigger asChild>
+                            <Button size="sm" className="size-8 border" variant="secondary"><ListPlus /></Button>
+                        </TooltipTrigger>
+                        <TooltipContent className="p-2 border shadow-xl bg-accent">
+                            <div className="gap-2 flex items-center justify-center">
+                                <BadgeInfo className="size-4 text-muted-foreground" />
+                                <p>Add multiple transactions.</p>
+                            </div>
+                        </TooltipContent>
+                    </Tooltip>
                 </div>
             )}
         </React.Fragment>

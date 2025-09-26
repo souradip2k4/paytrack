@@ -9,6 +9,7 @@ export type Store = {
 	set_yearly_billing: (yearly_billing: boolean) => void;
 
 	popover_transaction_dialog_open: boolean;
+    popover_datepicker_open: boolean;
 	popover_category_picker_open: boolean;
 	popover_currency_picker_open: boolean;
 	popover_status_picker_open: boolean;
@@ -42,6 +43,7 @@ export const useStore = create<Store>((set, get) => ({
 		}),
 
 	popover_transaction_dialog_open: false,
+	popover_datepicker_open: false,
 	popover_category_picker_open: false,
 	popover_currency_picker_open: false,
 	popover_status_picker_open: false,
