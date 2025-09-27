@@ -5,7 +5,7 @@ import path from "path";
 import rehypeHighlight from "rehype-highlight";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
-import remarkToc from "remark-toc";
+// import remarkToc from "remark-toc";
 
 export type MarkdownContent = {
 	content: string;
@@ -53,7 +53,7 @@ export async function readMDXFile(
 
 	const compiledSource = await serialize(markdown!.content, {
 		mdxOptions: {
-			remarkPlugins: [remarkGfm, remarkToc],
+			remarkPlugins: [remarkGfm],
 			rehypePlugins: [rehypeHighlight, rehypeSlug],
 		},
 		parseFrontmatter: false, // already parsed
