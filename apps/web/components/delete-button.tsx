@@ -10,19 +10,45 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { useDisplayStore } from "@/lib/store";
+import { bearerHeader } from "@/lib/bearer";
+import { db } from "@/lib/db";
+import { useDisplayStore, useStore } from "@/lib/store";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
-import React from "react";
+import { toast } from "sonner";
 import { Button } from "./ui/button";
 
 export function DeleteButton() {
-	const rowSelection = useDisplayStore(s => s.display_row_selection_state);
-	const keys = React.useMemo(
-		() => Object.keys(rowSelection).filter(x => rowSelection[x]),
-		[rowSelection],
-	);
+	const rowSelectionIds = useStore(s => s.row_selection_entries_ids);
 
-	if (keys.length <= 0) return null;
+	const queryClient = useQueryClient();
+	const { mutateAsync, isPending } = useMutation({
+		mutationKey: ["tr", "many", "delete"],
+		mutationFn: async () => {
+			if (rowSelectionIds.length <= 0) return;
+			const res = await db(await bearerHeader())
+				.from("transactions")
+				.delete()
+				.in("id", rowSelectionIds);
+			if (res.error) throw res.error;
+		},
+		onSuccess: () => {
+			toast.success("Transactions deleted successfully.");
+			queryClient.invalidateQueries({
+				queryKey: ["tr", "get"],
+				exact: false,
+			});
+			queryClient.refetchQueries({
+				queryKey: ["tr", "get"],
+				exact: false,
+			});
+			useDisplayStore.setState({ display_row_selection_state: {} });
+			useStore.setState({ row_selection_entries_ids: [] });
+		},
+		onError: () => toast.error("Failed to delete transactions"),
+	});
+
+	if (rowSelectionIds.length <= 0) return null;
 
 	return (
 		<Dialog>
@@ -38,7 +64,8 @@ export function DeleteButton() {
 						Delete transactions
 					</DialogTitle>
 					<DialogDescription>
-						Are you sure you want to delete these transactions?
+						Are you sure you want to delete these{" "}
+						{rowSelectionIds.length} transaction(s)?
 					</DialogDescription>
 				</DialogHeader>
 				<DialogFooter>
@@ -47,7 +74,12 @@ export function DeleteButton() {
 							Cancel
 						</Button>
 					</DialogClose>
-					<Button size="sm">Delete</Button>
+					<Button
+						size="sm"
+						isLoading={isPending}
+						onClick={() => mutateAsync()}>
+						Delete
+					</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

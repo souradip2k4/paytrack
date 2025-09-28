@@ -30,6 +30,7 @@ export const columns: ColumnDef<any>[] = [
 				checked={row.getIsSelected()}
 				onCheckedChange={value => row.toggleSelected(!!value)}
 				aria-label="Select row"
+				className="bg-red-200"
 			/>
 		),
 		enableSorting: false,

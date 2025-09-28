@@ -5,6 +5,8 @@ export type Store = {
 	row_selection_entries: RowSelectionState;
 	set_row_selection_entries: (row_selection: RowSelectionState) => void;
 
+	row_selection_entries_ids: string[];
+
 	yearly_billing: boolean;
 	set_yearly_billing: (yearly_billing: boolean) => void;
 
@@ -29,8 +31,9 @@ export type Store = {
 
 export const today = new Date();
 
-export const useStore = create<Store>((set, get) => ({
+export const useStore = create<Store>(set => ({
 	row_selection_entries: {},
+	row_selection_entries_ids: [],
 	set_row_selection_entries: row_selection_entries =>
 		set({
 			row_selection_entries,

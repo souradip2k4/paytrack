@@ -5,12 +5,13 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { BadgeInfo, ListPlus, SquarePen } from "lucide-react";
+import { BadgeInfo, ListPlus } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React from "react";
 import { navs } from "./sidebar/nav-main";
 import { TransactionDialog } from "./transaction-editor";
 import { Button } from "./ui/button";
+import { ViewCategoryPopover } from "./view-category-popover";
 
 export function AppHeader() {
 	const pathname = usePathname();
@@ -43,21 +44,18 @@ export function AppHeader() {
 				<div className="ml-auto flex gap-2">
 					<Tooltip delayDuration={750}>
 						<TooltipTrigger asChild>
-							<Button
-								size="sm"
-								className="border"
-								variant="secondary">
-								<SquarePen /> Edit
-							</Button>
+							<ViewCategoryPopover />
 						</TooltipTrigger>
 						<TooltipContent className="bg-accent border p-2 shadow-xl">
 							<div className="flex items-center justify-center gap-2">
 								<BadgeInfo className="text-muted-foreground size-4" />
-								<p>Edit transactions.</p>
+								<p>View categories.</p>
 							</div>
 						</TooltipContent>
 					</Tooltip>
+
 					<TransactionDialog />
+
 					<Tooltip delayDuration={750}>
 						<TooltipTrigger asChild>
 							<Button

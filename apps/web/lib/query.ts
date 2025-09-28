@@ -2,7 +2,7 @@ import { authClient } from "@/lib/auth-client";
 import { bearerHeader } from "@/lib/bearer";
 import { db } from "@/lib/db";
 import { useChartStore, useDisplayStore, useFilterStore } from "@/lib/store";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 type TAuthClientSession = ReturnType<typeof authClient.useSession>;
@@ -52,6 +52,35 @@ export const useCategories = () => {
 	return query;
 };
 
+export const useCreateCategories = () => {
+	const queryClient = useQueryClient();
+	const query = useMutation({
+		mutationKey: ["cat", "post"],
+		mutationFn: async (data: string) => {
+			const res = await db(await bearerHeader())
+				.from("categories")
+				.insert({
+					name: data,
+				});
+			if (res.error) {
+				toast.error("Failed to create category");
+				return;
+			}
+			return res.data;
+		},
+		onSuccess: () => {
+			toast.success("Category created successfully");
+			queryClient.invalidateQueries({
+				queryKey: ["cat", "get"],
+			});
+			queryClient.refetchQueries({
+				queryKey: ["cat", "get"],
+			});
+		},
+	});
+	return query;
+};
+
 export const useTransactions = () => {
 	const { data: authData, error: authError } = authClient.useSession();
 
@@ -64,8 +93,6 @@ export const useTransactions = () => {
 		queryKey: ["tr", "get", filterStack, pageSize],
 		queryFn: async () => {
 			if (authData === null) return [];
-
-			await new Promise(resolve => setTimeout(resolve, 10_000));
 
 			const res = await applyDisplay(
 				applyFilter(

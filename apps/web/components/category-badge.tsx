@@ -35,12 +35,19 @@ const variants = [
 	// "bg-stone-500/10 text-stone-500 border-stone-500",
 ];
 
-export function CategoryBadge({ category }: { category: string }) {
+export function CategoryBadge({
+	category,
+	className,
+}: {
+	category: string;
+	className?: string;
+}) {
 	return (
 		<div
 			className={cn(
 				"inline-flex w-fit items-center gap-2 rounded-full border px-2 py-1",
 				variants[hashStr(category || "", variants.length)],
+				className,
 			)}>
 			<pre className="text-xs">{category}</pre>
 		</div>
