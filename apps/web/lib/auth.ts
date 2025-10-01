@@ -134,7 +134,7 @@ export const auth = betterAuth({
 				session,
 				subscription: {
 					isSubscribed,
-					productId: subscriptionRes.rows[0].product_id,
+					productId: subscriptionRes.rows[0]?.product_id,
 				},
 			};
 		}),
