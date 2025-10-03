@@ -10,7 +10,7 @@ import { useFilterStore } from "@/lib/store";
 import { X } from "lucide-react";
 import React from "react";
 import { Button } from "../ui/button";
-import { AmountInput } from "./amount-input";
+import { AmountFilter } from "./amount-filter";
 import { CategoryFilter } from "./category-filter";
 import { FilterOperationSelect } from "./filter-operation-select";
 import { StatusFilter } from "./status-filter";
@@ -33,7 +33,7 @@ export function FilterPills() {
 								<icons.amount className="mr-2 size-4" /> Amount
 							</>
 						)}
-						{field === "categories" && (
+						{field === "category" && (
 							<>
 								<icons.category className="mr-2 size-4" />{" "}
 								Category
@@ -62,11 +62,11 @@ export function FilterPills() {
 								</Button>
 							</PopoverTrigger>
 							<PopoverContent className="p-1">
-								{field === "categories" && (
+								{field === "category" && (
 									<CategoryFilter id={id} />
 								)}
 								{field === "status" && <StatusFilter id={id} />}
-								{field === "amount" && <AmountInput id={id} />}
+								{field === "amount" && <AmountFilter id={id} />}
 							</PopoverContent>
 						</Popover>
 					)}

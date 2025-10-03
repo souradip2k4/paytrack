@@ -117,10 +117,6 @@ export function TransactionDialog() {
     const statusPickerOpen = useStore(s => s.popover_status_picker_open);
     const categoryPickerOpen = useStore(s => s.popover_category_picker_open);
 
-    React.useEffect(() => {
-        console.log(datePickerOpen);
-    }, [datePickerOpen]);
-
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>

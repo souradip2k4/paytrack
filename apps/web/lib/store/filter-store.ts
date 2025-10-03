@@ -5,7 +5,7 @@ import { persist } from "zustand/middleware";
 export type FilterState = Record<FilterFields, string[]>;
 export type FilterFields =
 	| "amount"
-	| "categories"
+	| "category"
 	| "status"
 	| "created_at"
 	| "updated_at"
@@ -26,7 +26,7 @@ export type FilterOperations =
 export const allowed_operations_map: Record<FilterFields, FilterOperations[]> =
 	{
 		amount: ["eq", "gt", "gte", "lt", "lte"],
-		categories: ["is", "is not", "is empty"],
+		category: ["is", "is not", "is empty"],
 		status: ["is", "is not", "is empty"],
 		created_at: ["from", "to", "between"],
 		updated_at: ["from", "to", "between"],
@@ -142,7 +142,7 @@ export const useFilterStore = create<FilterStore>()(
 			filter_apply: q => {
 				const properties_map: Record<FilterFields, string> = {
 					amount: "amount",
-					categories: "category_id",
+					category: "category_id",
 					status: "status",
 					created_at: "created_at",
 					updated_at: "updated_at",
@@ -165,7 +165,7 @@ export const useFilterStore = create<FilterStore>()(
 						continue;
 					}
 
-					if (field === "categories" || field === "status") {
+					if (field === "category" || field === "status") {
 						if (operation === "is empty") {
 							q.is(mapped_field, null);
 							continue;
@@ -228,3 +228,18 @@ export const useFilterStore = create<FilterStore>()(
 		{ name: "tr_filters" },
 	),
 );
+
+export const serializeFilterStack = (stack: FilterStackItem[]) => {
+	return stack.map(stackItem => {
+		const field = stackItem.field;
+		let value = [];
+		if (field === "category" || field === "status")
+			value = stackItem.values.map(v => v.value);
+		else value = stackItem.values[0]?.value;
+		return {
+			field: stackItem.field,
+			operation: stackItem.operation,
+			value,
+		};
+	});
+};

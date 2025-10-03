@@ -16,7 +16,7 @@ import { useFilterStore } from "@/lib/store";
 import { ListFilterPlus } from "lucide-react";
 import { nanoid } from "nanoid";
 import React from "react";
-import { AmountInput } from "./amount-input";
+import { AmountFilter } from "./amount-filter";
 import { CategoryFilter } from "./category-filter";
 import { StatusFilter } from "./status-filter";
 
@@ -47,7 +47,7 @@ export function FilterDialog() {
 						</DropdownMenuSubTrigger>
 						<DropdownMenuPortal>
 							<DropdownMenuSubContent>
-								<AmountInput id={id} />
+								<AmountFilter id={id} />
 							</DropdownMenuSubContent>
 						</DropdownMenuPortal>
 					</DropdownMenuSub>

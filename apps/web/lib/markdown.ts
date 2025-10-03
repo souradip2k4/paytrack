@@ -96,7 +96,6 @@ export async function getMDXBySlug(
 	const fullDirPath = path.resolve("./content");
 	for (const ext of extensions) {
 		const filePath = path.join(fullDirPath, `${slug}${ext}`);
-		console.log(filePath);
 		if (fs.existsSync(filePath)) return await readMDXFile(filePath);
 	}
 	return { data: null, error: "Not found" };

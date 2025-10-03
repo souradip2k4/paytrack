@@ -1,7 +1,12 @@
 import { authClient } from "@/lib/auth-client";
 import { bearerHeader } from "@/lib/bearer";
 import { db } from "@/lib/db";
-import { useChartStore, useDisplayStore, useFilterStore } from "@/lib/store";
+import {
+	serializeFilterStack,
+	useChartStore,
+	useDisplayStore,
+	useFilterStore,
+} from "@/lib/store";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -130,27 +135,26 @@ type TransactionDistribution = {
 export const useTransactionDistributionByCategories = () => {
 	const start_date = useChartStore(s => s.tr_chart_date_start);
 	const end_date = useChartStore(s => s.tr_chart_date_end);
-
+	const filterStack = useFilterStore(s => s.filter_stack);
 	const { data: authData, error: authError } = authClient.useSession();
-
 	const res = useQuery({
-		queryKey: ["tr", "dist", start_date, end_date],
+		queryKey: ["tr", "dist", start_date, end_date, filterStack],
 		queryFn: async () => {
 			if (authData === null) return [];
 			const res = await db(await bearerHeader()).rpc(
 				"get_transaction_distribution_by_category",
 				{
 					params: {
-						start_date,
-						end_date,
-						user_id: authData.user.id,
+						user_id: authData?.user?.id,
+						organization_id:
+							authData?.session?.activeOrganizationId,
+						filters: serializeFilterStack(filterStack),
 					},
 				},
 			);
 			if (res.error) throw res.error;
 			return res.data as TransactionDistribution[];
 		},
-		enabled: authError === null && authData !== null,
 	});
 
 	return res;

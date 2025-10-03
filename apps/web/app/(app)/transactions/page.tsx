@@ -1,10 +1,10 @@
 import { DeleteButton } from "@/components/delete-button";
-import { DisplayDropdown } from "@/components/transaction-display-dropdown";
 import {
 	FilterClear,
 	FilterDialog,
 	FilterPills,
-} from "@/components/transaction-filter-dropdown";
+} from "@/components/filter-dropdown";
+import { DisplayDropdown } from "@/components/transaction-display-dropdown";
 import { TransactionsTable } from "@/components/transactions-table";
 import { Button } from "@/components/ui/button";
 import {

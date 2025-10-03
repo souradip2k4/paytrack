@@ -27,9 +27,10 @@ export function ViewCategoryPopover() {
         const categoryName = createCategoryInputRef.current.value?.trim();
         if (categoryName === "") return;
         createCategory(categoryName);
-    }
+    };
 
-    const { data: categories, isLoading: isCategoriesLoading } = useCategories();
+    const { data: categories, isLoading: isCategoriesLoading } =
+        useCategories();
 
     const queryClient = useQueryClient();
 
@@ -67,8 +68,8 @@ export function ViewCategoryPopover() {
                 const res = await db(await bearerHeader())
                     .from("categories")
                     .update({ name: categoryName })
-                    .eq("id", categoryId).select()
-                console.log(res)
+                    .eq("id", categoryId)
+                    .select();
                 if (res.error) throw res.error;
                 return res.data;
             },
@@ -90,7 +91,8 @@ export function ViewCategoryPopover() {
             },
         });
 
-    const { mutateAsync: createCategory, isPending: isCreatingCategory } = useCreateCategories();
+    const { mutateAsync: createCategory, isPending: isCreatingCategory } =
+        useCreateCategories();
 
     return (
         <Popover>
@@ -105,16 +107,17 @@ export function ViewCategoryPopover() {
                     <h2 className="px-4 py-2">Categories</h2>
                     <Separator />
                     <ScrollArea className="max-h-96">
-
                         {isCategoriesLoading && (
                             <div className="p-4 text-center">
-                                <Loader className="animate-spin size-4 text-muted-foreground" />
+                                <Loader className="text-muted-foreground size-4 animate-spin" />
                             </div>
                         )}
 
                         {categories && categories.length <= 0 && (
                             <div className="p-4 text-center">
-                                <p className="text-muted-foreground">No categories</p>
+                                <p className="text-muted-foreground">
+                                    No categories
+                                </p>
                             </div>
                         )}
 
@@ -127,7 +130,9 @@ export function ViewCategoryPopover() {
                                             className="h-6"
                                             value={categoryName}
                                             onInput={e =>
-                                                setCategoryName(e.currentTarget.value)
+                                                setCategoryName(
+                                                    e.currentTarget.value,
+                                                )
                                             }
                                         />
                                         : <CategoryBadge
@@ -149,9 +154,12 @@ export function ViewCategoryPopover() {
                                                     size="sm"
                                                     variant="secondary"
                                                     className="size-6 border"
-                                                    isLoading={isEditingCategory}
-                                                    onClick={() => editCategory()}
-                                                >
+                                                    isLoading={
+                                                        isEditingCategory
+                                                    }
+                                                    onClick={() =>
+                                                        editCategory()
+                                                    }>
                                                     <Check className="size-3" />
                                                 </Button>
                                                 <Button
@@ -194,8 +202,15 @@ export function ViewCategoryPopover() {
                 </div>
                 <Separator />
                 <div className="flex gap-1 p-4">
-                    <Input placeholder="Create a new category" ref={createCategoryInputRef} />
-                    <Button size="icon" className="border" isLoading={isCreatingCategory} onClick={handleCreateCategory}>
+                    <Input
+                        placeholder="Create a new category"
+                        ref={createCategoryInputRef}
+                    />
+                    <Button
+                        size="icon"
+                        className="border"
+                        isLoading={isCreatingCategory}
+                        onClick={handleCreateCategory}>
                         <Plus />
                     </Button>
                 </div>

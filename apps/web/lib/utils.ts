@@ -18,3 +18,11 @@ export function avatarUrl(src?: string | undefined | null): string {
 	if (typeof src === "string" && src.length === 0) return fallbackUrl;
 	return src;
 }
+
+export function isTargetEditable(target: HTMLElement) {
+	return (
+		target.tagName === "INPUT" || // for <input />
+		target.tagName === "TEXTAREA" || // for <textarea />
+		target.isContentEditable // for elements with contentEditable="true"
+	);
+}

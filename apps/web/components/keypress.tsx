@@ -31,49 +31,47 @@ export function Keypress() {
 				target.tagName === "TEXTAREA" || // for <textarea />
 				target.isContentEditable; // for elements with contentEditable="true"
 
+			if (isEditable) return;
+
 			const key = e.key;
 			const lowerKey = key.toLowerCase();
 
-			console.log(key, isEditable);
+			/* sidebar navigations */
+			if (e.shiftKey && keypress[lowerKey]) {
+				keypress[lowerKey]();
+			}
 
-			if (!isEditable) {
-				/* sidebar navigations */
-				if (e.shiftKey && keypress[lowerKey]) {
-					keypress[lowerKey]();
-				}
+			/* TRANSACTION DIALOG SHORTCUTS */
+			/* open transaction dialog */
+			if (key === "n") {
+				e.preventDefault();
+				useStore.setState({
+					popover_transaction_dialog_open: true,
+				});
+			}
 
-				/* TRANSACTION DIALOG SHORTCUTS */
-				/* open transaction dialog */
-				if (key === "n") {
-					e.preventDefault();
-					useStore.setState({
-						popover_transaction_dialog_open: true,
-					});
-				}
+			/* open date picker */
+			if (!isEditable && key === "d") {
+				e.preventDefault();
+				useStore.setState({ popover_datepicker_open: true });
+			}
 
-				/* open date picker */
-				if (!isEditable && key === "d") {
-					e.preventDefault();
-					useStore.setState({ popover_datepicker_open: true });
-				}
+			/* open currency picker */
+			if (!isEditable && key === "k") {
+				e.preventDefault();
+				useStore.setState({ popover_currency_picker_open: true });
+			}
 
-				/* open currency picker */
-				if (!isEditable && key === "k") {
-					e.preventDefault();
-					useStore.setState({ popover_currency_picker_open: true });
-				}
+			/* open status picker */
+			if (!isEditable && key === "s") {
+				e.preventDefault();
+				useStore.setState({ popover_status_picker_open: true });
+			}
 
-				/* open status picker */
-				if (!isEditable && key === "s") {
-					e.preventDefault();
-					useStore.setState({ popover_status_picker_open: true });
-				}
-
-				/* open category picker */
-				if (!isEditable && key === "c") {
-					e.preventDefault();
-					useStore.setState({ popover_category_picker_open: true });
-				}
+			/* open category picker */
+			if (!isEditable && key === "c") {
+				e.preventDefault();
+				useStore.setState({ popover_category_picker_open: true });
 			}
 		};
 

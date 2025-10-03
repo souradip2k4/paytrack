@@ -12,7 +12,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const initialState = useFilterStore.getState();
 
 const filter: FilterStackItem = {
-	field: "categories",
+	field: "category",
 	operation: "is",
 	values: [{ id: "value#n", label: "Food", value: "value#n" }],
 	id: "filter#n",
@@ -20,7 +20,7 @@ const filter: FilterStackItem = {
 
 const filterStack: FilterStackItem[] = [
 	{
-		field: "categories",
+		field: "category",
 		operation: "is",
 		values: [
 			{ id: "value#1", label: "Food", value: "value#1" },
@@ -39,7 +39,7 @@ const filterStack: FilterStackItem[] = [
 		id: "filter#2",
 	},
 	{
-		field: "categories",
+		field: "category",
 		operation: "is not",
 		values: [{ id: "value#6", label: "Education", value: "value#6" }],
 		id: "filter#3",
@@ -270,7 +270,7 @@ describe("useFilterStore", () => {
 					useFilterStore.setState({
 						filter_stack: [
 							{
-								field: "categories",
+								field: "category",
 								operation: "is",
 								values: [
 									{
@@ -295,7 +295,7 @@ describe("useFilterStore", () => {
 					useFilterStore.setState({
 						filter_stack: [
 							{
-								field: "categories",
+								field: "category",
 								operation: "is",
 								values: [
 									{
@@ -394,7 +394,7 @@ describe("useFilterStore", () => {
 					useFilterStore.setState({
 						filter_stack: [
 							{
-								field: "categories",
+								field: "category",
 								operation: "is not",
 								values: [
 									{
@@ -421,7 +421,7 @@ describe("useFilterStore", () => {
 					useFilterStore.setState({
 						filter_stack: [
 							{
-								field: "categories",
+								field: "category",
 								operation: "is not",
 								values: [
 									{
@@ -519,7 +519,7 @@ describe("useFilterStore", () => {
 					useFilterStore.setState({
 						filter_stack: [
 							{
-								field: "categories",
+								field: "category",
 								operation: "is empty",
 								values: [],
 								id: "filter#1",

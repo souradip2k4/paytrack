@@ -26,6 +26,7 @@ export default function Error({
 
 	const handleReset = React.useCallback(() => {
 		startTransition(async () => {
+			if (localStorage) localStorage.clear();
 			reset();
 			await new Promise(resolve => setTimeout(resolve, 1000));
 		});

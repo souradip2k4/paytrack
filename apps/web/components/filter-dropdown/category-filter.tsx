@@ -49,7 +49,7 @@ export function CategoryFilter({ id }: { id: string }) {
 								keywords={[c.name]}
 								onSelect={() =>
 									toggle(
-										"categories",
+										"category",
 										"is",
 										{
 											id: c.id,
