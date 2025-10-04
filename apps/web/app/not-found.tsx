@@ -28,7 +28,7 @@ export default function NotFound() {
                         <Link
                             href="/support"
                             className="text-muted-foreground underline decoration-dotted">
-                            Help & support.
+                            Help and support.
                         </Link>
                         <Link
                             href="/transactions"

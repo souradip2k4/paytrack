@@ -16,8 +16,12 @@ import {
 } from "@/components/ui/tooltip";
 import { useEditorStore } from "@/lib/store/editor-store";
 import { BadgeInfo, SquarePen } from "lucide-react";
+import { useForm } from "react-hook-form";
 
 export default function Page() {
+    const isEditing = useEditorStore(s => s.is_editing);
+    const editorForm = useForm({});
+
     return (
         <div>
             <div>
@@ -31,24 +35,27 @@ export default function Page() {
                     <div className="flex gap-2">
                         <DeleteButton />
 
-                        <Tooltip delayDuration={750}>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    size="sm"
-                                    className="border"
-                                    variant="secondary"
-                                    onClick={() => useEditorStore.setState({ is_editing: true })}
-                                >
-                                    <SquarePen /> Edit
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent className="bg-accent border p-2 shadow-xl">
-                                <div className="flex items-center justify-center gap-2">
-                                    <BadgeInfo className="text-muted-foreground size-4" />
-                                    <p>Edit transactions.</p>
-                                </div>
-                            </TooltipContent>
-                        </Tooltip>
+                        {isEditing ? (<></>) : (
+                            <Tooltip delayDuration={750}>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        size="sm"
+                                        className="border"
+                                        variant="secondary"
+                                        onClick={() => useEditorStore.setState({ is_editing: true })}
+                                    >
+                                        <SquarePen /> Edit
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent className="bg-accent border p-2 shadow-xl">
+                                    <div className="flex items-center justify-center gap-2">
+                                        <BadgeInfo className="text-muted-foreground size-4" />
+                                        <p>Edit transactions.</p>
+                                    </div>
+                                </TooltipContent>
+                            </Tooltip>
+                        )}
+
                         <DisplayDropdown />
                     </div>
                 </div>

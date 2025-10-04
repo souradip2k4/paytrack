@@ -37,6 +37,7 @@ import { toast } from "sonner";
 import z from "zod";
 import { CurrencyPicker } from "./currency-picker";
 import { StatusPicker } from "./status-picker";
+import { Kbd } from "../ui/kbd";
 
 const schema = z.object({
     name: z.string().max(50).optional(),
@@ -123,6 +124,7 @@ export function TransactionDialog() {
                 <Button size="sm">
                     <PlusIcon className="h-4 w-4" />
                     <span className="hidden md:block">New transaction</span>
+                    <Kbd className="bg-primary brightness-125 text-primary-foreground">n</Kbd>
                 </Button>
             </DialogTrigger>
             <DialogContent className="md:min-w-4xl gap-0 p-0 md:max-w-4xl">
