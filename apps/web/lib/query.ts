@@ -59,13 +59,17 @@ export const useCategories = () => {
 
 export const useCreateCategories = () => {
 	const queryClient = useQueryClient();
+	const { data: authData } = authClient.useSession();
 	const query = useMutation({
 		mutationKey: ["cat", "post"],
 		mutationFn: async (data: string) => {
+			if (!authData || !authData.user?.id) return;
 			const res = await db(await bearerHeader())
 				.from("categories")
 				.insert({
 					name: data,
+					user_id: authData.user?.id,
+					organization_id: authData.session?.activeOrganizationId,
 				});
 			if (res.error) {
 				toast.error("Failed to create category");

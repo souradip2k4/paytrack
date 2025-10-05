@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.8
+
+- Migrated to nextjs 15 and Turborepo. Removed prisma and clerk dependencies.
+- New logical filtering for transactions.
+- New date picker.
+
 ## v1.0.7
 
 - Added gzip compression on api responses using hono's compress() middleware.

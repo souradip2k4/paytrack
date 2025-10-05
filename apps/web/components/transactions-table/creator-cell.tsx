@@ -8,18 +8,21 @@ import { Skeleton } from "../ui/skeleton";
 
 export const CreatorCell = () => {
 	const { data, isPending } = authClient.useSession();
+
+	if (isPending) return <Skeleton className="h-4 w-16" />;
+
 	return (
 		<React.Fragment>
-			{isPending ?
-				<Skeleton className="h-4 w-16" />
-			:	<Badge variant="secondary" className="rounded-full">
-					<img
-						className="h-4 w-4 rounded-full"
-						src={avatarUrl(data?.user.image)}
-					/>{" "}
-					{data?.user.name} (you)
-				</Badge>
-			}
+			<Badge
+				data-editor="disabled"
+				variant="secondary"
+				className="rounded-full">
+				<img
+					className="h-4 w-4 rounded-full"
+					src={avatarUrl(data?.user.image)}
+				/>{" "}
+				{data?.user.name} (you)
+			</Badge>
 		</React.Fragment>
 	);
 };

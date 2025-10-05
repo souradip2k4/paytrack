@@ -53,6 +53,7 @@ create table categories (
 	id uuid primary key default gen_random_uuid(),
 	name varchar(255) not null,
 	description varchar(1000),
+    color varchar(6),
 	user_id text references users (id),
 	organization_id text references organizations (id)
 );
@@ -69,10 +70,10 @@ create table transactions (
 	id uuid primary key default gen_random_uuid(),
 	amount numeric(10, 2) not null,
 	currency varchar(3) default 'usd',
-	user_id text references users (id),
-	organization_id text references organizations (id),
+	user_id text references users (id) on delete cascade,
+	organization_id text references organizations (id) on delete cascade,
 	external_id varchar(255),
-	category_id uuid references categories (id),
+	category_id uuid references categories (id) on delete set null,
 	reference_no varchar(255),
 	name varchar(50),
 	description varchar(1000),
@@ -86,13 +87,13 @@ create table transactions (
 
 create table transaction_tags (
 	id uuid primary key default gen_random_uuid(),
-	transaction_id uuid references transactions (id) not null,
-	tag_id uuid references tags (id) not null
+	transaction_id uuid references transactions (id) not null on delete cascade,
+	tag_id uuid references tags (id) not null on delete cascade
 );
 
 create table line_items (
 	id uuid primary key default gen_random_uuid(),
-	transaction_id uuid references transactions (id) not null,
+	transaction_id uuid references transactions (id) not null on delete cascade,
 	name varchar(255),
 	description varchar(1000),
 	unit_count integer default 1,
@@ -101,8 +102,8 @@ create table line_items (
 
 create table transaction_line_items (
 	id uuid primary key default gen_random_uuid(),
-	transaction_id uuid references transactions (id) not null,
-	line_item_id uuid references line_items (id) not null
+	transaction_id uuid references transactions (id) not null on delete cascade,
+	line_item_id uuid references line_items (id) not null on delete set null
 );
 
 create type subscription_status as enum('active', 'paused', 'canceled');
@@ -124,9 +125,9 @@ create table subscriptions (
 	logo_url varchar(255),
 	period subscription_period,
 	interval_in_days integer,
-	category_id uuid references categories (id),
-	user_id text references users (id),
-	organization_id text references organizations (id)
+	category_id uuid references categories (id) on delete set null,
+	user_id text references users (id) on delete cascade,
+	organization_id text references organizations (id) on delete cascade
 );
 
 create type app_subscriptions_status as enum('sub_active', 'sub_inactive');
@@ -212,95 +213,6 @@ WITH
 /* ========================================================================== */
 /* FUNCTIONS */
 /* ========================================================================== */
-CREATE TYPE transaction_query_params AS (user_id text, organization_id text);
-
-/* ========================================================================== */
-/* Returns the highest or lowest credit or debit for the user */
-DROP FUNCTION IF EXISTS get_tranasction_credit_summary (transaction_query_params, BOOLEAN, INTEGER);
-
-DROP FUNCTION IF EXISTS get_tranasction_debit_summary (transaction_query_params, BOOLEAN, INTEGER);
-
-CREATE OR REPLACE FUNCTION get_tranasction_credit_summary (
-	params transaction_query_params,
-	is_asc BOOLEAN,
-	count INTEGER
-) RETURNS TABLE (amount numeric(10, 2), day DATE) SECURITY INVOKER AS $$
-
-BEGIN
-
-IF is_asc THEN
-    RETURN QUERY
-        SELECT SUM(tr.amount) FILTER (WHERE tr.amount < 0) AS amount, DATE (tr.transaction_date) AS day
-        FROM transactions tr
-        WHERE tr.transaction_date >= params.start_date AND tr.transaction_date < (params.end_date + INTERVAL '1 day')
-        AND tr.user_id = params.user_id
-        AND (tr.organization_id = params.organization_id OR tr.organization_id IS NULL)
-        GROUP BY DATE (tr.transaction_date)
-        ORDER BY amount ASC
-        LIMIT count;
-ELSE
-    RETURN QUERY
-        SELECT SUM(tr.amount) FILTER (WHERE tr.amount < 0) AS amount, DATE (tr.transaction_date) AS day
-        FROM transactions tr
-        WHERE tr.transaction_date >= params.start_date AND tr.transaction_date < (params.end_date + INTERVAL '1 day')
-        AND tr.user_id = params.user_id
-        AND (tr.organization_id = params.organization_id OR tr.organization_id IS NULL)
-        GROUP BY DATE (tr.transaction_date)
-        ORDER BY amount DESC
-        LIMIT count;
-END IF;
-
-END
-$$ LANGUAGE plpgsql STABLE;
-
-CREATE OR REPLACE FUNCTION get_tranasction_debit_summary (
-	params transaction_query_params,
-	is_asc BOOLEAN,
-	count INTEGER
-) RETURNS TABLE (amount numeric(10, 2), day DATE) SECURITY INVOKER AS $$
-
-BEGIN
-
-IF is_asc THEN
-    RETURN QUERY
-        SELECT SUM(tr.amount) FILTER (WHERE tr.amount > 0) AS amount, DATE (tr.transaction_date) AS day
-        FROM transactions tr
-        WHERE tr.transaction_date >= params.start_date AND tr.transaction_date < (params.end_date + INTERVAL '1 day')
-        AND tr.user_id = params.user_id
-        AND (tr.organization_id = params.organization_id OR tr.organization_id IS NULL)
-        GROUP BY DATE (tr.transaction_date)
-        ORDER BY amount ASC
-        LIMIT count;
-ELSE
-    RETURN QUERY
-        SELECT SUM(tr.amount) FILTER (WHERE tr.amount < 0) AS amount, DATE (tr.transaction_date) AS day
-        FROM transactions tr
-        WHERE tr.transaction_date >= params.start_date AND tr.transaction_date < (params.end_date + INTERVAL '1 day')
-        AND tr.user_id = params.user_id
-        AND (tr.organization_id = params.organization_id OR tr.organization_id IS NULL)
-        GROUP BY DATE (tr.transaction_date)
-        ORDER BY amount DESC
-        LIMIT count;
-END IF;
-
-END
-$$ LANGUAGE plpgsql STABLE;
-
-REVOKE ALL ON FUNCTION get_tranasction_credit_summary (transaction_query_params, BOOLEAN, INTEGER)
-FROM
-	anon,
-	authenticated;
-
-REVOKE ALL ON FUNCTION get_tranasction_debit_summary (transaction_query_params, BOOLEAN, INTEGER)
-FROM
-	anon,
-	authenticated;
-
-GRANT
-EXECUTE ON FUNCTION get_tranasction_credit_summary (transaction_query_params, BOOLEAN, INTEGER) TO authenticated;
-
-GRANT
-EXECUTE ON FUNCTION get_tranasction_debit_summary (transaction_query_params, BOOLEAN, INTEGER) TO authenticated;
 
 /* ========================================================================== */
 /* Returns the total amount for each category */

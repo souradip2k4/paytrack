@@ -1,3 +1,5 @@
+"use client";
+
 import { useFilterStore } from "@/lib/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { nanoid } from "nanoid";
@@ -5,21 +7,17 @@ import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod/mini";
 import { Input } from "../ui/input";
 import React from "react";
+import { DatePicker } from "../date-picker";
+import { defaultHead } from "next/head";
 
 const amountSchema = z.object({
     amount: z.optional(z.number()),
 });
 
-export function AmountFilter({ id }: { id: string }) {
+export function DateFilter({ id }: { id: string }) {
     const stack = useFilterStore(s => s.filter_stack);
     const stackItemIndex = stack.findIndex(s => s.id === id);
-
-    const { register, handleSubmit } = useForm({
-        resolver: zodResolver(amountSchema),
-        defaultValues: {
-            amount: stack[stackItemIndex]?.values[0]?.value || 0,
-        },
-    });
+    const defaultDate = stack[stackItemIndex]?.values[0]?.value || new Date();
 
     const onSubmit = (e: FieldValues) => {
         useFilterStore.setState(s => {
@@ -27,7 +25,7 @@ export function AmountFilter({ id }: { id: string }) {
                 s.filter_stack.push({
                     id: id,
                     operation: "eq",
-                    field: "amount",
+                    field: "transaction_date",
                     values: [{
                         id: nanoid(4),
                         label: e.amount.toString(),
@@ -45,14 +43,6 @@ export function AmountFilter({ id }: { id: string }) {
     };
 
     return (
-        <form
-            className="flex items-center gap-2 p-2"
-            onSubmit={handleSubmit(onSubmit)}>
-            <Input
-                placeholder="Equals to amount"
-                className="w-full"
-                {...register("amount", { required: true, valueAsNumber: true })}
-            />
-        </form>
+        <DatePicker date={defaultDate} onDateChange={onSubmit} />
     );
 }

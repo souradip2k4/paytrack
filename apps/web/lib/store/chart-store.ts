@@ -7,8 +7,8 @@ export type ChartStore = {
 	tr_chart_metric: "credit" | "debit" | "balance";
 	tr_chart_grouping: boolean;
 	tr_chart_reverse_order: boolean;
-	tr_chart_date_start: string | null;
-	tr_chart_date_end: string | null;
+	tr_chart_date_start: string;
+	tr_chart_date_end: string;
 };
 
 export const useChartStore = create<ChartStore>()(
@@ -21,6 +21,6 @@ export const useChartStore = create<ChartStore>()(
 			tr_chart_date_start: format(startOfMonth(new Date()), "yyyy-MM-dd"),
 			tr_chart_date_end: format(endOfMonth(new Date()), "yyyy-MM-dd"),
 		}),
-		{ name: "chart::config" },
+		{ name: "chart_config" },
 	),
 );

@@ -1,0 +1,18 @@
+services:
+  bu-postgres:
+    image: postgres:17.5-alpine3.22
+    container_name: bu-postgres
+    restart: unless-stopped
+    networks:
+      - bu-net
+    volumes:
+      - bu-postgres-data:/var/lib/postgresql/data
+    env_file:
+      - path: .env
+        required: true
+    ports:
+      - 4000:5432
+    environment:
+      POSTGRES_DB: budgetbee
+      POSTGRES_USER: ${POSTGRES_USER:?environment variable POSTGRES_USER is not set.}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?environment variable POSTGRES_PASSWORD is not set.}

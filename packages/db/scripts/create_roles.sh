@@ -1,3 +1,5 @@
+source ./.env
+
 if [[ -z "$POSTGRES_SUBSCRIPTION_ADMIN_PASSWORD" ]]; then
     echo "POSTGRES_SUBSCRIPTION_ADMIN_PASSWORD is not set"
     exit 1

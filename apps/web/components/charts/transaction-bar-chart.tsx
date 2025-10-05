@@ -42,15 +42,25 @@ export function TransactionBarChart() {
     const { data: categories, isLoading: isCategoriesLoading } =
         useCategories();
 
-    React.useEffect(() => {
-    }, [transactions]);
+    React.useEffect(() => { }, [transactions]);
 
     const chartData: Record<string, string | number>[] = React.useMemo(() => {
         if (transactions === undefined || categories === undefined) return [];
         if (transactions.length === 0) return []; // since we would an empty state
 
-        const startDate = new Date(start_date);
-        const endDate = new Date(end_date);
+
+        // calculate range of dates
+        /*let minTimestamp: number = new Date(transactions[0].day).getTime();
+        let maxTimestamp: number = new Date(transactions[0].day).getTime();
+
+        for (let i = 1; i < transactions.length; i++) {
+            const currentTimestamp: number = new Date(transactions[i].day).getTime();
+            if (currentTimestamp < minTimestamp) minTimestamp = currentTimestamp;
+            if (currentTimestamp > maxTimestamp) maxTimestamp = currentTimestamp;
+        }*/
+
+        const startDate: Date = new Date(start_date);
+        const endDate: Date = new Date(end_date);
 
         const catMap: Map<string, string> = categories.reduce((map, cat) => {
             map.set(cat.id, cat.name);

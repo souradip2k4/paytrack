@@ -2,13 +2,133 @@
 
 import { StatusBadge } from "@/components/status-badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import { formatMoney } from "@/lib/money-utils";
+import { useEditorStore } from "@/lib/store/editor-store";
 import { cn } from "@/lib/utils";
-import { ColumnDef } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import {
+    CellContext,
+    ColumnDef,
+    ColumnDefTemplate,
+} from "@tanstack/react-table";
+import { ChevronDown } from "lucide-react";
+import { useController } from "react-hook-form";
+import { StatusPicker } from "../transaction-editor/status-picker";
 import { CategoryCell } from "./category-cell";
 import { CreatorCell } from "./creator-cell";
-import { DateCell } from "./date-cell";
+import { DateCell, TransactionDateCell } from "./date-cell";
+
+export const AmountCell: ColumnDefTemplate<CellContext<any, unknown>> = ({
+    row,
+    column,
+}) => {
+    const defaultAmount = parseFloat(row.getValue("amount"));
+    const formattedAmount = formatMoney(defaultAmount, row.original.currency);
+    const amountColor =
+        defaultAmount > 0 ? "text-emerald-500"
+            : defaultAmount < 0 ? "text-red-500"
+                : "";
+    const isEditing = useEditorStore(s => s.is_editing);
+
+    const {
+        field: { onChange, ...field },
+    } = useController({
+        name: `tr.${row.id}.amount`,
+        defaultValue: defaultAmount,
+    });
+
+    const editorState = field.value !== defaultAmount ? "stale" : "clean";
+
+    if (!isEditing) {
+        return (
+            <div className={cn("font-medium", amountColor)}>
+                <p className="whitespace-nowrap">{formattedAmount}</p>
+            </div>
+        );
+    }
+
+    return (
+        <Input
+            {...field}
+            onInput={onChange}
+            data-editor={editorState}
+            placeholder="Amount"
+            className="h-[48px] rounded-none border-none"
+            style={{ width: column.getSize() }}
+        />
+    );
+};
+
+export const TitleCell: ColumnDefTemplate<CellContext<any, unknown>> = ({
+    row,
+    column,
+}) => {
+    const isEditing = useEditorStore(s => s.is_editing);
+    const defaultName: string = row.getValue(column.id);
+    const {
+        field: { onChange, ...field },
+    } = useController({
+        name: `tr.${row.id}.name`,
+        defaultValue: defaultName,
+    });
+
+    const editorState = field.value !== defaultName ? "stale" : "clean";
+
+    if (!isEditing) {
+        return (
+            <p
+                className={cn("overflow-hidden text-ellipsis", {
+                    "text-muted-foreground italic": !defaultName,
+                })}>
+                {defaultName || "no title"}
+            </p>
+        );
+    }
+
+    return (
+        <Input
+            data-editor={editorState}
+            placeholder="Title"
+            style={{ width: column.getSize() }}
+            className="h-[48px] rounded-none border-none"
+            onInput={onChange}
+            {...field}
+        />
+    );
+};
+
+export const StatusCell: ColumnDefTemplate<CellContext<any, unknown>> = ({
+    row,
+    column,
+}) => {
+    const defaultStatus = row.getValue<string>("status");
+
+    const {
+        field: { onChange, ...field },
+    } = useController({
+        name: `tr.${row.id}.status`,
+        defaultValue: defaultStatus,
+    });
+
+    const isEditing = useEditorStore(s => s.is_editing);
+    const editorState = field.value !== defaultStatus ? "stale" : "clean";
+
+    if (!isEditing) return <StatusBadge status={defaultStatus} />;
+    return (
+        <StatusPicker
+            {...field}
+            data-editor={editorState}
+            onValueChange={onChange}
+            asChild>
+            <span
+                className="flex h-[48px] items-center justify-between p-2"
+                style={{ width: column.getSize() }}>
+                <StatusBadge variant="ghost" status={field.value} />
+                <ChevronDown className="size-4" />
+            </span>
+        </StatusPicker>
+    );
+};
 
 // By defining an explicit `size` for every column, we gain full control over the table's layout.
 // This ensures that headers and cells align perfectly.
@@ -34,80 +154,63 @@ export const columns: ColumnDef<any>[] = [
                 aria-label="Select row"
             />
         ),
-        size: 48, // Adjusted size for checkbox
+        size: 48,
         enableSorting: false,
         enableHiding: false,
     },
     {
         accessorKey: "amount",
         header: "Amount",
-        cell: ({ row }) => {
-            const amount = parseFloat(row.getValue("amount"));
-            const formatted = formatMoney(amount, row.original.currency);
-            const color =
-                amount > 0 ? "text-emerald-500"
-                    : amount < 0 ? "text-red-500"
-                        : "";
-            return (
-                <div className={cn("font-medium", color)}>
-                    <p className="whitespace-nowrap">{formatted}</p>
-                </div>
-            );
-        },
-        size: 120, // Explicit size for amount
+        cell: AmountCell,
+        size: 120,
         enableHiding: false,
     },
     {
         accessorKey: "name",
         header: "Title",
-        cell: ({ column, row }) => (
-            <p
-                className={cn("text-ellipsis overflow-hidden", {
-                    "text-muted-foreground italic": !row.getValue(column.id),
-                })}>
-                {row.getValue(column.id) || "no title"}
-            </p>
-        ),
-        size: 480, // More space for the title
+        cell: TitleCell,
+        size: 480,
     },
     {
         accessorKey: "status",
         header: "Status",
-        cell: ({ row }) => {
-            return <StatusBadge status={row.getValue("status")} />;
-        },
-        size: 120, // Explicit size for status
+        cell: StatusCell,
+        size: 120,
     },
     {
         accessorKey: "category_id",
         header: "Category",
         cell: CategoryCell,
-        size: 160, // Explicit size for category
+        size: 160,
     },
     {
         accessorKey: "transaction_date",
         header: "Transaction date",
-        cell: DateCell,
-        size: 180, // Explicit size for date
+        cell: TransactionDateCell,
+        sortingFn: "datetime",
+        size: 180,
     },
     {
         accessorKey: "created_at",
         header: "Created",
         cell: DateCell,
-        size: 150, // Explicit size for date
+        sortingFn: "datetime",
+        size: 150,
     },
     {
         accessorKey: "updated_at",
         header: "Last updated",
         cell: DateCell,
-        size: 150, // Explicit size for date
+        sortingFn: "datetime",
+        size: 150,
     },
 
     {
         accessorKey: "user_id",
         header: "Creator",
         cell: CreatorCell,
-        size: 150, // Explicit size for creator
+        sortingFn: "datetime",
+        size: 150,
     },
 
     /*
@@ -118,4 +221,3 @@ export const columns: ColumnDef<any>[] = [
     },
     */
 ];
-

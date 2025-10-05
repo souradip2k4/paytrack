@@ -1,52 +1,7 @@
-services:
-  bu-postgres:
-    image: postgres:17.5-alpine3.22
-    container_name: bu-postgres
-    restart: unless-stopped
-    networks:
-      - bu-net
-    volumes:
-      - bu-postgres-data:/var/lib/postgresql/data
-    env_file:
-      - path: .env
-        required: true
-    ports:
-      - 4000:5432
-    environment:
-      POSTGRES_DB: budgetbee
-      POSTGRES_USER: ${POSTGRES_USER:?environment variable POSTGRES_USER is not set.}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?environment variable POSTGRES_PASSWORD is not set.}
-
-  bu-postgrest:
-    image: postgrest/postgrest:v13.0.4
-    container_name: bu-postgrest
-    restart: unless-stopped
-    networks:
-      - bu-net
-    ports:
-      - 4001:3000
-    environment:
-      PGRST_DB_URI: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@bu-postgres:5432/budgetbee
-      PGRST_DB_SCHEMA: public
-      PGRST_DB_POOL: 10
-      PGRST_JWT_SECRET: ${PGRST_JWT_SECRET:?environment variable PGRST_JWT_SECRET is not set.}
-      PGRST_JWT_AUD: http://localhost:3000
-      PGRST_DB_ANON_ROLE: anon
-      PGRST_DB_AUTHENTICATED_ROLE: authenticated
-    depends_on:
-      - bu-postgres
-
-  bu-adminer:
-    image: adminer
-    container_name: bu-adminer
-    restart: unless-stopped
-    ports:
-      - 4002:8080
-    environment:
-      ADMINER_DEFAULT_SERVER: bu-postgres
-      ADMINER_DESIGN: pepa-linha-dark
-    networks:
-      - bu-net
+include:
+  - bu-postgres.yml
+  - bu-postgrest.yml
+  - bu-adminer.yml
 
 volumes:
   bu-postgres-data:
