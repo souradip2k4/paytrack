@@ -15,7 +15,6 @@ import { Pool } from "pg";
 import { checkEnv } from "./check-env";
 
 checkEnv("APP_URL");
-checkEnv("API_URL");
 checkEnv("GOOGLE_CLIENT_ID");
 checkEnv("GOOGLE_CLIENT_SECRET");
 checkEnv("POSTGRES_AUTH_ADMIN_DATABASE_URL");

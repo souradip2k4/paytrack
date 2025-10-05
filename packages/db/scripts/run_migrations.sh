@@ -1,20 +1,19 @@
 #!/usr/bin/env bash
 
-source .env
+source ./.env
 
 # TODO: add checks for env instead of printing it.
 echo "> Loaded environment variables."
 echo "> Database: $DATABASE_URL"
 echo "> Username: $POSTGRES_USER"
 echo "> Password: $POSTGRES_PASSWORD"
-echo "> Auth admin: $POSTGRES_ADMIN_PASSWORD"
-echo "> Subcription Admin: $POSTGRES_SUBSCRIPTION_ADMIN"
+echo "> Auth admin: $POSTGRES_AUTH_ADMIN_PASSWORD"
+echo "> Subcription Admin: $POSTGRES_SUBSCRIPTION_ADMIN_PASSWORD"
 
 ./scripts/create_roles.sh
 
 SQL_DIR="$(pwd)/migrations"
 FILE_EXTENSION=".sql"
-
 
 DB_COMMAND="psql $DATABASE_URL"
 

@@ -87,13 +87,13 @@ create table transactions (
 
 create table transaction_tags (
 	id uuid primary key default gen_random_uuid(),
-	transaction_id uuid references transactions (id) not null on delete cascade,
-	tag_id uuid references tags (id) not null on delete cascade
+	transaction_id uuid references transactions (id) on delete cascade,
+	tag_id uuid references tags (id) on delete cascade
 );
 
 create table line_items (
 	id uuid primary key default gen_random_uuid(),
-	transaction_id uuid references transactions (id) not null on delete cascade,
+	transaction_id uuid references transactions (id) on delete cascade,
 	name varchar(255),
 	description varchar(1000),
 	unit_count integer default 1,
@@ -102,8 +102,8 @@ create table line_items (
 
 create table transaction_line_items (
 	id uuid primary key default gen_random_uuid(),
-	transaction_id uuid references transactions (id) not null on delete cascade,
-	line_item_id uuid references line_items (id) not null on delete set null
+	transaction_id uuid references transactions (id) on delete cascade,
+	line_item_id uuid references line_items (id) on delete set null
 );
 
 create type subscription_status as enum('active', 'paused', 'canceled');
@@ -156,22 +156,40 @@ CREATE ROLE authenticated NOLOGIN;
 
 GRANT USAGE ON SCHEMA public TO anon,
 authenticated,
+auth_admin,
 subscription_admin;
 
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO authenticated;
 
 REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA public
-FROM
-	anon;
+FROM anon;
 
 REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA public
-FROM
-	subscription_admin;
+FROM auth_admin;
+
+REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA public
+FROM subscription_admin;
 
 REVOKE TRIGGER,
 TRUNCATE ON ALL TABLES IN SCHEMA public
-FROM
-	authenticated;
+FROM authenticated;
+
+/* Auth admin role is used by better auth for special user management */
+/* TODO: Make permissions more granular */
+GRANT ALL PRIVILEGES ON TABLE 
+users, 
+sessions, 
+accounts, 
+verifications,
+organizations,
+members,
+invitations,
+jwks 
+TO auth_admin;
+
+REVOKE TRIGGER,
+TRUNCATE ON ALL TABLES IN SCHEMA public
+FROM auth_admin;
 
 /* Subscription admin role is already created via create_subscription_admin_role.sh */
 GRANT
