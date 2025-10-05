@@ -28,11 +28,11 @@ export const options: PricingOption[] = [
 		title: "Pro",
 		price: {
 			monthly: {
-				amount: 8,
+				amount: 199,
 				price_slug: "pro",
 			},
 			yearly: {
-				amount: 12,
+				amount: 169,
 				price_slug: "pro-yearly",
 				percent_off: 33,
 			},
@@ -49,14 +49,14 @@ export const options: PricingOption[] = [
 		highlight: true,
 	},
 	{
-		title: "Business",
+		title: "Teams",
 		price: {
 			monthly: {
-				amount: 36,
+				amount: 789,
 				price_slug: "teams",
 			},
 			yearly: {
-				amount: 30,
+				amount: 732,
 				price_slug: "teams-yearly",
 				percent_off: 33,
 			},
