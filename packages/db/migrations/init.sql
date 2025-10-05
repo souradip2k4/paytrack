@@ -176,16 +176,7 @@ FROM authenticated;
 
 /* Auth admin role is used by better auth for special user management */
 /* TODO: Make permissions more granular */
-GRANT ALL PRIVILEGES ON TABLE 
-users, 
-sessions, 
-accounts, 
-verifications,
-organizations,
-members,
-invitations,
-jwks 
-TO auth_admin;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO auth_admin;
 
 REVOKE TRIGGER,
 TRUNCATE ON ALL TABLES IN SCHEMA public
