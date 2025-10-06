@@ -11,7 +11,7 @@ services:
       - path: .env
         required: true
     ports:
-      - 4000:5432
+      - 5100:5432
     environment:
       POSTGRES_DB: budgetbee
       POSTGRES_USER: ${POSTGRES_USER:?environment variable POSTGRES_USER is not set.}

@@ -6,13 +6,13 @@ services:
     networks:
       - bu-net
     ports:
-      - 4001:3000
+      - 5101:3000
     environment:
       PGRST_DB_URI: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@bu-postgres:5432/budgetbee
       PGRST_DB_SCHEMA: public
       PGRST_DB_POOL: 10
       PGRST_JWT_SECRET: ${PGRST_JWT_SECRET:?environment variable PGRST_JWT_SECRET is not set.}
-      PGRST_JWT_AUD: http://localhost:3000
+      PGRST_JWT_AUD: ${APP_URL:?environment variable APP_URL is not set.}
       PGRST_DB_ANON_ROLE: anon
       PGRST_DB_AUTHENTICATED_ROLE: authenticated
     depends_on:
