@@ -5,11 +5,12 @@ import { cn } from "@/lib/utils";
 import { Equal, X } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import { BudgetbeeLogo } from "./budgetbee-logo";
 
 const menuItems = [
     { name: 'Overview', href: '/overview' },
     { name: 'Pricing', href: '/pricing' },
-    { name: 'Support', href: '/contact' },
+    { name: 'Support', href: '/support' },
 ]
 
 export function Navbar() {
@@ -36,16 +37,7 @@ export function Navbar() {
                                 href="/"
                                 aria-label="home"
                                 className="flex gap-2 items-center">
-                                <svg
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 392.02 324.6"
-                                    fill="currentColor"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        fill="#00FA9A"
-                                        d="M268.08,0c-27.4,0-51.41,4.43-72.07,13.26C175.36,4.43,151.35,0,123.95,0H0v324.6h123.95c27.37,0,51.38-4.58,72.07-13.7,20.69,9.12,44.7,13.7,72.07,13.7h123.95V0h-123.95ZM324.09,268.36h-47.91c-20.25,0-37.3-4.05-51.18-12.15-12.28-7.17-21.94-17.41-28.99-30.7h0s0,0,0,0c0,0,0,0,0,0h0c-7.05,13.29-16.71,23.53-28.99,30.7-13.87,8.1-30.93,12.15-51.18,12.15h-47.91V56.24h47.91c19.8,0,36.67,4.01,50.61,12.04,12.51,7.2,22.35,17.47,29.55,30.77h0s0,0,0,0c0,0,0,0,0,0h0c7.2-13.3,17.04-23.57,29.55-30.77,13.95-8.02,30.82-12.04,50.61-12.04h47.91v212.13Z"></path>
-                                </svg>
+                                <BudgetbeeLogo />
                                 <p className='font-semibold text-xl tracking-tighter'> Budgetbee</p>
                             </Link>
 
@@ -92,7 +84,7 @@ export function Navbar() {
                                     variant="outline"
                                     size="sm"
                                     className={cn(isScrolled && 'lg:hidden')}>
-                                    <Link href="#">
+                                    <Link href="/login">
                                         <span>Login</span>
                                     </Link>
                                 </Button>
@@ -100,7 +92,7 @@ export function Navbar() {
                                     asChild
                                     size="sm"
                                     className={cn(isScrolled && 'lg:hidden')}>
-                                    <Link href="#">
+                                    <Link href="/home">
                                         <span>Sign Up</span>
                                     </Link>
                                 </Button>
@@ -108,7 +100,7 @@ export function Navbar() {
                                     asChild
                                     size="sm"
                                     className={cn(isScrolled ? 'lg:inline-flex' : 'hidden')}>
-                                    <Link href="#">
+                                    <Link href="/home">
                                         <span>Get Started</span>
                                     </Link>
                                 </Button>

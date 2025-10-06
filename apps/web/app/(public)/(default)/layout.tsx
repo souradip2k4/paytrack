@@ -1,7 +1,9 @@
 import React from "react";
 import { Instrument_Serif } from "next/font/google";
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
 
-const instrumentSerif = Instrument_Serif({ subsets: ["latin"], weight: "400", variable: "--font-instrument-serif" });
+const _Instrument_Serif = Instrument_Serif({ subsets: ["latin"], weight: "400", variable: "--font-instrument-serif" });
 
 export default function Layout({
     children,
@@ -9,9 +11,13 @@ export default function Layout({
     children: Readonly<React.ReactNode>;
 }) {
     return (
-        <main>
+        <div>
+            <div className="mx-auto max-w-5xl flex justify-center">
+                <Navbar />
+            </div>
             {children}
-        </main>
+            <Footer />
+        </div>
     );
 }
 

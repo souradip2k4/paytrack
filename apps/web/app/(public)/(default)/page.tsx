@@ -1,29 +1,23 @@
 "use client";
 
+import { Card, CardContent } from '@/components/ui/card'
+import { BellRing, FileSpreadsheet, Shield, ShieldCheck, Users } from 'lucide-react'
+import { Activity, DraftingCompass, Mail, Zap } from 'lucide-react'
 import { PricingSection } from "@/components/pricing";
-import { BentoGrid } from "@/components/section/bento-grid";
 import { Button } from "@/components/ui/button";
-import BudgetbeeDashboardImg from "@/public/images/budgetbee_dashboard.png";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { Instrument_Serif } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { Equal, X } from 'lucide-react'
 import React from 'react'
-import { Card } from '@/components/ui/card'
-import { ChevronRight } from 'lucide-react'
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 
-export default function GradientHero() {
+export default function LandingPage() {
+
     return (
         <main>
-            <div className="mx-auto max-w-5xl flex justify-center">
-                <Navbar />
-            </div>
-
-            <div className="flex flex-col justify-center gap-4 px-8 py-48 lg:items-center">
-                <h1 className={cn("text-accent-foreground hidden items-center text-2xl lg:flex lg:text-5xl select-none font-[var(--font-instrument-serif)]")}>
+            <div className="flex flex-col justify-center gap-8 px-8 md:pb-48 md:pt-64 pb-24 pt-32 lg:items-center overflow-x-hidden">
+                <h1 className={cn("text-accent-foreground hidden items-center text-2xl lg:flex lg:text-5xl select-none font-[Instrument_Serif]")}>
                     Seemlessly track your
                     <span className="text-slider text-primary">
                         <span className="text-slider__word">finances</span>
@@ -31,10 +25,10 @@ export default function GradientHero() {
                         <span className="text-slider__word">subscriptions</span>
                     </span>
                 </h1>
-                <h1 className="text-2xl lg:hidden">
-                    Seemlessly track your finances
+                <h1 className="text-4xl lg:hidden font-[Instrument_Serif]">
+                    Seemlessly track your <span className="text-primary">finances</span>
                 </h1>
-                <h2 className="text-muted-foreground text-xl leading-relaxed lg:w-1/2 lg:text-center">
+                <h2 className="text-muted-foreground text-lg md:text-xl leading-relaxed lg:w-1/2 lg:text-center">
                     Do you find managing your finances{" "}
                     <span className="text-accent-foreground">tedious</span> and{" "}
                     <span className="text-accent-foreground">difficult</span>?
@@ -42,18 +36,20 @@ export default function GradientHero() {
                     valuable{" "}
                     <span className="text-accent-foreground">insights</span>.
                 </h2>
-                <div className="mt-4 lg:flex">
-                    <Button asChild>
+                <div className="space-x-2 space-y-2 lg:flex">
+                    <Button asChild className='rounded-full' size="lg">
                         <Link href="/join">
-                            Get started
+                            Start tracking
                             <ArrowRight />
                         </Link>
                     </Button>
-                    {/*<Button variant="secondary" className="ml-2" asChild>
-                            <Link href="/blogs/getting-started">
-                                Learn more
-                            </Link>
-                        </Button>*/}
+
+                    <Button asChild variant="ghost" className='rounded-full' size="lg">
+                        <Link href="/join">
+                            Learn more
+                            <ArrowRight />
+                        </Link>
+                    </Button>
                 </div>
 
                 <div className="relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20">
@@ -73,13 +69,43 @@ export default function GradientHero() {
                 </div>
             </div>
 
-            {/** BENTO GRID SECTION **/}
-            <BentoGrid />
 
+            <section className="py-8 md:py-16">
+                <div className="mx-auto max-w-xl md:max-w-7xl px-6">
+                    <div className="grid items-center gap-12 md:grid-cols-2 md:gap-12 lg:grid-cols-5 lg:gap-24">
+                        <div className="lg:col-span-2">
+                            <div className="md:pr-6 lg:pr-0">
+                                <h2 className="text-accent-foreground leading-normal items-center text-2xl lg:flex lg:text-5xl select-none font-[Instrument_Serif]">Simple, intuitive, powerful.</h2>
+                            </div>
+                            <ul className="mt-8 divide-y border-y *:flex *:items-center *:gap-3 *:py-3 [&_p]:hover:text-primary-foreground [&_p]:transition">
+                                <li>
+                                    <ShieldCheck className="size-5 stroke-amber-500 fill-amber-500/20" strokeWidth={1} />
+                                    <p className='text-muted-foreground'><span className='text-primary-foreground underline decoration-dotted'>Secure</span> by default.</p>
+                                </li>
+                                <li>
+                                    <Zap className="size-5 stroke-green-500 fill-green-500/20" />
+                                    <p className='text-muted-foreground'>Powerful analytics.</p>
+                                </li>
+                                <li>
+                                    <FileSpreadsheet className="size-5 stroke-blue-500 fill-blue-500/20" />
+                                    <p className='text-muted-foreground'>Connect with Google Sheets.</p>
+                                </li>
+                                <li>
+                                    <BellRing className="size-5 stroke-red-500 fill-red-500/20" />
+                                    <p className='text-muted-foreground'>Email alerts.</p>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="border-border/50 relative bg-accent/20 rounded-3xl border p-3 lg:col-span-3">
+                            <div className="bg-gradient-to-b aspect-76/59 relative rounded-2xl from-zinc-300 to-transparent p-px dark:from-zinc-700">
+                                <img src="/images/budgetbee-tables-preview.png" className="rounded-[15px] h-full w-full" alt="budgetbee transactions view" width={1207} height={929} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             <PricingSection />
-
-            <Footer />
         </main>
     );
 }

@@ -310,8 +310,8 @@ export const auth = betterAuth({
 						},
 					};
 				},
-				issuer: process.env.APP_URL || "http://localhost:3000",
-				audience: process.env.APP_URL || "http://localhost:3000",
+				issuer: process.env.APP_URL!,
+				audience: process.env.APP_URL!,
 				expirationTime: "1h",
 			},
 			schema: {

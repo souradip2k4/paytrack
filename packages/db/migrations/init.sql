@@ -75,7 +75,7 @@ create table transactions (
 	external_id varchar(255),
 	category_id uuid references categories (id) on delete set null,
 	reference_no varchar(255),
-	name varchar(50),
+	name varchar(255),
 	description varchar(1000),
 	status varchar(8) default 'paid',
 	source varchar(255) default 'manual',
