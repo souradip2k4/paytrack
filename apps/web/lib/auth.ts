@@ -31,7 +31,6 @@ const subscriptionAdminClient = new Pool({
 export const auth = betterAuth({
 	database: authAdminClient,
 	appName: "Budgetbee",
-	trustedProxies: [process.env.APP_URL],
 	emailAndPassword: {
 		enabled: true,
 		requireEmailVerification: true,
