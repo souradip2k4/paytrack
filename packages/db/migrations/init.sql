@@ -68,7 +68,7 @@ create table tags (
 
 create table transactions (
 	id uuid primary key default gen_random_uuid(),
-	amount numeric(10, 2) not null,
+	amount numeric(10, 2) default 0,
 	currency varchar(3) default 'usd',
 	user_id text references users (id) on delete cascade,
 	organization_id text references organizations (id) on delete cascade,
