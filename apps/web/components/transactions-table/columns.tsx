@@ -130,8 +130,6 @@ export const StatusCell: ColumnDefTemplate<CellContext<any, unknown>> = ({
     );
 };
 
-// By defining an explicit `size` for every column, we gain full control over the table's layout.
-// This ensures that headers and cells align perfectly.
 export const columns: ColumnDef<any>[] = [
     {
         id: "select",

@@ -31,8 +31,12 @@ import {
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { ArrowDown, ArrowUp, FolderOpen, LoaderCircle } from "lucide-react";
 import React from "react";
-import { FieldValues, FormProvider, UseFormReturn } from "react-hook-form";
+import { FieldValues, FormProvider, useForm } from "react-hook-form";
+import { authClient } from "@/lib/auth-client";
 import { columns } from "./columns";
+import { db } from "@/lib/db";
+import { bearerHeader } from "@/lib/bearer";
+import { useQueryClient } from "@tanstack/react-query";
 
 const defaultSpacing: Record<string, number> = {
     select: 48,
@@ -46,11 +50,9 @@ const defaultSpacing: Record<string, number> = {
     user_id: 150,
 };
 
-export function TransactionsTable({
-    formStates,
-}: {
-    formStates: UseFormReturn<FieldValues, any, FieldValues>;
-}) {
+export function TransactionsTable({ ref }: { ref: React.RefObject<HTMLFormElement> }) {
+    const queryClient = useQueryClient()
+    const { data: authData } = authClient.useSession();
     const { data, isLoading: isTransactionsLoading } = useTransactions();
     const transactions = React.useMemo(() => data || [], [data]);
 
@@ -104,19 +106,64 @@ export function TransactionsTable({
 
     const { rows } = table.getRowModel();
 
-    const tableParentRef = React.useRef<HTMLFormElement>(null!);
-
     const virtualizer = useVirtualizer({
         count: rows.length,
         estimateSize: () => 48, // 3 rem
-        getScrollElement: () => tableParentRef.current,
+        getScrollElement: () => ref.current,
         overscan: 20,
     });
 
     const isEditing = useEditorStore(s => s.is_editing);
 
-    const onSubmit = (e: FieldValues) => {
-        console.log(e);
+    const formStates = useForm();
+
+    const onSubmit = async (e: FieldValues) => {
+        const diffs: Record<string, string>[] = []
+        const trUpdates: Record<string, Record<string, string>> = e.tr || {}
+        Object.entries(trUpdates).forEach(([rowId, trUpdatedRow]) => {
+            let diff: Record<string, any> = {}
+            let diffCount = 0
+
+            let numRowId = Number(rowId)
+            if (!Number.isSafeInteger(numRowId)) return;
+
+            for (const trKey of Object.keys(trUpdatedRow)) {
+                const row = rows[numRowId]
+                const updatedRow = trUpdatedRow[trKey]
+
+                if (trKey === "transaction_date") {
+                    const updatedTransactionDate = new Date(updatedRow).toISOString().slice(0, 10)
+                    const originalTransactionDate = (row.getValue(trKey) as string)?.slice(0, 10)
+
+                    if (updatedTransactionDate !== originalTransactionDate) {
+                        diff[trKey] = trUpdatedRow[trKey]
+                        diffCount++
+                    }
+                }
+                else if (updatedRow !== row.getValue(trKey)) {
+                    diff[trKey] = trUpdatedRow[trKey]
+                    diffCount++
+                }
+            }
+
+            if (diffCount <= 0) return;
+
+            const original = rows[numRowId].original
+            Object.keys(original).forEach((key) => {
+                if (diff[key] === undefined) diff[key] = original[key]
+            })
+
+            diff.user_id = authData?.user.id
+            diff.organization_id = authData?.session.activeOrganizationId
+            diffs.push(diff)
+        })
+        await db(await bearerHeader()).from("transactions").upsert(diffs).then(() => {
+            window.alert("Transactions updated successfully.")
+            queryClient.invalidateQueries("transactions")
+            useEditorStore.setState({
+                is_editing: false,
+            })
+        })
     };
 
     const columnSpan = table.getAllColumns().filter(column => column.getIsVisible()).length
@@ -124,7 +171,7 @@ export function TransactionsTable({
     return (
         <FormProvider {...formStates}>
             <form
-                ref={tableParentRef}
+                ref={ref}
                 onSubmit={formStates.handleSubmit(onSubmit)}
                 className="border-input max-h-[calc(100vh-10rem)] overflow-auto rounded-md border">
                 <Table>

@@ -16,7 +16,11 @@ export default function LandingPage() {
 
     return (
         <main>
-            <div className="flex flex-col justify-center gap-8 px-8 md:pb-48 md:pt-64 pb-24 pt-32 lg:items-center overflow-x-hidden">
+            <div className="flex flex-col justify-center gap-8 px-8 md:pb-48 md:pt-64 pb-24 pt-32 lg:items-center overflow-x-hidden"
+                style={{
+                    background: "radial-gradient(ellipse 40% 30% at 50% 0%, rgba(34, 197, 94, 0.25), transparent 70%), transparent",
+                }}
+            >
                 <h1 className={cn("text-accent-foreground hidden items-center text-2xl lg:flex lg:text-5xl select-none font-[Instrument_Serif]")}>
                     Seemlessly track your
                     <span className="text-slider text-primary">

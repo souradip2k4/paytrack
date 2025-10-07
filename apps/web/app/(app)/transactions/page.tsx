@@ -17,11 +17,10 @@ import {
 import { useEditorStore } from "@/lib/store/editor-store";
 import { BadgeInfo, Check, SquarePen, X } from "lucide-react";
 import React from "react";
-import { useForm } from "react-hook-form";
 
 export default function Page() {
     const isEditing = useEditorStore(s => s.is_editing);
-    const formStates = useForm();
+    const transactionTableRef = React.useRef<HTMLFormElement>(null!);
 
     return (
         <div>
@@ -42,8 +41,8 @@ export default function Page() {
                                     size="sm"
                                     className="border"
                                     variant="secondary"
-                                    onClick={() => {
-                                        formStates.handleSubmit(formStates.getValues())();
+                                    onClick={(e) => {
+                                        transactionTableRef.current.requestSubmit();
                                     }}
                                 >
                                     <Check /> Save
@@ -57,7 +56,7 @@ export default function Page() {
                                         useEditorStore.setState({
                                             is_editing: false,
                                         });
-                                        formStates.reset();
+                                        transactionTableRef.current.dispatchEvent(new Event('reset', { bubbles: true, cancelable: true }))
                                     }}>
                                     <X /> Cancel
                                 </Button>
@@ -91,7 +90,7 @@ export default function Page() {
             </div>
 
             <div className="p-4">
-                <TransactionsTable formStates={formStates} />
+                <TransactionsTable ref={transactionTableRef} />
             </div>
         </div>
     );
