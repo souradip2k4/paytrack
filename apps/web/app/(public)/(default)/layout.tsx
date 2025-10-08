@@ -1,40 +1,13 @@
-import { Footer } from "@/components/footer";
-import { Navbar } from "@/components/navbar";
-import { Instrument_Serif } from "next/font/google";
 import React from "react";
 
-const _Instrument_Serif = Instrument_Serif({
-	subsets: ["latin"],
-	weight: "400",
-	variable: "--font-instrument-serif",
-});
-
 export default function Layout({
-	children,
+    children,
 }: {
-	children: Readonly<React.ReactNode>;
+    children: Readonly<React.ReactNode>;
 }) {
-	return (
-		<div>
-			<div className="mx-auto flex max-w-5xl justify-center">
-				<Navbar />
-			</div>
-			{children}
-			<Footer />
-		</div>
-	);
-}
-
-{
-	/*<divlanding
-			style={{
-				background:
-					"radial-gradient(ellipse 80% 60% at 50% 0%, rgba(16, 185, 129, 0.25), transparent 60%), transparent",
-			}}>
-			<Navbar />
-			{children}
-			<aside className="border-t px-4 py-8 lg:px-16 lg:py-16">
-				<Footer />
-			</aside>
-		</div>*/
+    return (
+        <div className="pt-8">
+            {children}
+        </div>
+    );
 }
