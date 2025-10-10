@@ -119,7 +119,7 @@ export function PricingCard({ option }: { option: PricingOption }) {
                         <div className="flex items-center">
                             <Switch
                                 id={switchId}
-                                checked={yearlyBilling}
+                                checked={!yearlyBilling}
                                 onCheckedChange={setYearlyBilling}
                             />
                             <Label htmlFor={switchId} className="ml-2">
