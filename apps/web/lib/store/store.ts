@@ -39,7 +39,7 @@ export const useStore = create<Store>(set => ({
 			row_selection_entries,
 		}),
 
-	yearly_billing: true,
+	yearly_billing: false,
 	set_yearly_billing: (yearly_billing: boolean) =>
 		set({
 			yearly_billing,
