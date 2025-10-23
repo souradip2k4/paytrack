@@ -58,7 +58,7 @@
 		"date-fns": "^4.1.0",
 		"fz-datetime": "workspace:*",
 		"gray-matter": "^4.0.3",
-		"hono": "^4.9.7",
+		"hono": "^4.10.2",
 		"ioredis": "^5.6.1",
 		"jwt-decode": "^4.0.0",
 		"lucide-react": "^0.501.0",
