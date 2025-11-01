@@ -1,4 +1,5 @@
 import { StatusBadge } from "@/components/status-badge";
+import { useFilterStore } from "@/lib/store";
 import {
 	Command,
 	CommandEmpty,
@@ -6,8 +7,7 @@ import {
 	CommandInput,
 	CommandItem,
 	CommandList,
-} from "@/components/ui/command";
-import { useFilterStore } from "@/lib/store";
+} from "@budgetbee/ui/core/command";
 import { Checkbox } from "../ui/checkbox";
 
 export function StatusFilter({ id }: { id: string }) {

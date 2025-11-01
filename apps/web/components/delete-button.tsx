@@ -1,5 +1,7 @@
 "use client";
 
+import { useDisplayStore, useStore } from "@/lib/store";
+import { getDb } from "@budgetbee/core/db";
 import {
 	Dialog,
 	DialogClose,
@@ -9,10 +11,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
-} from "@/components/ui/dialog";
-import { bearerHeader } from "@/lib/bearer";
-import { db } from "@/lib/db";
-import { useDisplayStore, useStore } from "@/lib/store";
+} from "@budgetbee/ui/core/dialog";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -26,7 +25,8 @@ export function DeleteButton() {
 		mutationKey: ["tr", "many", "delete"],
 		mutationFn: async () => {
 			if (rowSelectionIds.length <= 0) return;
-			const res = await db(await bearerHeader())
+			const db = await getDb();
+			const res = await db
 				.from("transactions")
 				.delete()
 				.in("id", rowSelectionIds);

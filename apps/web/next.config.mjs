@@ -8,6 +8,15 @@ const nextConfig = {
 	experimental: {
 		optimizePackageImports: ["recharts"],
 	},
+	async redirects() {
+		return [
+			{
+				source: "/",
+				destination: "/home",
+				permanent: true,
+			},
+		];
+	},
 };
 
 const withBundleAnalyzer = bundleAnalyzer({

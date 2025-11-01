@@ -1,19 +1,19 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { Button } from "@budgetbee/ui/core/button";
 import {
 	ResizableHandle,
 	ResizablePanel,
 	ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import { ScrollArea } from "@/components/ui/scroll-area";
+} from "@budgetbee/ui/core/resizable";
+import { ScrollArea } from "@budgetbee/ui/core/scroll-area";
 import {
 	Sheet,
 	SheetContent,
 	SheetHeader,
 	SheetTrigger,
-} from "@/components/ui/sheet";
-import { useMediaQuery } from "@/hooks/use-media-query";
+} from "@budgetbee/ui/core/sheet";
 import { PanelLeft } from "lucide-react";
 import Link from "next/link";
 import React from "react";

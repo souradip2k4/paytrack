@@ -10,7 +10,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 // Replace with the actual paths to your modules
 
 // 1. Mock the authClient
-vi.mock("@/lib/auth-client", () => ({
+vi.mock("@budgetbee/core/auth-client", () => ({
 	authClient: {
 		useSession: vi.fn(),
 	},
@@ -35,9 +35,8 @@ vi.mock("@/lib/db", () => ({
 }));
 
 // --- Now, import the hook and mocked modules ---
-import { authClient } from "@/lib/auth-client";
-import { db } from "@/lib/db";
 import { useCategories } from "@/lib/query"; // Adjust path as needed
+import { authClient } from "@budgetbee/core/auth-client";
 
 // --- Test Suite ---
 describe("useCategories", () => {

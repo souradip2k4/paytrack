@@ -1,6 +1,6 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
+import { Input } from "@budgetbee/ui/core/input";
 import React from "react";
 
 export const EditableCell = ({ getValue, row, column, table }) => {

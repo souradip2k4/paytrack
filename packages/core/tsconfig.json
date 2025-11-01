@@ -1,0 +1,11 @@
+{
+	"extends": "@budgetbee/tsconfig/react-library.json",
+	"compilerOptions": {
+		"baseUrl": "../core",
+		"paths": {
+			"@budgetbee/core/*": ["../core/*"]
+		}
+	},
+	"include": ["../core"],
+	"exclude": ["../core/node_modules", "../core/dist"]
+}

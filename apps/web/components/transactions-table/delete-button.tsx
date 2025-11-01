@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
 import { QueryEntry } from "@/lib/api";
 import { deleteEntryMutationFn } from "@/lib/query";
+import { Button } from "@budgetbee/ui/core/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Row } from "@tanstack/react-table";
 

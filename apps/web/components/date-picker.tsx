@@ -1,7 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import { Button } from "@budgetbee/ui/core/button";
+import { Calendar } from "@budgetbee/ui/core/calendar";
 import {
 	Command,
 	CommandEmpty,
@@ -11,14 +12,13 @@ import {
 	CommandList,
 	CommandSeparator,
 	CommandShortcut,
-} from "@/components/ui/command";
+} from "@budgetbee/ui/core/command";
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
-} from "@/components/ui/popover";
-import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+} from "@budgetbee/ui/core/popover";
+import { Separator } from "@budgetbee/ui/core/separator";
 import { addDays, format } from "date-fns";
 import { fzDatetime } from "fz-datetime";
 import { ChevronLeft } from "lucide-react";

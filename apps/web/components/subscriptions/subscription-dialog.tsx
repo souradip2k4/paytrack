@@ -1,27 +1,27 @@
 "use client";
 
 import { CategoryPicker } from "@/components/category-picker";
-import { Button } from "@/components/ui/button";
+import { authClient } from "@budgetbee/core/auth-client";
+import { Button } from "@budgetbee/ui/core/button";
 import {
 	Dialog,
 	DialogContent,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@budgetbee/ui/core/dialog";
+import { Input } from "@budgetbee/ui/core/input";
+import { Label } from "@budgetbee/ui/core/label";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui/select";
-import { authClient } from "@/lib/auth-client";
-import { bearerHeader } from "@/lib/bearer";
-import { db } from "@/lib/db";
+} from "@budgetbee/ui/core/select";
+
 import { useStore } from "@/lib/store/store";
+import { getDb } from "@budgetbee/core/db";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React from "react";
@@ -63,12 +63,11 @@ export function SubscriptionDialog() {
 		mutationFn: async (data: FieldValues) => {
 			if (!authData || !authData.user || !authData.user.id) return;
 			const { ...rest } = data;
-			const res = await db(await bearerHeader())
-				.from("subscriptions")
-				.insert({
-					...rest,
-					user_id: authData.user.id,
-				});
+			const db = await getDb();
+			const res = await db.from("subscriptions").insert({
+				...rest,
+				user_id: authData.user.id,
+			});
 			if (res.error) throw res.error;
 			return res.data;
 		},

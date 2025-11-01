@@ -1,20 +1,25 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { authClient } from "@budgetbee/core/auth-client";
+import {
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+} from "@budgetbee/ui/core/card";
 import {
 	ChartConfig,
 	ChartContainer,
 	ChartTooltip,
 	ChartTooltipContent,
-} from "@/components/ui/chart";
-import { authClient } from "@/lib/auth-client";
-import { bearerHeader } from "@/lib/bearer";
-import { db } from "@/lib/db";
+} from "@budgetbee/ui/core/chart";
+
 import {
 	serializeFilterStack,
 	useChartStore,
 	useFilterStore,
 } from "@/lib/store";
+import { getDb } from "@budgetbee/core/db";
 import { useQuery } from "@tanstack/react-query";
 import { addDays, differenceInDays, format } from "date-fns";
 import { LoaderCircle } from "lucide-react";
@@ -69,7 +74,8 @@ export function StatusBarChart() {
 		useQuery({
 			queryKey: ["st", "agg", authData?.user.id, filterStack],
 			queryFn: async () => {
-				const res = await db(await bearerHeader()).rpc(
+				const db = await getDb();
+				const res = await db.rpc(
 					"get_transaction_distribution_by_status",
 					{
 						params: {

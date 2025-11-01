@@ -1,7 +1,9 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { avatarUrl } from "@/lib/utils";
+import { authClient } from "@budgetbee/core/auth-client";
+import { Badge } from "@budgetbee/ui/core/badge";
+import { Button } from "@budgetbee/ui/core/button";
 import {
 	Card,
 	CardContent,
@@ -9,9 +11,7 @@ import {
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
-import { authClient } from "@/lib/auth-client";
-import { avatarUrl } from "@/lib/utils";
+} from "@budgetbee/ui/core/card";
 import { useRouter } from "next/navigation";
 import React from "react";
 

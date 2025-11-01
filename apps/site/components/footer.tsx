@@ -1,0 +1,94 @@
+import Link from "next/link";
+import { BudgetbeeLogo } from "./budgetbee-logo";
+
+const footerConfig = {
+	columns: [
+		{
+			title: "Company",
+			links: [
+				{ label: "Blog", href: "/blog" },
+				{
+					label: "Support",
+					href: "https://nocodb.sammaji.com/dashboard/#/nc/form/780055c9-89b3-4c1f-825b-2fca58cd2336",
+				},
+				{
+					label: "Report a bug",
+					href: "https://nocodb.sammaji.com/dashboard/#/nc/form/780055c9-89b3-4c1f-825b-2fca58cd2336?type_of_request=Bug+report",
+				},
+			],
+		},
+		{
+			title: "Platform",
+			links: [
+				{ label: "Overview", href: "/overview" },
+				{ label: "Pricing", href: "/pricing" },
+				{ label: "Changelog", href: "/changelog" },
+				{ label: "Status", href: "https://budgetbee.openstatus.dev" },
+			],
+		},
+		{
+			title: "Legal",
+			links: [
+				{ label: "Privacy Policy", href: "/legal/privacy-policy" },
+				{
+					label: "Terms of Service",
+					href: "/legal/terms-and-conditions",
+				},
+				{ label: "Refund Policy", href: "/legal/refund-policy" },
+				{ label: "Cookie Policy", href: "/legal/cookie-policy" },
+			],
+		},
+	],
+};
+
+export function Footer() {
+	return (
+		<footer className="border-t bg-black/50 px-4 py-24 md:px-8">
+			<div className="mx-auto max-w-7xl">
+				<div className="mb-12 space-y-4">
+					<div className="relative mb-6">
+						<BudgetbeeLogo width={32} height={32} />
+					</div>
+
+					<div className="grow space-y-2">
+						<h1>Budgetbee</h1>
+						<p className="text-muted-foreground leading-relaxed">
+							Simple, intuitive, powerful expense tracker :)
+						</p>
+					</div>
+				</div>
+
+				<div className="grid grid-cols-2 gap-8 md:grid-cols-3">
+					{footerConfig.columns.map((col, idx) => (
+						<div key={idx}>
+							<h3 className="mb-3 text-sm font-medium">
+								{col.title}
+							</h3>
+							<ul className="space-y-2">
+								{col.links.map((link, i) => (
+									<li key={i}>
+										<Link
+											href={link.href}
+											className="text-muted-foreground hover:text-primary-foreground underline decoration-dotted transition">
+											{link.label}
+										</Link>
+									</li>
+								))}
+							</ul>
+						</div>
+					))}
+				</div>
+
+				<div className="col-span-3 mt-12 flex flex-col items-center justify-between gap-4 pt-6 text-xs text-gray-500 md:flex-row dark:text-gray-400">
+					<p>© 2025 Budgetbee. All rights reserved.</p>
+					<div className="flex gap-6">
+						<Link href="https://budgetbee.openstatus.dev">
+							Status
+						</Link>
+						<Link href="/sitemap.xml">Sitemap</Link>
+					</div>
+				</div>
+			</div>
+		</footer>
+	);
+}

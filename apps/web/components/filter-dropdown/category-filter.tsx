@@ -1,3 +1,5 @@
+import { useCategories } from "@/lib/query";
+import { useFilterStore } from "@/lib/store";
 import {
 	Command,
 	CommandEmpty,
@@ -5,9 +7,7 @@ import {
 	CommandInput,
 	CommandItem,
 	CommandList,
-} from "@/components/ui/command";
-import { useCategories } from "@/lib/query";
-import { useFilterStore } from "@/lib/store";
+} from "@budgetbee/ui/core/command";
 import { LoaderIcon } from "lucide-react";
 import { CategoryBadge } from "../category-badge";
 import { Checkbox } from "../ui/checkbox";

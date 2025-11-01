@@ -1,6 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { useChartStore } from "@/lib/store";
+import { Button } from "@budgetbee/ui/core/button";
 import {
 	DropdownMenu,
 	DropdownMenuCheckboxItem,
@@ -9,8 +10,7 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useChartStore } from "@/lib/store";
+} from "@budgetbee/ui/core/dropdown-menu";
 import {
 	addDays,
 	endOfMonth,

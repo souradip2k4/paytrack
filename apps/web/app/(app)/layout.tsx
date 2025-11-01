@@ -6,7 +6,7 @@ import {
 	SidebarInset,
 	SidebarProvider,
 	SidebarTrigger,
-} from "@/components/ui/sidebar";
+} from "@budgetbee/ui/core/sidebar";
 import React from "react";
 
 export default async function Layout({

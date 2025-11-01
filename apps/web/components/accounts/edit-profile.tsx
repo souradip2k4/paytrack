@@ -1,8 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@budgetbee/core/auth-client";
+import { Button } from "@budgetbee/ui/core/button";
+import { Input } from "@budgetbee/ui/core/input";
 import React from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { toast } from "sonner";

@@ -1,6 +1,6 @@
 import { DateFormatPicker } from "@/components/settings/date-format-picker";
 import { ThemeRadioGroup } from "@/components/theme-radio-group";
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@budgetbee/ui/core/separator";
 
 export default function Page() {
 	return (

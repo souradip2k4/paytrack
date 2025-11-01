@@ -1,15 +1,15 @@
 import {
+	allowed_operations_map as availableOperations,
+	FilterOperations,
+	useFilterStore,
+} from "@/lib/store";
+import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui/select";
-import {
-	allowed_operations_map as availableOperations,
-	FilterOperations,
-	useFilterStore,
-} from "@/lib/store";
+} from "@budgetbee/ui/core/select";
 
 export function FilterOperationSelect({ idx }: { idx: number }) {
 	const stack = useFilterStore(s => s.filter_stack);

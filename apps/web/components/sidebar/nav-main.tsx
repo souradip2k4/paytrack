@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import {
 	SidebarGroup,
 	SidebarGroupContent,
@@ -7,15 +8,13 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
+} from "@budgetbee/ui/core/sidebar";
 import {
 	ArrowBigUp,
 	ArrowUpRight,
 	Bolt,
 	Command,
 	Home,
-	MessageCircleQuestion,
 	ReceiptCent,
 	UserCircle,
 	type LucideIcon,
@@ -71,11 +70,6 @@ export const navs: NavMainItem[] = [
 				url: "/accounts",
 				icon: UserCircle,
 				shortcutKey: "a",
-			},
-			{
-				title: "Priority support",
-				url: "/priority-support",
-				icon: MessageCircleQuestion,
 			},
 			{
 				title: "Shortcuts",

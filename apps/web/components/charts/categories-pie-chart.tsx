@@ -1,6 +1,12 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { authClient } from "@budgetbee/core/auth-client";
+import {
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+} from "@budgetbee/ui/core/card";
 import {
 	ChartConfig,
 	ChartContainer,
@@ -8,10 +14,8 @@ import {
 	ChartLegendContent,
 	ChartTooltip,
 	ChartTooltipContent,
-} from "@/components/ui/chart";
-import { authClient } from "@/lib/auth-client";
-import { bearerHeader } from "@/lib/bearer";
-import { db } from "@/lib/db";
+} from "@budgetbee/ui/core/chart";
+
 import { getColor } from "@/lib/hash";
 import {
 	serializeFilterStack,
@@ -19,6 +23,7 @@ import {
 	useFilterStore,
 } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { getDb } from "@budgetbee/core/db";
 import { useQuery } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
 import React from "react";
@@ -62,17 +67,14 @@ export function CategoriesPieChart() {
 			filterStack,
 		],
 		queryFn: async () => {
-			const res = await db(await bearerHeader()).rpc(
-				"get_transaction_by_category",
-				{
-					params: {
-						user_id: authData?.user.id,
-						organization_id:
-							authData?.session?.activeOrganizationId,
-						filters: serializeFilterStack(filterStack),
-					},
+			const db = await getDb();
+			const res = await db.rpc("get_transaction_by_category", {
+				params: {
+					user_id: authData?.user.id,
+					organization_id: authData?.session?.activeOrganizationId,
+					filters: serializeFilterStack(filterStack),
 				},
-			);
+			});
 			if (res.error) throw res.error;
 			const mapped = res.data.map((x: any, i: number) => ({
 				name: x.name ?? "Uncategorized",

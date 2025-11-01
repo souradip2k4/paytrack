@@ -1,5 +1,5 @@
-import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Separator } from "@budgetbee/ui/core/separator";
+import { SidebarTrigger } from "@budgetbee/ui/core/sidebar";
 
 export function SiteHeader() {
 	return (

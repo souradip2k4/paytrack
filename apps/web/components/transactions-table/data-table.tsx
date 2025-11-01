@@ -1,12 +1,13 @@
 "use client";
 
+import { authClient } from "@budgetbee/core/auth-client";
 import {
 	Empty,
 	EmptyDescription,
 	EmptyHeader,
 	EmptyMedia,
 	EmptyTitle,
-} from "@/components/ui/empty";
+} from "@budgetbee/ui/core/empty";
 import {
 	Table,
 	TableBody,
@@ -14,10 +15,8 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@/components/ui/table";
-import { authClient } from "@/lib/auth-client";
-import { bearerHeader } from "@/lib/bearer";
-import { db } from "@/lib/db";
+} from "@budgetbee/ui/core/table";
+
 import { useTransactions } from "@/lib/query";
 import { useDisplayStore, useStore } from "@/lib/store";
 import { useEditorStore } from "@/lib/store/editor-store";
@@ -122,6 +121,8 @@ export function TransactionsTable({
 	const formStates = useForm();
 
 	const onSubmit = async (e: FieldValues) => {
+		const db = await getDb();
+
 		const diffs: Record<string, string>[] = [];
 		const trUpdates: Record<string, Record<string, string>> = e.tr || {};
 		Object.entries(trUpdates).forEach(([rowId, trUpdatedRow]) => {
@@ -164,12 +165,11 @@ export function TransactionsTable({
 			diff.organization_id = authData?.session.activeOrganizationId;
 			diffs.push(diff);
 		});
-		await db(await bearerHeader())
-			.from("transactions")
+		db.from("transactions")
 			.upsert(diffs)
 			.then(() => {
 				window.alert("Transactions updated successfully.");
-				queryClient.invalidateQueries("transactions");
+				queryClient.invalidateQueries({ queryKey: ["transactions"] });
 				useEditorStore.setState({
 					is_editing: false,
 				});

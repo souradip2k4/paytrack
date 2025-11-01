@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import AnalyticsImg from "@/public/images/analytics.png";
 import EasyCollaborationImg from "@/public/images/easy_collaboration.png";
 import InvoiceImg from "@/public/images/invoice.png";
 import MonthlyAnalyticsImg from "@/public/images/monthly_analytics.png";
+import { Button } from "@budgetbee/ui/core/button";
 import Link from "next/link";
 import React from "react";
 

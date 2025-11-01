@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@budgetbee/ui/core/button";
 import {
 	Card,
 	CardContent,
@@ -6,7 +6,7 @@ import {
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
+} from "@budgetbee/ui/core/card";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 

@@ -1,0 +1,7 @@
+name: bu-iaac
+description: aws infra for budgetbee
+runtime: go
+config:
+    pulumi:tags:
+        value:
+            pulumi:template: aws-go

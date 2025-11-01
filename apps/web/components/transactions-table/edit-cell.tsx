@@ -1,13 +1,13 @@
 "use client";
 
 import { type Entry } from "@/app/api/[[...route]]/server";
-import { Button } from "@/components/ui/button";
+import { Button } from "@budgetbee/ui/core/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@budgetbee/ui/core/dropdown-menu";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Row } from "@tanstack/react-table";
 import axios from "axios";

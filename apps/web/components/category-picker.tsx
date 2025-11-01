@@ -1,4 +1,7 @@
-import { Badge } from "@/components/ui/badge";
+import { useCategories, useCreateCategories } from "@/lib/query";
+import { useStore } from "@/lib/store";
+import { cn } from "@/lib/utils";
+import { Badge } from "@budgetbee/ui/core/badge";
 import {
 	Command,
 	CommandGroup,
@@ -6,15 +9,12 @@ import {
 	CommandItem,
 	CommandList,
 	CommandSeparator,
-} from "@/components/ui/command";
+} from "@budgetbee/ui/core/command";
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
-} from "@/components/ui/popover";
-import { useCategories, useCreateCategories } from "@/lib/query";
-import { useStore } from "@/lib/store";
-import { cn } from "@/lib/utils";
+} from "@budgetbee/ui/core/popover";
 import { useQueryClient } from "@tanstack/react-query";
 import { CheckIcon, Plus } from "lucide-react";
 import { Popover as PopoverPrimitive } from "radix-ui";

@@ -5,7 +5,7 @@ import {
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
+} from "@budgetbee/ui/core/card";
 
 export default function VerifyPage() {
 	return (

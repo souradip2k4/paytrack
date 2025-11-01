@@ -1,6 +1,5 @@
 "use server";
 
-import { db } from "@/lib/db";
 import { headers } from "next/headers";
 
 export async function getActiveOrganization(userId: string) {

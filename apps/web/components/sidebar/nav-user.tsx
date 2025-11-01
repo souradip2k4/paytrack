@@ -1,6 +1,10 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { TUseSession } from "@/lib/query";
+import { useStore } from "@/lib/store";
+import { avatarUrl } from "@/lib/utils";
+import { authClient } from "@budgetbee/core/auth-client";
+import { Avatar, AvatarFallback, AvatarImage } from "@budgetbee/ui/core/avatar";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -9,18 +13,14 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@budgetbee/ui/core/dropdown-menu";
 import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
 	useSidebar,
-} from "@/components/ui/sidebar";
-import { Skeleton } from "@/components/ui/skeleton";
-import { authClient } from "@/lib/auth-client";
-import { TUseSession } from "@/lib/query";
-import { useStore } from "@/lib/store";
-import { avatarUrl } from "@/lib/utils";
+} from "@budgetbee/ui/core/sidebar";
+import { Skeleton } from "@budgetbee/ui/core/skeleton";
 import {
 	Activity,
 	ChevronsUpDown,
@@ -161,7 +161,7 @@ export function NavUser() {
 								</DropdownMenuItem>
 							}
 							<DropdownMenuItem asChild>
-								<Link href="/changelog">
+								<Link href="https://www.budget-bee.app/changelog">
 									<Logs />
 									Changelog
 								</Link>

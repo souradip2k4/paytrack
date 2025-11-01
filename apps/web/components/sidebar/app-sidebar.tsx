@@ -3,20 +3,23 @@
 import * as React from "react";
 
 import { options, PricingCard } from "@/components/pricing";
+import { TUseSession } from "@/lib/query";
+import { useStore } from "@/lib/store";
+import { authClient } from "@budgetbee/core/auth-client";
 import {
 	Card,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
+} from "@budgetbee/ui/core/card";
 import {
 	Dialog,
 	DialogContent,
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
-} from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
+} from "@budgetbee/ui/core/dialog";
+import { Separator } from "@budgetbee/ui/core/separator";
 import {
 	Sidebar,
 	SidebarContent,
@@ -25,10 +28,7 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import { authClient } from "@/lib/auth-client";
-import { TUseSession } from "@/lib/query";
-import { useStore } from "@/lib/store";
+} from "@budgetbee/ui/core/sidebar";
 import Link from "next/link";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";

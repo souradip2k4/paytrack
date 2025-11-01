@@ -1,0 +1,15 @@
+{
+	"name": "@budgetbee/billing",
+	"version": "1.0.0",
+	"author": "Samyabrata Maji <samyabratamaji334@gmail.com>",
+	"description": "Billing utilities + polar client.",
+	"license": "MIT",
+	"main": "index.ts",
+	"packageManager": "pnpm@10.11.0",
+	"dependencies": {
+		"@polar-sh/sdk": "^0.34.17"
+	},
+	"devDependencies": {
+		"@types/node": "^24.10.0"
+	}
+}

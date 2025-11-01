@@ -8,13 +8,13 @@ import {
 } from "@/components/filter-dropdown";
 import { DisplayDropdown } from "@/components/transaction-display-dropdown";
 import { TransactionsTable } from "@/components/transactions-table";
-import { Button } from "@/components/ui/button";
+import { useEditorStore } from "@/lib/store/editor-store";
+import { Button } from "@budgetbee/ui/core/button";
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useEditorStore } from "@/lib/store/editor-store";
+} from "@budgetbee/ui/core/tooltip";
 import { BadgeInfo, Check, SquarePen, X } from "lucide-react";
 import React from "react";
 

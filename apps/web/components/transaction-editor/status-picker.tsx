@@ -1,4 +1,6 @@
 import { StatusBadge } from "@/components/status-badge";
+import { useStore } from "@/lib/store";
+import { cn } from "@/lib/utils";
 import {
 	Command,
 	CommandEmpty,
@@ -6,14 +8,12 @@ import {
 	CommandInput,
 	CommandItem,
 	CommandList,
-} from "@/components/ui/command";
+} from "@budgetbee/ui/core/command";
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
-} from "@/components/ui/popover";
-import { useStore } from "@/lib/store";
-import { cn } from "@/lib/utils";
+} from "@budgetbee/ui/core/popover";
 import { CheckIcon } from "lucide-react";
 import { Popover as PopoverPrimitive } from "radix-ui";
 

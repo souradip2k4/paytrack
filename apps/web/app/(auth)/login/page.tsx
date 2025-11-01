@@ -1,6 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { authClient } from "@budgetbee/core/auth-client";
+import { Button } from "@budgetbee/ui/core/button";
 import {
 	Card,
 	CardContent,
@@ -8,10 +9,9 @@ import {
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { authClient } from "@/lib/auth-client";
+} from "@budgetbee/ui/core/card";
+import { Input } from "@budgetbee/ui/core/input";
+import { Label } from "@budgetbee/ui/core/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";

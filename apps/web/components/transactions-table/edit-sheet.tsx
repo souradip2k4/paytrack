@@ -2,9 +2,9 @@
 
 import { CategoryPicker } from "@/components/category-picker";
 import { DatePicker as TransactionDatePicker } from "@/components/date-picker";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@budgetbee/ui/core/button";
+import { Input } from "@budgetbee/ui/core/input";
+import { Label } from "@budgetbee/ui/core/label";
 import {
 	Sheet,
 	SheetClose,
@@ -13,9 +13,9 @@ import {
 	SheetFooter,
 	SheetHeader,
 	SheetTitle,
-} from "@/components/ui/sheet";
-import { bearerHeader } from "@/lib/bearer";
-import { db } from "@/lib/db";
+} from "@budgetbee/ui/core/sheet";
+
+import { getDb } from "@budgetbee/core/db";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -42,7 +42,8 @@ export function EditSheet({ open, onOpenChange, transaction }) {
 		mutationFn: async data => {
 			if (!transaction?.id) return;
 
-			const res = await db(await bearerHeader())
+			const db = await getDb();
+			const res = await db
 				.from("transactions")
 				.update(data)
 				.eq("id", transaction.id);

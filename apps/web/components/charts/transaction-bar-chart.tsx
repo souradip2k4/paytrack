@@ -1,18 +1,23 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-	ChartConfig,
-	ChartContainer,
-	ChartTooltip,
-	ChartTooltipContent,
-} from "@/components/ui/chart";
 import { getColor } from "@/lib/hash";
 import {
 	useCategories,
 	useTransactionDistributionByCategories,
 } from "@/lib/query";
 import { useChartStore } from "@/lib/store";
+import {
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+} from "@budgetbee/ui/core/card";
+import {
+	ChartConfig,
+	ChartContainer,
+	ChartTooltip,
+	ChartTooltipContent,
+} from "@budgetbee/ui/core/chart";
 import { addDays, differenceInDays, format } from "date-fns";
 import { LoaderCircle } from "lucide-react";
 import * as React from "react";

@@ -1,4 +1,8 @@
-import { Badge } from "@/components/ui/badge";
+import { useLocalStorage } from "@/hooks/use-localstorage";
+import currenciesJson from "@/lib/currencies.json";
+import { useStore } from "@/lib/store";
+import { cn } from "@/lib/utils";
+import { Badge } from "@budgetbee/ui/core/badge";
 import {
 	Command,
 	CommandEmpty,
@@ -6,16 +10,12 @@ import {
 	CommandInput,
 	CommandItem,
 	CommandList,
-} from "@/components/ui/command";
+} from "@budgetbee/ui/core/command";
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
-} from "@/components/ui/popover";
-import { useLocalStorage } from "@/hooks/use-localstorage";
-import currenciesJson from "@/lib/currencies.json";
-import { useStore } from "@/lib/store";
-import { cn } from "@/lib/utils";
+} from "@budgetbee/ui/core/popover";
 import { CheckIcon } from "lucide-react";
 import { Popover as PopoverPrimitive } from "radix-ui";
 import React from "react";

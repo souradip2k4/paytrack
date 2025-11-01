@@ -1,6 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { authClient } from "@budgetbee/core/auth-client";
+import { Button } from "@budgetbee/ui/core/button";
 import {
 	Dialog,
 	DialogClose,
@@ -10,10 +11,9 @@ import {
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { authClient } from "@/lib/auth-client";
+} from "@budgetbee/ui/core/dialog";
+import { Input } from "@budgetbee/ui/core/input";
+import { Label } from "@budgetbee/ui/core/label";
 import Link from "next/link";
 import React from "react";
 

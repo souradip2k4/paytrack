@@ -1,6 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { icons } from "@/lib/icons";
+import { useFilterStore } from "@/lib/store";
+import { Button } from "@budgetbee/ui/core/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -10,9 +12,7 @@ import {
 	DropdownMenuSubContent,
 	DropdownMenuSubTrigger,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { icons } from "@/lib/icons";
-import { useFilterStore } from "@/lib/store";
+} from "@budgetbee/ui/core/dropdown-menu";
 import { ListFilterPlus } from "lucide-react";
 import { nanoid } from "nanoid";
 import React from "react";

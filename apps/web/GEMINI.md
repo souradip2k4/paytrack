@@ -35,7 +35,7 @@ Here's some examples:
 ```ts
 "use client";
 
-import { db } from "@/lib/db";
+import { getDb } from "@budgetbee/core/db";
 import { bearerHeaders } from "@/lib/bearer-headers";
 
 // bearerHeaders() returns a headers object with the bearer token, can only be called in client components
@@ -53,7 +53,7 @@ We are using `better-auth` for authentication.
 You can use the `authClient` to access sessions, tokens, subscription intents, etc.
 
 ```ts
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@budgetbee/core/auth-client";
 
 const {
 	data: { session, user },
@@ -65,7 +65,7 @@ const {
 For server side, you can use `auth` object to access sessions, tokens, subscription intents, etc.
 
 ```ts
-import { auth } from "@/lib/auth";
+import { auth } from "@budgetbee/core/auth";
 import { headers } from "next/headers";
 
 const { data, error } = await auth.api.session.getSession({

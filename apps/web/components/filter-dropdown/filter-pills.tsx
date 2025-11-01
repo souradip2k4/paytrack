@@ -1,12 +1,12 @@
 "use client";
 
+import { icons } from "@/lib/icons";
+import { useFilterStore } from "@/lib/store";
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
-} from "@/components/ui/popover";
-import { icons } from "@/lib/icons";
-import { useFilterStore } from "@/lib/store";
+} from "@budgetbee/ui/core/popover";
 import { X } from "lucide-react";
 import React from "react";
 import { Button } from "../ui/button";

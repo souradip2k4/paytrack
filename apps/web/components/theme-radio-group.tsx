@@ -3,7 +3,7 @@
 import { CheckIcon, MinusIcon } from "lucide-react";
 import { useId } from "react";
 
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@budgetbee/ui/core/radio-group";
 import { useTheme } from "next-themes";
 
 const items = [

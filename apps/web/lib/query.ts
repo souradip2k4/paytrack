@@ -1,12 +1,11 @@
-import { authClient } from "@/lib/auth-client";
-import { bearerHeader } from "@/lib/bearer";
-import { db } from "@/lib/db";
 import {
 	serializeFilterStack,
 	useChartStore,
 	useDisplayStore,
 	useFilterStore,
 } from "@/lib/store";
+import { authClient } from "@budgetbee/core/auth-client";
+import { getDb } from "@budgetbee/core/db";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -27,7 +26,8 @@ export const useSubscriptions = () => {
 		queryKey: ["subscriptions", "get", data?.user?.id],
 		queryFn: async () => {
 			if (!data || !data.user.id) return [];
-			const res = await db(await bearerHeader())
+			const db = await getDb();
+			const res = await db
 				.from("subscriptions")
 				.select("*")
 				.eq("user_id", data.user.id)
@@ -45,7 +45,8 @@ export const useCategories = () => {
 		queryKey: ["cat", "get", data?.user?.id],
 		queryFn: async () => {
 			if (!data || !data.user.id) return [];
-			const res = await db(await bearerHeader())
+			const db = await getDb();
+			const res = await db
 				.from("categories")
 				.select("*")
 				.eq("user_id", data.user.id)
@@ -64,13 +65,12 @@ export const useCreateCategories = () => {
 		mutationKey: ["cat", "post"],
 		mutationFn: async (data: string) => {
 			if (!authData || !authData.user?.id) return;
-			const res = await db(await bearerHeader())
-				.from("categories")
-				.insert({
-					name: data,
-					user_id: authData.user?.id,
-					organization_id: authData.session?.activeOrganizationId,
-				});
+			const db = await getDb();
+			const res = await db.from("categories").insert({
+				name: data,
+				user_id: authData.user?.id,
+				organization_id: authData.session?.activeOrganizationId,
+			});
 			if (res.error) {
 				toast.error("Failed to create category");
 				return;
@@ -103,9 +103,10 @@ export const useTransactions = () => {
 		queryFn: async () => {
 			if (authData === null) return [];
 
+			const db = await getDb();
 			const res = await applyDisplay(
 				applyFilter(
-					db(await bearerHeader())
+					db
 						.from("transactions")
 						.select("*")
 						.order("transaction_date", {
@@ -145,7 +146,8 @@ export const useTransactionDistributionByCategories = () => {
 		queryKey: ["tr", "dist", start_date, end_date, filterStack],
 		queryFn: async () => {
 			if (authData === null) return [];
-			const res = await db(await bearerHeader()).rpc(
+			const db = await getDb();
+			const res = await db.rpc(
 				"get_transaction_distribution_by_category",
 				{
 					params: {

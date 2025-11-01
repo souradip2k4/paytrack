@@ -1,7 +1,7 @@
 "use client";
 
-import { authClient } from "@/lib/auth-client";
 import { avatarUrl } from "@/lib/utils";
+import { authClient } from "@budgetbee/core/auth-client";
 import React from "react";
 import { Badge } from "../ui/badge";
 import { Skeleton } from "../ui/skeleton";

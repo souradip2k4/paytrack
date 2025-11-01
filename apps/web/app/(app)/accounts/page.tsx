@@ -7,8 +7,8 @@ import {
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+} from "@budgetbee/ui/core/card";
+import { Separator } from "@budgetbee/ui/core/separator";
 
 export default function AccountPage() {
 	return (

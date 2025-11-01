@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Button } from "@budgetbee/ui/core/button";
 import { Equal, X } from "lucide-react";
 import Link from "next/link";
 import React from "react";

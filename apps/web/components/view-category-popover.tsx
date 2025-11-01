@@ -1,16 +1,16 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@budgetbee/ui/core/button";
+import { Input } from "@budgetbee/ui/core/input";
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
-} from "@/components/ui/popover";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { bearerHeader } from "@/lib/bearer";
-import { db } from "@/lib/db";
+} from "@budgetbee/ui/core/popover";
+import { ScrollArea } from "@budgetbee/ui/core/scroll-area";
+import { Separator } from "@budgetbee/ui/core/separator";
+
 import { useCategories, useCreateCategories } from "@/lib/query";
 import { cn } from "@/lib/utils";
+import { getDb } from "@budgetbee/core/db";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, Loader, Pencil, Plus, Tags, Trash, X } from "lucide-react";
 import React from "react";
@@ -39,10 +39,8 @@ export function ViewCategoryPopover() {
 			mutationKey: ["cat", "delete"],
 			mutationFn: async (id: string) => {
 				if (!id) return;
-				const res = await db(await bearerHeader())
-					.from("categories")
-					.delete()
-					.eq("id", id);
+				const db = await getDb();
+				const res = await db.from("categories").delete().eq("id", id);
 				if (res.error) throw res.error;
 				return res.data;
 			},
@@ -65,7 +63,8 @@ export function ViewCategoryPopover() {
 			mutationKey: ["cat", "patch"],
 			mutationFn: async () => {
 				if (!categoryId || categoryName === "") return;
-				const res = await db(await bearerHeader())
+				const db = await getDb();
+				const res = await db
 					.from("categories")
 					.update({ name: categoryName })
 					.eq("id", categoryId)

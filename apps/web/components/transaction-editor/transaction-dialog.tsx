@@ -3,8 +3,10 @@
 import { CategoryPicker } from "@/components/category-picker";
 import { DatePicker } from "@/components/date-picker";
 import { StatusBadgeProps } from "@/components/status-badge";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useLocalStorage } from "@/hooks/use-localstorage";
+import { authClient } from "@budgetbee/core/auth-client";
+import { Badge } from "@budgetbee/ui/core/badge";
+import { Button } from "@budgetbee/ui/core/button";
 import {
 	Dialog,
 	DialogClose,
@@ -13,21 +15,19 @@ import {
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@budgetbee/ui/core/dialog";
+import { Input } from "@budgetbee/ui/core/input";
+import { Label } from "@budgetbee/ui/core/label";
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useLocalStorage } from "@/hooks/use-localstorage";
-import { authClient } from "@/lib/auth-client";
-import { bearerHeader } from "@/lib/bearer";
+} from "@budgetbee/ui/core/tooltip";
+
 import currenciesJson from "@/lib/currencies.json";
-import { db } from "@/lib/db";
 import { useStore } from "@/lib/store/store";
 import { cn } from "@/lib/utils";
+import { getDb } from "@budgetbee/core/db";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -60,13 +60,12 @@ export function TransactionDialog() {
 		mutationFn: async (data: FieldValues) => {
 			if (!authData || !authData.user || !authData.user.id) return;
 			const { transaction_date, ...rest } = data;
-			const res = await db(await bearerHeader())
-				.from("transactions")
-				.insert({
-					...rest,
-					transaction_date: transaction_date?.toISOString(),
-					user_id: authData.user.id,
-				});
+			const db = await getDb();
+			const res = await db.from("transactions").insert({
+				...rest,
+				transaction_date: transaction_date?.toISOString(),
+				user_id: authData.user.id,
+			});
 			if (res.error) throw res.error;
 			return res.data;
 		},

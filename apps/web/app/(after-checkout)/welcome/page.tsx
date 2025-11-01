@@ -1,15 +1,15 @@
-import { Button } from "@/components/ui/button";
+import { formatLowestUnitCurrency } from "@/lib/money-utils";
+import { polarClient } from "@/lib/polar";
+import { auth } from "@budgetbee/core/auth";
+import { Button } from "@budgetbee/ui/core/button";
 import {
 	Card,
 	CardContent,
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { auth } from "@/lib/auth";
-import { formatLowestUnitCurrency } from "@/lib/money-utils";
-import { polarClient } from "@/lib/polar";
+} from "@budgetbee/ui/core/card";
+import { Separator } from "@budgetbee/ui/core/separator";
 import { type Checkout } from "@polar-sh/sdk/models/components/checkout.js";
 import { ArrowUpRight, Check } from "lucide-react";
 import { headers } from "next/headers";

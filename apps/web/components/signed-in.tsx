@@ -1,6 +1,6 @@
 "use client";
 
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@budgetbee/core/auth-client";
 import { useRouter } from "next/navigation";
 import React from "react";
 

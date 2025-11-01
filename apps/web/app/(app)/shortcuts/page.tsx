@@ -5,7 +5,7 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@/components/ui/table";
+} from "@budgetbee/ui/core/table";
 
 type Shortcut = {
 	key: string;
