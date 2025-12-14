@@ -1,5 +1,5 @@
 import { formatLowestUnitCurrency } from "@/lib/money-utils";
-import { polarClient } from "@/lib/polar";
+import { polar as polarClient } from "@budgetbee/billing";
 import { auth } from "@budgetbee/core/auth";
 import { Button } from "@budgetbee/ui/core/button";
 import {
@@ -22,6 +22,8 @@ export default async function WelcomePage({
 	searchParams: Promise<Record<string, string>>;
 }) {
 	const id = (await searchParams).id;
+	if (!id) notFound();
+
 	let checkout: Checkout = await polarClient.checkouts
 		.get({ id })
 		.catch(notFound);
