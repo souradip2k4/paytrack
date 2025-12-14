@@ -208,7 +208,7 @@ export const columns: ColumnDef<any>[] = [
 		header: "Creator",
 		cell: CreatorCell,
 		sortingFn: "datetime",
-		size: 150,
+		size: 250,
 	},
 
 	/*

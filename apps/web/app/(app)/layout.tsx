@@ -18,7 +18,7 @@ export default async function Layout({
 		<React.Fragment>
 			<SidebarProvider>
 				<AppSidebar />
-				<SidebarInset className="border">
+				<SidebarInset className="overflow-hidden border">
 					<header className="flex h-[48px] shrink-0 items-center gap-2 border-b">
 						<div className="flex w-full items-center gap-2 px-4">
 							<SidebarTrigger className="-ml-1" />
@@ -26,7 +26,7 @@ export default async function Layout({
 							<AppHeader />
 						</div>
 					</header>
-					<div className="flex-1 overflow-y-auto">
+					<div className="min-w-0 flex-1 overflow-y-auto">
 						<SignedIn>{children}</SignedIn>
 					</div>
 				</SidebarInset>

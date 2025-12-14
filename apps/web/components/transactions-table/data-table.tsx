@@ -21,6 +21,7 @@ import { useTransactions } from "@/lib/query";
 import { useDisplayStore, useStore } from "@/lib/store";
 import { useEditorStore } from "@/lib/store/editor-store";
 import { cn } from "@/lib/utils";
+import { getDb } from "@budgetbee/core/db";
 import { useQueryClient } from "@tanstack/react-query";
 import {
 	ColumnFiltersState,
@@ -36,18 +37,6 @@ import { ArrowDown, ArrowUp, FolderOpen, LoaderCircle } from "lucide-react";
 import React from "react";
 import { FieldValues, FormProvider, useForm } from "react-hook-form";
 import { columns } from "./columns";
-
-const defaultSpacing: Record<string, number> = {
-	select: 48,
-	amount: 120,
-	name: 480,
-	status: 120,
-	category_id: 160,
-	transaction_date: 180,
-	created_at: 150,
-	updated_at: 150,
-	user_id: 150,
-};
 
 export function TransactionsTable({
 	ref,
@@ -186,8 +175,8 @@ export function TransactionsTable({
 				ref={ref}
 				onSubmit={formStates.handleSubmit(onSubmit)}
 				className="border-input max-h-[calc(100vh-10rem)] overflow-auto rounded-md border">
-				<Table>
-					<TableHeader className="bg-muted sticky top-px z-10 flex">
+				<Table containerClassName="h-full">
+					<TableHeader className="bg-muted sticky top-0 z-10">
 						{table.getHeaderGroups().map(headerGroup => (
 							<TableRow key={headerGroup.id}>
 								{headerGroup.headers.map(header => {
@@ -204,6 +193,9 @@ export function TransactionsTable({
 											className="hover:bg-accent/10 select-none rounded"
 											style={{
 												width: `${header.getSize()}px`,
+												minWidth: `${header.getSize()}px`,
+												maxWidth: `${header.getSize()}px`,
+												flexShrink: 0,
 											}}>
 											<span className="flex items-center gap-2 [&:has(>[role='checkbox'])]:justify-center">
 												{header.isPlaceholder ? null : (
@@ -230,7 +222,6 @@ export function TransactionsTable({
 						))}
 					</TableHeader>
 					<TableBody
-						className="w-full"
 						style={{
 							height: `${virtualizer.getTotalSize()}px`,
 							position: "relative",
@@ -283,6 +274,9 @@ export function TransactionsTable({
 												key={cell.id}
 												style={{
 													width: `${cell.column.getSize()}px`,
+													minWidth: `${cell.column.getSize()}px`,
+													maxWidth: `${cell.column.getSize()}px`,
+													flexShrink: 0,
 													height: `${virtualRow.size}px`,
 												}}>
 												{flexRender(
