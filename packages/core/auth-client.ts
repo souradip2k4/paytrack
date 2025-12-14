@@ -1,9 +1,9 @@
-import { polarClient } from "@polar-sh/better-auth";
+import { polarClient } from "@polar-sh/better-auth/client";
 import { jwtClient, organizationClient } from "better-auth/client/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { createAuthClient } from "better-auth/react";
 
-export const authClient = createAuthClient({
+const authClient = createAuthClient({
 	baseURL: process.env.NEXT_PUBLIC_APP_URL!,
 	fetchOptions: {
 		credentials: "include",
@@ -35,3 +35,5 @@ export const authClient = createAuthClient({
 	},
 	plugins: [organizationClient(), polarClient(), jwtClient(), nextCookies()],
 });
+
+export { authClient };

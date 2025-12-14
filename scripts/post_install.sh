@@ -2,44 +2,54 @@
 
 . ./scripts/is_root.sh
 
-if ! is_root; then
-    echo "ERROR: This script must be run from the project root directory (git toplevel)."
+only_allow_git_root
+
+if [ -f "$ENV_FILE" ]; then
+    echo "INFO: $ENV_FILE found. Skipped generation."
     exit 1
 fi
 
-if [ ! -f ".env" ]; then
-    echo "INFO: No .env file found. Creating one..."
-    cp .env.example .env
+echo "INFO: Creating .env file..."
+ENV_FILE="$GIT_ROOT/.env"
+TEMP_ENV_FILE="$GIT_ROOT/.env.temp"
 
-    sed "/^BETTER_AUTH_SECRET=/c\BETTER_AUTH_SECRET=$(openssl rand -hex 32)" .env > .env.tmp
-    mv .env.tmp .env
+cp "$GIT_ROOT/.env.example" "$ENV_FILE"
 
-    sed "/^POSTGRES_PASSWORD=/c\POSTGRES_PASSWORD=$(openssl rand -hex 32)" .env > .env.tmp
-    mv .env.tmp .env
+# ---- Auto generate secrets ---- #
+autogen_secret() {
+    local VAR_KEY="$1"
+    local VAR_VALUE="$2"
+    local ENV_FILE_LOCAL="${ENV_FILE:-.env}"
+    local TEMP_FILE_LOCAL="${TEMP_ENV_FILE:-.env.temp}"
 
-    sed "/^POSTGRES_AUTH_ADMIN_PASSWORD=/c\POSTGRES_AUTH_ADMIN_PASSWORD=$(openssl rand -hex 32)" .env > .env.tmp
-    mv .env.tmp .env
+    if [[ -z "$VAR_KEY" || -z "$VAR_VALUE" ]]; then
+        echo "Usage: autogen_secret <secret_key> <secret_value>" >&2
+        return 1
+    fi
 
-    sed "/^POSTGRES_SUBSCRIPTION_ADMIN_PASSWORD=/c\POSTGRES_SUBSCRIPTION_ADMIN_PASSWORD=$(openssl rand -hex 32)" .env > .env.tmp
-    mv .env.tmp .env
+    awk -v key="$VAR_KEY" -v value="$VAR_VALUE" '
+    {
+        # Check if the line begins with the key followed by an '='
+        if ($0 ~ ("^" key "=")) {
+            print key "=" value;
+            next;
+        }
+        print $0;
+    }
+    ' "$ENV_FILE_LOCAL" > "$TEMP_FILE_LOCAL"
 
-    echo "INFO: Generated .env file."
-else
-    echo "INFO: Found .env file. Skipping..."
-fi
+    if [ $? -eq 0 ]; then
+        mv "$TEMP_FILE_LOCAL" "$ENV_FILE_LOCAL"
+        echo "INFO: Successfully set $VAR_KEY in $ENV_FILE_LOCAL."
+        return 0
+    else
+        rm -f "$TEMP_FILE_LOCAL" 2>/dev/null
+        echo "ERROR: Failed to update $VAR_KEY in $ENV_FILE_LOCAL." >&2
+        return 1
+    fi
+}
 
-echo "INFO: Creating symlinks..."
-ln -sfv "$(pwd)/.env" "$(pwd)/infra/.env"
-
-for file in ./apps/*/package.json; do
-    dir="$(dirname $file)"
-    ln -sfv "$(pwd)/.env"
-done
-
-for file in ./packages/*/package.json; do
-    dir="$(dirname $file)"
-    ln -sfv "$(pwd)/.env" "${dir#./}/.env"
-done
-
-echo "INFO: Symlinks created."
-
+autogen_secret "BETTER_AUTH_SECRET" "$(openssl rand -hex 32)"
+autogen_secret "POSTGRES_PASSWORD" "$(openssl rand -hex 32)"
+autogen_secret "POSTGRES_AUTH_ADMIN_PASSWORD" "$(openssl rand -hex 32)"
+autogen_secret "POSTGRES_SUBSCRIPTION_ADMIN_PASSWORD" "$(openssl rand -hex 32)"

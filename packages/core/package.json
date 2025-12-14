@@ -1,6 +1,7 @@
 {
 	"name": "@budgetbee/core",
 	"version": "1.0.0",
+	"type": "module",
 	"description": "Core package for budgetbee",
 	"author": "Samyabrata Maji <samyabratamaji334@gmail.com>",
 	"license": "MIT",

@@ -20,7 +20,11 @@ function confirm(query: string) {
 
 const initdb = async () => {
 	const db = new PostgrestClient({
-		connectionString: process.env.DATABASE_URL!,
+		database: process.env.POSTGRES_DATABASE,
+		host: process.env.POSTGRES_HOST,
+		port: Number(process.env.POSTGRES_PORT),
+		user: process.env.POSTGRES_USER,
+		password: process.env.POSTGRES_PASSWORD,
 		connectionTimeoutMillis: 1000,
 	});
 
@@ -28,7 +32,7 @@ const initdb = async () => {
 		.connect()
 		.then(() => console.log("Database connection established."));
 
-	const user_id = process.env.DEV_ONLY_TEST_USER_ID;
+	const user_id = process.env.DEV_ONLY_TEST_USER_ID!;
 
 	const response = await confirm(
 		`Are you sure you want to delete all data for ${user_id}?`,
