@@ -20,7 +20,6 @@ export const AmountCell: ColumnDefTemplate<CellContext<any, unknown>> = ({
 	);
 	const amountColor =
 		initialAmount > 0 ? "text-emerald-500"
-		: initialAmount < 0 ? "text-red-500"
 		: "";
 
 	const isEditing = useEditorStore(s => s.is_editing);

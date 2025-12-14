@@ -26,8 +26,7 @@ export const AmountCell: ColumnDefTemplate<CellContext<any, unknown>> = ({
 	const formattedAmount = formatMoney(defaultAmount, row.original.currency);
 	const amountColor =
 		defaultAmount > 0 ? "text-emerald-500"
-		: defaultAmount < 0 ? "text-red-500"
-		: "";
+		: "text-muted-foreground";
 	const isEditing = useEditorStore(s => s.is_editing);
 
 	const {
