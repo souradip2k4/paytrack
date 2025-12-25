@@ -3,9 +3,9 @@
 	"version": "1.0.6",
 	"private": true,
 	"scripts": {
-		"dev": "next dev -p 3000",
-		"build": "next build --no-lint",
-		"start": "next start -p 3000",
+		"dev": "next dev --turbo -p 3000",
+		"build": "next build --turbo",
+		"start": "next start --turbo -p 3000",
 		"lint": "next lint",
 		"test": "vitest run",
 		"test:ui": "vitest --ui",
