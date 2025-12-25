@@ -3,18 +3,18 @@
 import { display_fields, useDisplayStore } from "@/lib/store";
 import { SlidersHorizontal } from "lucide-react";
 import { icons } from "../../lib/icons";
-import { Button } from "../ui/button";
-import { Label } from "../ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Button } from "@budgetbee/ui/core/button";
+import { Label } from "@budgetbee/ui/core/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@budgetbee/ui/core/popover";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "../ui/select";
-import { Separator } from "../ui/separator";
-import { Toggle } from "../ui/toggle";
+} from "@budgetbee/ui/core/select";
+import { Separator } from "@budgetbee/ui/core/separator";
+import { Toggle } from "@budgetbee/ui/core/toggle";
 
 export function DisplayDropdown() {
 	const pageCount = useDisplayStore(s => s.display_page_size);

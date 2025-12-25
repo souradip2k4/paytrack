@@ -1,7 +1,7 @@
 "use client";
 
 import { useEditorStore } from "@/lib/store/editor-store";
-import { cn } from "@/lib/utils";
+import { cn } from "@budgetbee/ui/lib/utils";
 import { Input } from "@budgetbee/ui/core/input";
 import { CellContext, ColumnDefTemplate } from "@tanstack/react-table";
 import React from "react";

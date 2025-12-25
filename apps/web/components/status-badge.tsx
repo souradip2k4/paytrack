@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@budgetbee/ui/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Badge } from "./ui/badge";
+import { Badge } from "@budgetbee/ui/core/badge";
 
 const statusBadgeVariants = cva("", {
 	variants: {

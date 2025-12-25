@@ -15,7 +15,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "./ui/button";
+import { Button } from "@budgetbee/ui/core/button";
 
 export function DeleteButton() {
 	const rowSelectionIds = useStore(s => s.row_selection_entries_ids);

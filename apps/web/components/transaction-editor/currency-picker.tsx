@@ -1,7 +1,7 @@
 import { useLocalStorage } from "@/hooks/use-localstorage";
 import currenciesJson from "@/lib/currencies.json";
 import { useStore } from "@/lib/store";
-import { cn } from "@/lib/utils";
+import { cn } from "@budgetbee/ui/lib/utils";
 import { Badge } from "@budgetbee/ui/core/badge";
 import {
 	Command,

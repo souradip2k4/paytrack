@@ -1,6 +1,6 @@
 import { StatusBadge } from "@/components/status-badge";
 import { useStore } from "@/lib/store";
-import { cn } from "@/lib/utils";
+import { cn } from "@budgetbee/ui/lib/utils";
 import {
 	Command,
 	CommandEmpty,

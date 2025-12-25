@@ -10,7 +10,7 @@ import {
 } from "@budgetbee/ui/core/command";
 import { LoaderIcon } from "lucide-react";
 import { CategoryBadge } from "../category-badge";
-import { Checkbox } from "../ui/checkbox";
+import { Checkbox } from "@budgetbee/ui/core/checkbox";
 
 export function CategoryFilter({ id }: { id: string }) {
 	const { data, isLoading } = useCategories();

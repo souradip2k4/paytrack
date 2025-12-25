@@ -26,7 +26,7 @@ import {
 
 import currenciesJson from "@/lib/currencies.json";
 import { useStore } from "@/lib/store/store";
-import { cn } from "@/lib/utils";
+import { cn } from "@budgetbee/ui/lib/utils";
 import { getDb } from "@budgetbee/core/db";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -36,7 +36,7 @@ import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
-import { Kbd } from "../ui/kbd";
+import { Kbd } from "@budgetbee/ui/core/kbd";
 import { CurrencyPicker } from "./currency-picker";
 import { StatusPicker } from "./status-picker";
 

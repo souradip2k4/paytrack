@@ -17,7 +17,7 @@ vi.mock("@budgetbee/core/auth-client", () => ({
 }));
 
 // 2. Mock the bearerHeader utility
-vi.mock("@/lib/utils", () => ({
+vi.mock("@budgetbee/ui/lib/utils", () => ({
 	bearerHeader: vi
 		.fn()
 		.mockResolvedValue({ Authorization: "Bearer FAKE_TOKEN" }),

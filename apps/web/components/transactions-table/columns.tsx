@@ -3,7 +3,7 @@
 import { StatusBadge } from "@/components/status-badge";
 import { formatMoney } from "@/lib/money-utils";
 import { useEditorStore } from "@/lib/store/editor-store";
-import { cn } from "@/lib/utils";
+import { cn } from "@budgetbee/ui/lib/utils";
 import { Checkbox } from "@budgetbee/ui/core/checkbox";
 import { Input } from "@budgetbee/ui/core/input";
 import {

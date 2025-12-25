@@ -22,7 +22,7 @@ import {
 	useChartStore,
 	useFilterStore,
 } from "@/lib/store";
-import { cn } from "@/lib/utils";
+import { cn } from "@budgetbee/ui/lib/utils";
 import { getDb } from "@budgetbee/core/db";
 import { useQuery } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";

@@ -8,7 +8,7 @@ import {
 	CommandItem,
 	CommandList,
 } from "@budgetbee/ui/core/command";
-import { Checkbox } from "../ui/checkbox";
+import { Checkbox } from "@budgetbee/ui/core/checkbox";
 
 export function StatusFilter({ id }: { id: string }) {
 	const stack = useFilterStore(s => s.filter_stack);

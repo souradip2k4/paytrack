@@ -9,7 +9,7 @@ import { ScrollArea } from "@budgetbee/ui/core/scroll-area";
 import { Separator } from "@budgetbee/ui/core/separator";
 
 import { useCategories, useCreateCategories } from "@/lib/query";
-import { cn } from "@/lib/utils";
+import { cn } from "@budgetbee/ui/lib/utils";
 import { getDb } from "@budgetbee/core/db";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, Loader, Pencil, Plus, Tags, Trash, X } from "lucide-react";

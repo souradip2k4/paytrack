@@ -2,7 +2,7 @@
 
 import { StatusBadge } from "@/components/status-badge";
 import { useEditorStore } from "@/lib/store/editor-store";
-import { cn } from "@/lib/utils";
+import { cn } from "@budgetbee/ui/lib/utils";
 import { CellContext, ColumnDefTemplate } from "@tanstack/react-table";
 import { useController, useFormContext } from "react-hook-form";
 import { StatusPicker } from "../transaction-editor/status-picker";

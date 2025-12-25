@@ -8,7 +8,7 @@ import React from "react";
 import { useController } from "react-hook-form";
 import { CategoryBadge } from "../category-badge";
 import { CategoryPicker } from "../category-picker";
-import { Skeleton } from "../ui/skeleton";
+import { Skeleton } from "@budgetbee/ui/core/skeleton";
 
 export const CategoryCell: ColumnDefTemplate<CellContext<any, unknown>> = ({
 	row,

@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@budgetbee/ui/lib/utils";
 import AnalyticsImg from "@/public/images/analytics.png";
 import EasyCollaborationImg from "@/public/images/easy_collaboration.png";
 import InvoiceImg from "@/public/images/invoice.png";

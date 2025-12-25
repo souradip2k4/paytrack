@@ -6,8 +6,8 @@ import { Session } from "better-auth";
 import { format } from "date-fns";
 import { Ellipsis, LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
+import { Badge } from "@budgetbee/ui/core/badge";
+import { Button } from "@budgetbee/ui/core/button";
 import {
 	Card,
 	CardContent,
@@ -15,13 +15,13 @@ import {
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "../ui/card";
+} from "@budgetbee/ui/core/card";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "@budgetbee/ui/core/dropdown-menu";
 
 function SessionItem({
 	session,

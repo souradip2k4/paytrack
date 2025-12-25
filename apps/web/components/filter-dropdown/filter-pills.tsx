@@ -9,7 +9,7 @@ import {
 } from "@budgetbee/ui/core/popover";
 import { X } from "lucide-react";
 import React from "react";
-import { Button } from "../ui/button";
+import { Button } from "@budgetbee/ui/core/button";
 import { AmountFilter } from "./amount-filter";
 import { CategoryFilter } from "./category-filter";
 import { FilterOperationSelect } from "./filter-operation-select";

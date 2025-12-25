@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@budgetbee/ui/lib/utils";
 import { Toaster } from "@budgetbee/ui/core/sonner";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata } from "next";

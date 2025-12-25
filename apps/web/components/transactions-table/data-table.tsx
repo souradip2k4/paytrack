@@ -20,7 +20,7 @@ import {
 import { useTransactions } from "@/lib/query";
 import { useDisplayStore, useStore } from "@/lib/store";
 import { useEditorStore } from "@/lib/store/editor-store";
-import { cn } from "@/lib/utils";
+import { cn } from "@budgetbee/ui/lib/utils";
 import { getDb } from "@budgetbee/core/db";
 import { useQueryClient } from "@tanstack/react-query";
 import {

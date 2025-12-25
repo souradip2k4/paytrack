@@ -1,10 +1,6 @@
-import { clsx, type ClassValue } from "clsx";
 import * as React from "react";
-import { twMerge } from "tailwind-merge";
 
-function cn(...inputs: ClassValue[]) {
-	return twMerge(clsx(inputs));
-}
+import { cn } from "@budgetbee/ui/lib/utils";
 
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
 	return (

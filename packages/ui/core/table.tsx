@@ -4,15 +4,9 @@ import * as React from "react";
 
 import { cn } from "@budgetbee/ui/lib/utils";
 
-function Table({
-	className,
-	containerClassName,
-	...props
-}: React.ComponentProps<"table"> & { containerClassName?: string }) {
+function Table({ className, ...props }: React.ComponentProps<"table">) {
 	return (
-		<div
-			data-slot="table-container"
-			className={cn("relative w-full", containerClassName)}>
+		<div data-slot="table-container" className="relative w-full">
 			<table
 				data-slot="table"
 				className={cn("w-full caption-bottom text-sm", className)}
@@ -73,7 +67,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
 		<th
 			data-slot="table-head"
 			className={cn(
-				"text-foreground h-10 whitespace-nowrap px-2 text-left align-middle font-medium [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+				"text-foreground h-10 whitespace-nowrap px-2 text-left align-middle font-medium",
 				className,
 			)}
 			{...props}
@@ -86,7 +80,7 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
 		<td
 			data-slot="table-cell"
 			className={cn(
-				"whitespace-nowrap p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+				"whitespace-nowrap p-2 align-middle [&>*]:ring-inset",
 				className,
 			)}
 			{...props}

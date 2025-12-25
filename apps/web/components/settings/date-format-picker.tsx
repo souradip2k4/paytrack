@@ -3,7 +3,7 @@
 import { useLocalSettingsStore } from "@/lib/store";
 import { format } from "date-fns";
 import React from "react";
-import { Label } from "../ui/label";
+import { Label } from "@budgetbee/ui/core/label";
 import {
 	Select,
 	SelectContent,
@@ -13,8 +13,8 @@ import {
 	SelectSeparator,
 	SelectTrigger,
 	SelectValue,
-} from "../ui/select";
-import { Switch } from "../ui/switch";
+} from "@budgetbee/ui/core/select";
+import { Switch } from "@budgetbee/ui/core/switch";
 
 const dateTimeFormats = [
 	{

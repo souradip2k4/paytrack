@@ -3,8 +3,8 @@ import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 import { Row } from "@tanstack/react-table";
 import axios from "axios";
-import { Badge } from "../ui/badge";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Badge } from "@budgetbee/ui/core/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "@budgetbee/ui/core/popover";
 
 export const TagsCell = ({ row }: { row: Row<Entry> }) => {
     const tagc = 2; // no of tags to display

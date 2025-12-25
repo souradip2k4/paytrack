@@ -1,10 +1,3 @@
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
-
-export function cn(...inputs: ClassValue[]) {
-	return twMerge(clsx(inputs));
-}
-
 export function wait(ms: number): Promise<void> {
 	if (process.env.NODE_ENV === "production")
 		return new Promise(resolve => setTimeout(resolve, 0));

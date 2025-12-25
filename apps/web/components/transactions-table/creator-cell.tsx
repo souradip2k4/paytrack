@@ -3,8 +3,8 @@
 import { avatarUrl } from "@/lib/utils";
 import { authClient } from "@budgetbee/core/auth-client";
 import React from "react";
-import { Badge } from "../ui/badge";
-import { Skeleton } from "../ui/skeleton";
+import { Badge } from "@budgetbee/ui/core/badge";
+import { Skeleton } from "@budgetbee/ui/core/skeleton";
 
 export const CreatorCell = () => {
 	const { data, isPending } = authClient.useSession();

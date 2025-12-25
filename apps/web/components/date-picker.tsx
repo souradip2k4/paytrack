@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@budgetbee/ui/lib/utils";
 import { Button } from "@budgetbee/ui/core/button";
 import { Calendar } from "@budgetbee/ui/core/calendar";
 import {

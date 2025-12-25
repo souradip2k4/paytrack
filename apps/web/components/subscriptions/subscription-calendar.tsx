@@ -1,7 +1,7 @@
 "use client";
 
 import { useStore } from "@/lib/store/store";
-import { cn } from "@/lib/utils";
+import { cn } from "@budgetbee/ui/lib/utils";
 import { format } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import { SubscriptionDialog } from "./subscription-dialog";

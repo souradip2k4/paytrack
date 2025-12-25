@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { nanoid } from "nanoid";
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod/mini";
-import { Input } from "../ui/input";
+import { Input } from "@budgetbee/ui/core/input";
 
 const amountSchema = z.object({
 	amount: z.optional(z.number()),

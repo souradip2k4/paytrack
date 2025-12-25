@@ -1,7 +1,7 @@
 "use client";
 
 import { useStore } from "@/lib/store";
-import { cn } from "@/lib/utils";
+import { cn } from "@budgetbee/ui/lib/utils";
 import { authClient } from "@budgetbee/core/auth-client";
 import {
 	Card,
@@ -17,9 +17,9 @@ import { Check } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
-import { Button } from "../ui/button";
-import { Label } from "../ui/label";
-import { Switch } from "../ui/switch";
+import { Button } from "@budgetbee/ui/core/button";
+import { Label } from "@budgetbee/ui/core/label";
+import { Switch } from "@budgetbee/ui/core/switch";
 import { PricingOption } from "./pricing";
 
 export function PricingCard({ option }: { option: PricingOption }) {

@@ -1,5 +1,5 @@
 import { hashStr } from "@/lib/hash";
-import { cn } from "@/lib/utils";
+import { cn } from "@budgetbee/ui/lib/utils";
 
 /*const variants = [
     "bg-[#ebebeb] dark:bg-[#1f1f1f] text-[#171717] dark:text-[#ededed] fill-[#171717] dark:fill-[#ededed]", // gray
