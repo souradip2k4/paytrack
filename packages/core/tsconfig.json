@@ -4,7 +4,9 @@
 		"baseUrl": "../core",
 		"paths": {
 			"@budgetbee/core/*": ["../core/*"]
-		}
+		},
+		"module": "ESNext",
+		"moduleResolution": "Bundler"
 	},
 	"include": ["../core"],
 	"exclude": ["../core/node_modules", "../core/dist"]
