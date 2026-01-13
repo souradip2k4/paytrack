@@ -39,4 +39,11 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+echo "INFO: Running migrations from $SQL_DIR/migration_2026_01_11_feature_flags.sql"
+$DB_COMMAND -f "$SQL_DIR/migration_2026_01_11_feature_flags.sql"
+if [ $? -ne 0 ]; then
+    echo "ERROR: Failed to run migrations from $SQL_DIR/migration_2026_01_11_feature_flags.sql"
+    exit 1
+fi
+
 echo "INFO: All migrations completed successfully."

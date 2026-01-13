@@ -23,3 +23,4 @@ types are QueryParams, ResponseBody, Request
 ## Database
 
 - For indexes, names should be in the format `idx_table_name_column_names`
+- For migrations, create a new migration file `migration_yyyy_mm_dd_message.sql` file
