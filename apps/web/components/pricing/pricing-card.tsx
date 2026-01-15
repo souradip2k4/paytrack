@@ -106,7 +106,7 @@ export function PricingCard({ option }: { option: PricingOption }) {
 				<CardTitle className="text-md text-muted-foreground font-normal">
 					{option.title}
 				</CardTitle>
-				<CardDescription className="text-primary-foreground mt-2 text-4xl font-[Instrument_Serif]">
+				<CardDescription className="text-foreground mt-2 text-4xl font-[Instrument_Serif]">
 					{price}{" "}
 					<span className="text-xl">
 						{yearlyBilling ? "/year" : "/month"}
