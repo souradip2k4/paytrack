@@ -39,6 +39,7 @@ import z from "zod";
 import { Kbd } from "@budgetbee/ui/core/kbd";
 import { CurrencyPicker } from "./currency-picker";
 import { StatusPicker } from "./status-picker";
+import { useCategories } from "@/lib/query";
 
 const schema = z.object({
 	name: z.string().max(50).optional(),
@@ -82,6 +83,8 @@ export function TransactionDialog() {
 			});
 		},
 	});
+
+	const { data: categories } = useCategories()
 
 	const [defaultLocalCurrency, _] = useLocalStorage(
 		"last_used_currency",
@@ -209,7 +212,7 @@ export function TransactionDialog() {
 									<CurrencyPicker
 										modal
 										open={currencyPickerOpen}
-										onOpenChange={e =>
+										onOpenChange={(e: boolean) =>
 											useStore.setState({
 												popover_currency_picker_open: e,
 											})
@@ -250,23 +253,23 @@ export function TransactionDialog() {
 									value ?
 										value instanceof Date ?
 											value
-										:	new Date(value as string)
-									:	undefined;
+											: new Date(value as string)
+										: undefined;
 								const formatedDate =
 									date ?
 										format(date, "dd MMM yyyy")
-									:	"Pick a date";
+										: "Pick a date";
 								return (
 									<DatePicker
 										modal
 										date={date}
 										open={datePickerOpen}
-										onOpenChange={e =>
+										onOpenChange={(e: boolean) =>
 											useStore.setState({
 												popover_datepicker_open: e,
 											})
 										}
-										onDateChange={d => onChange(d)}
+										onDateChange={(d: Date) => onChange(d)}
 										className="focus-visible:ring-accent rounded-full outline-none focus-visible:ring-2"
 										asChild>
 										<Tooltip delayDuration={750}>
@@ -305,7 +308,7 @@ export function TransactionDialog() {
 										<StatusPicker
 											modal
 											open={statusPickerOpen}
-											onOpenChange={e =>
+											onOpenChange={(e: boolean) =>
 												useStore.setState({
 													popover_status_picker_open:
 														e,
@@ -365,7 +368,7 @@ export function TransactionDialog() {
 									<CategoryPicker
 										modal
 										open={categoryPickerOpen}
-										onOpenChange={e =>
+										onOpenChange={(e: boolean) =>
 											useStore.setState({
 												popover_category_picker_open: e,
 											})
@@ -380,7 +383,7 @@ export function TransactionDialog() {
 													variant="outline"
 													className="gap-1.5 rounded-full capitalize">
 													<React.Fragment>
-														{value ?? "Category"}
+														{categories?.find(c => c.id === value)?.name ?? "Category"}
 													</React.Fragment>
 												</Badge>
 											</TooltipTrigger>
