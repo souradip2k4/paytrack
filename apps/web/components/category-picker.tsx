@@ -1,4 +1,4 @@
-import { useCategories, useCreateCategories } from "@/lib/query";
+import { useCategories, useCategoryMutation } from "@/lib/query";
 import { useStore } from "@/lib/store";
 import { cn } from "@budgetbee/ui/lib/utils";
 import { Badge } from "@budgetbee/ui/core/badge";
@@ -59,7 +59,7 @@ export function CategoryPicker(props: CategoryPickerProps) {
 	}, [categories, value]);
 
 	const { mutateAsync: createCategory, isPending: isCreatingCategory } =
-		useCreateCategories();
+		useCategoryMutation();
 
 	const [search, setSearch] = React.useState("");
 
@@ -84,7 +84,7 @@ export function CategoryPicker(props: CategoryPickerProps) {
 				)}>
 				{children ?
 					children
-				:	<Badge variant="outline" className="gap-1.5 rounded-full">
+					: <Badge variant="outline" className="gap-1.5 rounded-full">
 						{name ? name : "Category"}
 					</Badge>
 				}
@@ -112,7 +112,7 @@ export function CategoryPicker(props: CategoryPickerProps) {
 											popover_category_picker_open: false,
 										});
 									}}>
-									<CategoryBadge category={c.name} />
+									<CategoryBadge category={c.name} color={c.color} />
 									{value === c.id && (
 										<CheckIcon
 											size={16}
@@ -130,11 +130,12 @@ export function CategoryPicker(props: CategoryPickerProps) {
 								<CommandItem
 									disabled={isCreatingCategory}
 									value={createCategoryId}
-									onSelect={() => createCategory(search)}>
+									onSelect={() => createCategory({ type: "create", payload: { name: search } })}
+								>
 									<Plus className="size-4" />{" "}
 									{isCreatingCategory ?
 										"Creating..."
-									:	`Create "${search}"`}
+										: `Create "${search}"`}
 								</CommandItem>
 							</CommandGroup>
 						)}

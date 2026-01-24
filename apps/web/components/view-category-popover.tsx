@@ -1,5 +1,3 @@
-import { Button } from "@budgetbee/ui/core/button";
-import { Input } from "@budgetbee/ui/core/input";
 import {
 	Popover,
 	PopoverContent,
@@ -7,91 +5,42 @@ import {
 } from "@budgetbee/ui/core/popover";
 import { ScrollArea } from "@budgetbee/ui/core/scroll-area";
 import { Separator } from "@budgetbee/ui/core/separator";
-
-import { useCategories, useCreateCategories } from "@/lib/query";
-import { cn } from "@budgetbee/ui/lib/utils";
-import { getDb } from "@budgetbee/core/db";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Check, Loader, Pencil, Plus, Tags, Trash, X } from "lucide-react";
+import { useStore, useLocalSettingsStore } from "@/lib/store";
+import { useCategories, useCategoryMutation } from "@/lib/query";
+import { Button } from "@budgetbee/ui/core/button";
+import { Loader, Pencil, Plus, Tags, Trash } from "lucide-react";
 import React from "react";
-import { toast } from "sonner";
 import { CategoryBadge } from "./category-badge";
+import { CategoryDialog } from "./category-dialog";
+
 
 export function ViewCategoryPopover() {
-	const [categoryId, setCategoryId] = React.useState<string | null>(null);
-	const [categoryName, setCategoryName] = React.useState<string>("");
-
-	const createCategoryInputRef = React.useRef<HTMLInputElement>(null!);
-
-	const handleCreateCategory = () => {
-		const categoryName = createCategoryInputRef.current.value?.trim();
-		if (categoryName === "") return;
-		createCategory(categoryName);
-	};
-
 	const { data: categories, isLoading: isCategoriesLoading } =
 		useCategories();
 
-	const queryClient = useQueryClient();
+	const { category_create_dialog_set_state: setCategoryDialogState } = useStore();
+	const { confirmation_dialog_delete_category_hidden } = useLocalSettingsStore();
+	const { mutateAsync: manageCategory, isPending: isUpdating } = useCategoryMutation();
 
-	const { mutateAsync: deleteCategory, isPending: isDeletingCategory } =
-		useMutation({
-			mutationKey: ["cat", "delete"],
-			mutationFn: async (id: string) => {
-				if (!id) return;
-				const db = await getDb();
-				const res = await db.from("categories").delete().eq("id", id);
-				if (res.error) throw res.error;
-				return res.data;
-			},
-			onSuccess: () => {
-				toast.success("Category deleted successfully");
-				queryClient.invalidateQueries({
-					queryKey: ["cat", "get"],
-					exact: false,
-				});
-				queryClient.refetchQueries({
-					queryKey: ["cat", "get"],
-					exact: false,
-				});
-			},
-			onError: () => toast.error("Failed to delete category"),
-		});
+	const [deletingId, setDeletingId] = React.useState<string | null>(null);
 
-	const { mutateAsync: editCategory, isPending: isEditingCategory } =
-		useMutation({
-			mutationKey: ["cat", "patch"],
-			mutationFn: async () => {
-				if (!categoryId || categoryName === "") return;
-				const db = await getDb();
-				const res = await db
-					.from("categories")
-					.update({ name: categoryName })
-					.eq("id", categoryId)
-					.select();
-				if (res.error) throw res.error;
-				return res.data;
-			},
-			onSuccess: () => {
-				toast.success("Category renamed successfully");
-				queryClient.invalidateQueries({
-					queryKey: ["cat", "get"],
-					exact: false,
-				});
-				queryClient.refetchQueries({
-					queryKey: ["cat", "get"],
-					exact: false,
-				});
-			},
-			onError: () => toast.error("Failed to update category"),
-			onSettled: () => {
-				setCategoryId(null);
-				setCategoryName("");
-			},
-		});
-
-	const { mutateAsync: createCategory, isPending: isCreatingCategory } =
-		useCreateCategories();
+	const handleDeleteClick = async (id: string) => {
+		if (confirmation_dialog_delete_category_hidden) {
+			setDeletingId(id);
+			await manageCategory({
+				type: "delete",
+				payload: {
+					id,
+					cascade: false
+				}
+			});
+			setDeletingId(null);
+		} else {
+			setCategoryDialogState(true, "delete", {
+				id,
+			});
+		}
+	};
 
 	return (
 		<Popover>
@@ -105,7 +54,7 @@ export function ViewCategoryPopover() {
 				<div className="flex flex-col">
 					<h2 className="px-4 py-2">Categories</h2>
 					<Separator />
-					<ScrollArea className="max-h-96">
+					<ScrollArea className="h-72">
 						{isCategoriesLoading && (
 							<div className="p-4 text-center">
 								<Loader className="text-muted-foreground size-4 animate-spin" />
@@ -122,75 +71,33 @@ export function ViewCategoryPopover() {
 
 						{categories?.map((c, i) => (
 							<React.Fragment key={i}>
-								<div className="not-last:border-b group flex justify-between gap-2 px-4 py-2">
-									{categoryId === c.id ?
-										<Input
-											placeholder="Category"
-											className="h-6"
-											value={categoryName}
-											onInput={e =>
-												setCategoryName(
-													e.currentTarget.value,
-												)
-											}
-										/>
-									:	<CategoryBadge
-											category={c.name}
-											className="rounded"
-										/>
-									}
-									<div
-										className={cn(
-											"flex gap-2 opacity-0 group-hover:opacity-100",
-											{
-												"opacity-100":
-													categoryId === c.id,
-											},
-										)}>
-										{categoryId === c.id ?
-											<React.Fragment>
-												<Button
-													size="sm"
-													variant="secondary"
-													className="size-6 border"
-													isLoading={
-														isEditingCategory
-													}
-													onClick={() =>
-														editCategory()
-													}>
-													<Check className="size-3" />
-												</Button>
-												<Button
-													size="sm"
-													variant="secondary"
-													className="size-6 border"
-													onClick={() => {
-														setCategoryId(null);
-														setCategoryName("");
-													}}>
-													<X className="size-3" />
-												</Button>
-											</React.Fragment>
-										:	<React.Fragment>
-												<Button
-													size="sm"
-													variant="secondary"
-													className="size-6 border"
-													onClick={() => {
-														setCategoryId(c.id);
-														setCategoryName(c.name);
-													}}>
-													<Pencil className="size-3" />
-												</Button>
-											</React.Fragment>
-										}
+								<div className="not-last:border-b group flex items-center justify-between gap-2 px-4 py-2">
+									<CategoryBadge
+										category={c.name}
+										className="rounded"
+										color={c.color}
+									/>
+									<div className="flex items-center gap-2 opacity-0 transition-opacity group-hover:opacity-100">
 										<Button
 											size="sm"
 											variant="secondary"
 											className="size-6 border"
-											onClick={() => deleteCategory(c.id)}
-											isLoading={isDeletingCategory}>
+											onClick={() =>
+												setCategoryDialogState(true, "update", {
+													id: c.id,
+													name: c.name,
+													color: c.color,
+												})
+											}>
+											<Pencil className="size-3" />
+										</Button>
+
+										<Button
+											size="sm"
+											variant="secondary"
+											className="size-6 border"
+											isLoading={isUpdating && deletingId === c.id}
+											onClick={() => handleDeleteClick(c.id)}>
 											<Trash className="size-3" />
 										</Button>
 									</div>
@@ -200,18 +107,20 @@ export function ViewCategoryPopover() {
 					</ScrollArea>
 				</div>
 				<Separator />
-				<div className="flex gap-1 p-4">
-					<Input
-						placeholder="Create a new category"
-						ref={createCategoryInputRef}
-					/>
+				<div className="p-4">
 					<Button
-						size="icon"
-						className="border"
-						isLoading={isCreatingCategory}
-						onClick={handleCreateCategory}>
-						<Plus />
+						variant="outline"
+						className="w-full"
+						onClick={() =>
+							setCategoryDialogState(true, "create", {
+								name: "",
+								color: "",
+							})
+						}>
+						<Plus className="size-4" />
+						Create Category
 					</Button>
+					<CategoryDialog />
 				</div>
 			</PopoverContent>
 		</Popover>

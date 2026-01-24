@@ -52,10 +52,21 @@ const initdb = async () => {
 	for (let i = 0; i < 5; i++) {
 		const category_id = uuidv4();
 		const category_name = faker.commerce.department();
+		const color = faker.helpers.arrayElement([
+			"gray",
+			"brown",
+			"orange",
+			"yellow",
+			"green",
+			"blue",
+			"purple",
+			"pink",
+			"red",
+		]);
 
 		await db.query(
-			"INSERT INTO categories (id, name, user_id) VALUES ($1, $2, $3)",
-			[category_id, category_name, user_id],
+			"INSERT INTO categories (id, name, user_id, color) VALUES ($1, $2, $3, $4)",
+			[category_id, category_name, user_id, color],
 		);
 
 		console.log(`categories(${category_id}, ${category_name}, ${user_id})`);

@@ -39,7 +39,7 @@ export default function ForgotpasswordPage() {
 
 	const onSubmit = (data: FieldValues) => {
 		startTransition(async () => {
-			const res = await authClient.forgetPassword({
+			const res = await authClient.requestPasswordReset({
 				email: data.email,
 				redirectTo: "/update-password",
 			});

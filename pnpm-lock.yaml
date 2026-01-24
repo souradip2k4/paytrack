@@ -187,7 +187,7 @@ importers:
         version: link:../../packages/ui
       '@hono/zod-validator':
         specifier: ^0.5.0
-        version: 0.5.0(hono@4.11.4)(zod@4.1.13)
+        version: 0.5.0(hono@4.11.0)(zod@4.3.6)
       '@hookform/resolvers':
         specifier: ^5.2.1
         version: 5.2.2(react-hook-form@7.68.0(react@19.2.0))
@@ -565,7 +565,7 @@ importers:
         version: 19.2.3(@types/react@19.2.7)
       shadcn:
         specifier: latest
-        version: 3.6.3(@types/node@20.19.26)(typescript@5.9.3)
+        version: 3.7.0(@types/node@20.19.26)(typescript@5.9.3)
       tailwindcss:
         specifier: ^4.1.11
         version: 4.1.18
@@ -7194,8 +7194,8 @@ packages:
   setprototypeof@1.2.0:
     resolution: {integrity: sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==}
 
-  shadcn@3.6.3:
-    resolution: {integrity: sha512-j2xlma8PtYLbhvA612/MPOrDYsEp0DIiU1gC0BEbSBqWR6mBgwiKpA21Juq9tSswgUeIfxoUzZX8c7YwcL3ncA==}
+  shadcn@3.7.0:
+    resolution: {integrity: sha512-zOXNAIFclguSYmmoibyXyKiYA6qjEJtXDSvloAMziSREW9Q0R/dLqBUYdb81lOejmZkDYuZApGabbMLH7G8qvQ==}
     hasBin: true
 
   sharp@0.33.5:
@@ -8857,10 +8857,10 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@hono/zod-validator@0.5.0(hono@4.11.4)(zod@4.1.13)':
+  '@hono/zod-validator@0.5.0(hono@4.11.0)(zod@4.3.6)':
     dependencies:
-      hono: 4.11.4
-      zod: 4.1.13
+      hono: 4.11.0
+      zod: 4.3.6
 
   '@hookform/resolvers@5.2.2(react-hook-form@7.68.0(react@19.2.0))':
     dependencies:
@@ -15501,7 +15501,7 @@ snapshots:
 
   setprototypeof@1.2.0: {}
 
-  shadcn@3.6.3(@types/node@20.19.26)(typescript@5.9.3):
+  shadcn@3.7.0(@types/node@20.19.26)(typescript@5.9.3):
     dependencies:
       '@antfu/ni': 25.0.0
       '@babel/core': 7.28.5

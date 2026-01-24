@@ -1,5 +1,6 @@
 import { type RowSelectionState } from "@tanstack/react-table";
 import { create } from "zustand";
+import { CATEGORY_COLORS } from "../hash";
 
 export type Store = {
 	row_selection_entries: RowSelectionState;
@@ -26,7 +27,22 @@ export type Store = {
 	modal_subscription_date: Date | null;
 	modal_subscription_set_date: (d: Date | null) => void;
 
+	sheet_subscription_open: boolean;
+	sheet_subscription_set_open: (s: boolean) => void;
+	sheet_subscription_date: Date | null;
+	sheet_subscription_set_date: (d: Date | null) => void;
+
 	modal_upgrade_plan_open: boolean;
+
+	category_create_dialog_open: boolean;
+	category_create_dialog_type: "create" | "update" | "delete";
+	category_create_dialog_data: { id?: string; name?: string; color?: string };
+	category_create_dialog_set_open: (s: boolean) => void;
+	category_create_dialog_set_state: (
+		s: boolean,
+		type: "create" | "update" | "delete",
+		data: { id?: string; name?: string; color?: string },
+	) => void;
 };
 
 export const today = new Date();
@@ -79,5 +95,30 @@ export const useStore = create<Store>(set => ({
 			modal_subscription_date: d,
 		}),
 
+	sheet_subscription_open: false,
+	sheet_subscription_set_open: (s: boolean) =>
+		set({
+			sheet_subscription_open: s,
+		}),
+	sheet_subscription_date: null,
+	sheet_subscription_set_date: (d: Date | null) =>
+		set({
+			sheet_subscription_date: d,
+		}),
+
 	modal_upgrade_plan_open: false,
+
+	category_create_dialog_open: false,
+	category_create_dialog_type: "create",
+	category_create_dialog_data: {},
+	category_create_dialog_set_open: (s: boolean) =>
+		set({
+			category_create_dialog_open: s,
+		}),
+	category_create_dialog_set_state: (s, type, data) =>
+		set({
+			category_create_dialog_open: s,
+			category_create_dialog_type: type,
+			category_create_dialog_data: data,
+		}),
 }));

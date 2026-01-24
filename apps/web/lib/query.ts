@@ -6,6 +6,7 @@ import {
 } from "@/lib/store";
 import { authClient } from "@budgetbee/core/auth-client";
 import { getDb } from "@budgetbee/core/db";
+import { PostgrestSingleResponse } from "@supabase/postgrest-js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -58,33 +59,88 @@ export const useCategories = () => {
 	return query;
 };
 
-export const useCreateCategories = () => {
+export type CategoryMutationProps =
+	| { type: "create"; payload: { name: string; color?: string } }
+	| { type: "update"; payload: { id: string; name?: string; color?: string } }
+	| { type: "delete"; payload: { id: string; cascade?: boolean } };
+
+/** Explicitly mutates category, will fail if the id is not present in database. */
+export const useCategoryMutation = () => {
 	const queryClient = useQueryClient();
 	const { data: authData } = authClient.useSession();
 	const query = useMutation({
-		mutationKey: ["cat", "post"],
-		mutationFn: async (data: string) => {
+		mutationKey: ["cat", "mut"],
+		mutationFn: async (data: CategoryMutationProps) => {
 			if (!authData || !authData.user?.id) return;
+
 			const db = await getDb();
-			const res = await db.from("categories").insert({
-				name: data,
-				user_id: authData.user?.id,
-				organization_id: authData.session?.activeOrganizationId,
-			});
-			if (res.error) {
-				toast.error("Failed to create category");
-				return;
+			let res: PostgrestSingleResponse<null>;
+			if (data.type === "create") {
+				res = await db.from("categories").insert({
+					name: data.payload.name,
+					color: data.payload.color,
+					user_id: authData.user?.id,
+					organization_id: authData.session?.activeOrganizationId,
+				});
+			} else if (data.type === "update") {
+				res = await db
+					.from("categories")
+					.update({
+						name: data.payload.name,
+						color: data.payload.color,
+						user_id: authData.user?.id,
+						organization_id: authData.session?.activeOrganizationId,
+					})
+					.eq("id", data.payload.id);
+			} else if (data.type === "delete") {
+				if (data.payload.cascade) {
+					res = await db.rpc("delete_category", {
+						p_category_id: data.payload.id,
+						p_cascade_delete: true,
+					});
+				} else {
+					res = await db
+						.from("categories")
+						.delete()
+						.eq("id", data.payload.id);
+				}
+			} else {
+				throw new Error("Invalid operation type");
 			}
+
+			if (res.error) throw res.error;
 			return res.data;
 		},
-		onSuccess: () => {
-			toast.success("Category created successfully");
+		onSuccess: (_, variables) => {
+			if (variables.type === "create") {
+				toast.success("Category created successfully");
+			} else if (variables.type === "update") {
+				toast.success("Category updated successfully");
+			} else if (variables.type === "delete") {
+				toast.success("Category deleted successfully");
+				if (variables.payload.cascade) {
+					queryClient.invalidateQueries({
+						queryKey: ["tr", "get"],
+						exact: false,
+					});
+					queryClient.refetchQueries({
+						queryKey: ["tr", "get"],
+						exact: false,
+					});
+				}
+			}
+
 			queryClient.invalidateQueries({
 				queryKey: ["cat", "get"],
+				exact: false,
 			});
 			queryClient.refetchQueries({
 				queryKey: ["cat", "get"],
+				exact: false,
 			});
+		},
+		onError: () => {
+			toast.error("Failed to perform operation");
 		},
 	});
 	return query;

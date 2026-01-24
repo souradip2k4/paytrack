@@ -32,8 +32,8 @@ export const CategoryCell: ColumnDefTemplate<CellContext<any, unknown>> = ({
 
 	const defaultCategory = categories?.find(
 		x => x.id === defaultCategoryId,
-	)?.name;
-	const category = categories?.find(x => x.id === field.value)?.name;
+	);
+	const category = categories?.find(x => x.id === field.value);
 
 	if (isEditing) {
 		return (
@@ -45,8 +45,8 @@ export const CategoryCell: ColumnDefTemplate<CellContext<any, unknown>> = ({
 					className="flex h-[48px] items-center justify-between p-2"
 					style={{ width: column.getSize() }}>
 					{category ?
-						<CategoryBadge category={category} />
-					:	<pre className="text-muted-foreground pl-2 text-xs">
+						<CategoryBadge category={category.name} color={category.color} />
+						: <pre className="text-muted-foreground pl-2 text-xs">
 							Empty
 						</pre>
 					}
@@ -58,7 +58,7 @@ export const CategoryCell: ColumnDefTemplate<CellContext<any, unknown>> = ({
 
 	return (
 		<React.Fragment>
-			{defaultCategory && <CategoryBadge category={defaultCategory} />}
+			{defaultCategory && <CategoryBadge category={defaultCategory.name} color={defaultCategory.color} />}
 		</React.Fragment>
 	);
 };
