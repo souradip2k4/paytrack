@@ -22,6 +22,7 @@ export const auth = betterAuth({
 		process.env.NEXT_PUBLIC_SITE_URL!,
 		process.env.NEXT_PUBLIC_APP_URL!,
 	],
+	baseURL: process.env.NEXT_PUBLIC_APP_URL!,
 	emailAndPassword: {
 		enabled: true,
 		requireEmailVerification: true,
