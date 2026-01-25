@@ -8,6 +8,7 @@ import { authClient } from "@budgetbee/core/auth-client";
 import { getDb } from "@budgetbee/core/db";
 import { PostgrestSingleResponse } from "@supabase/postgrest-js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import React from "react";
 import { toast } from "sonner";
 
 type TAuthClientSession = ReturnType<typeof authClient.useSession>;
@@ -57,6 +58,17 @@ export const useCategories = () => {
 		},
 	});
 	return query;
+};
+
+export const useCategoryMap = () => {
+	const { data } = useCategories();
+	return React.useMemo(() => {
+		if (!data) return new Map();
+		return data.reduce((acc, cat) => {
+			acc.set(cat.id, cat);
+			return acc;
+		}, new Map<string, typeof data[0]>());
+	}, [data]);
 };
 
 export type CategoryMutationProps =
