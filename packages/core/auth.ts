@@ -15,6 +15,14 @@ import { getAuthAdminClient, getSubscriptionAdminClient } from "./db-pool";
 const authAdminClient = getAuthAdminClient();
 const subscriptionAdminClient = getSubscriptionAdminClient();
 
+if (!authAdminClient) {
+	throw new Error("Auth admin client not found");
+}
+
+if (!subscriptionAdminClient) {
+	throw new Error("Subscription admin client not found");
+}
+
 export const auth = betterAuth({
 	database: authAdminClient,
 	appName: "Budgetbee",
@@ -301,8 +309,8 @@ export const auth = betterAuth({
 						},
 					};
 				},
-				issuer: process.env.APP_URL!,
-				audience: process.env.APP_URL!,
+				issuer: process.env.NEXT_PUBLIC_APP_URL!,
+				audience: process.env.NEXT_PUBLIC_APP_URL!,
 				expirationTime: "1h",
 			},
 			schema: {

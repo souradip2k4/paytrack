@@ -234,86 +234,85 @@ export function StatusBarChart() {
 						<div className="text-muted-foreground absolute inset-0 flex items-center justify-center">
 							<LoaderCircle className="mx-auto animate-spin" />
 						</div>
-					: chartData && chartData.length === 0 ?
-						<div className="text-muted-foreground absolute inset-0 flex items-center justify-center">
-							<p>No data available</p>
-						</div>
-					:	<BarChart
-							accessibilityLayer
-							data={chartData}
-							reverseStackOrder={reverse_order}>
-							<CartesianGrid vertical={false} />
-							<YAxis
-								tickLine={false}
-								axisLine={false}
-								tickMargin={8}
-								tickFormatter={value => {
-									const v = Number.parseFloat(value);
-									if (Number.isNaN(v)) return "";
-									return Intl.NumberFormat("en-US", {
-										notation: "compact",
-										maximumFractionDigits: 2,
-										compactDisplay: "short",
-									}).format(v);
-								}}
-							/>
-							<XAxis
-								dataKey="day"
-								tickLine={false}
-								axisLine={false}
-								tickMargin={8}
-								minTickGap={32}
-								tickFormatter={value => {
-									const date = new Date(value);
-									return date.toLocaleDateString("en-US", {
-										month: "short",
-										day: "numeric",
-									});
-								}}
-							/>
-							<ChartTooltip
-								content={
-									<ChartTooltipContent
-										className="w-[150px]"
-										nameKey="amount"
-										labelFormatter={value => {
-											return new Date(
-												value,
-											).toLocaleDateString("en-US", {
-												month: "short",
-												day: "numeric",
-												year: "numeric",
-											});
-										}}
-									/>
-								}
-							/>
-							<ReferenceLine
-								y={0}
-								strokeWidth={2}
-								stroke="hsl(var(--primary))"
-							/>
+						: chartData && chartData.length === 0 ?
+							<div className="text-muted-foreground absolute inset-0 flex items-center justify-center">
+								<p>No data available</p>
+							</div>
+							: <BarChart
+								accessibilityLayer
+								data={chartData}
+								reverseStackOrder={reverse_order}>
+								<CartesianGrid vertical={false} />
+								<YAxis
+									tickLine={false}
+									axisLine={false}
+									tickMargin={8}
+									tickFormatter={value => {
+										const v = Number.parseFloat(value);
+										if (Number.isNaN(v)) return "";
+										return Intl.NumberFormat("en-US", {
+											notation: "compact",
+											maximumFractionDigits: 2,
+											compactDisplay: "short",
+										}).format(v);
+									}}
+								/>
+								<XAxis
+									dataKey="day"
+									tickLine={false}
+									axisLine={false}
+									tickMargin={8}
+									minTickGap={32}
+									tickFormatter={value => {
+										const date = new Date(value);
+										return date.toLocaleDateString("en-US", {
+											month: "short",
+											day: "numeric",
+										});
+									}}
+								/>
+								<ChartTooltip
+									content={
+										<ChartTooltipContent
+											className="w-[150px]"
+											nameKey="amount"
+											labelFormatter={value => {
+												return new Date(
+													value,
+												).toLocaleDateString("en-US", {
+													month: "short",
+													day: "numeric",
+													year: "numeric",
+												});
+											}}
+										/>
+									}
+								/>
+								<ReferenceLine
+									y={0}
+									strokeWidth={2}
+									stroke="hsl(var(--primary))"
+								/>
 
-							{statuses.map((status, i) => {
-								return (
-									<Bar
-										key={status}
-										name={status}
-										stackId="a"
-										dataKey={status}
-										radius={4}
-										overflow="visible"
-										className="stroke-card"
-										fill={
-											statusColors[
+								{statuses.map((status, i) => {
+									return (
+										<Bar
+											key={status}
+											name={status}
+											stackId="a"
+											dataKey={status}
+											overflow="visible"
+											className="stroke-card"
+											fill={
+												statusColors[
 												status as keyof typeof statusColors
-											]
-										}
-										strokeWidth={1}
-									/>
-								);
-							})}
-						</BarChart>
+												]
+											}
+											strokeWidth={1}
+										/>
+									);
+								})}
+							</BarChart>
 					}
 				</ChartContainer>
 			</CardContent>

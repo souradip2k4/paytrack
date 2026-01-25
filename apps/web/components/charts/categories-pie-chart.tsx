@@ -26,8 +26,10 @@ import { cn } from "@budgetbee/ui/lib/utils";
 import { getDb } from "@budgetbee/core/db";
 import { useQuery } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
+import { useTheme } from "next-themes";
 import React from "react";
 import { Cell, Pie, PieChart } from "recharts";
+import { useCategoryMap } from "@/lib/query";
 
 export const description =
 	"Donut chart showing the distribution of transactions by category.";
@@ -54,6 +56,7 @@ type PieLabelLineProps = {
 export function CategoriesPieChart() {
 	const { data: authData, isPending: isSessionLoading } =
 		authClient.useSession();
+	const metric = useChartStore(s => s.tr_chart_metric);
 	const start = useChartStore(s => s.tr_chart_date_start);
 	const end = useChartStore(s => s.tr_chart_date_end);
 	const filterStack = useFilterStore(s => s.filter_stack);
@@ -64,27 +67,67 @@ export function CategoriesPieChart() {
 			authData?.user.id,
 			start,
 			end,
+			metric,
 			filterStack,
 		],
 		queryFn: async () => {
 			const db = await getDb();
+			const filters = serializeFilterStack(filterStack);
+
+			if (start && end) {
+				filters.push({
+					field: "transaction_date",
+					operation: "between",
+					value: [start, end],
+				});
+			}
+
+			if (metric === "credit") {
+				filters.push({
+					field: "amount",
+					operation: "gt",
+					value: 0,
+				});
+			} else if (metric === "debit") {
+				filters.push({
+					field: "amount",
+					operation: "lt",
+					value: 0,
+				});
+			}
+
 			const res = await db.rpc("get_transaction_by_category", {
 				params: {
 					user_id: authData?.user.id,
 					organization_id: authData?.session?.activeOrganizationId,
-					filters: serializeFilterStack(filterStack),
+					filters: filters,
 				},
 			});
 			if (res.error) throw res.error;
 			const mapped = res.data.map((x: any, i: number) => ({
 				name: x.name ?? "Uncategorized",
+				categoryId: x.category_id,
 				amount: Math.abs(Number(x.amount)) || 0,
-				fill: getColor(x.name ?? "Uncategorized"),
 			}));
 			return mapped;
 		},
 		enabled: !isSessionLoading,
 	});
+
+	const categoryMap = useCategoryMap();
+	const { resolvedTheme } = useTheme();
+
+	const processedData = React.useMemo(() => {
+		if (!chartData) return [];
+		return chartData.map((item: any) => {
+			const cat = item.categoryId ? categoryMap.get(item.categoryId) : null;
+			return {
+				...item,
+				name: cat?.name ?? item.name,
+				fill: getColor(cat?.color || "gray", resolvedTheme || "light"),
+			};
+		});
+	}, [chartData, categoryMap, resolvedTheme]);
 
 	const chartConfig: ChartConfig = React.useMemo(() => {
 		const cf: Record<string, { label: string; color: string }> = {};
@@ -171,45 +214,45 @@ export function CategoriesPieChart() {
 						<div className="text-muted-foreground absolute inset-0 flex items-center justify-center">
 							<LoaderCircle className="mx-auto animate-spin" />
 						</div>
-					: chartData && chartData.length === 0 ?
-						<div className="text-muted-foreground absolute inset-0 flex items-center justify-center">
-							<p>No data available</p>
-						</div>
-					:	<PieChart>
-							<ChartTooltip
-								cursor={false}
-								content={<ChartTooltipContent hideLabel />}
-							/>
-							<Pie
-								data={chartData}
-								dataKey="amount"
-								nameKey="name"
-								label={label}
-								labelLine={labelLine}
-								innerRadius="60%"
-								outerRadius="80%"
-								cornerRadius={4}
-								paddingAngle={1}
-								onMouseEnter={(_, i) => setActiveIdx(i)}
-								onMouseLeave={() => setActiveIdx(null)}>
-								{chartData?.map((c: any, i: number) => (
-									<Cell
-										key={`cell-${i}`}
-										fill={c.fill}
-										className={cn("opacity-30", {
-											"opacity-100":
-												activeIdx === i ||
-												activeIdx === null,
-										})}
-									/>
-								))}
-							</Pie>
+						: chartData && chartData.length === 0 ?
+							<div className="text-muted-foreground absolute inset-0 flex items-center justify-center">
+								<p>No data available</p>
+							</div>
+							: <PieChart>
+								<ChartTooltip
+									cursor={false}
+									content={<ChartTooltipContent hideLabel />}
+								/>
+								<Pie
+									data={processedData}
+									dataKey="amount"
+									nameKey="name"
+									label={label}
+									labelLine={labelLine}
+									innerRadius="60%"
+									outerRadius="80%"
+									cornerRadius={2}
+									paddingAngle={1}
+									onMouseEnter={(_, i) => setActiveIdx(i)}
+									onMouseLeave={() => setActiveIdx(null)}>
+									{processedData?.map((c: any, i: number) => (
+										<Cell
+											key={`cell-${i}`}
+											fill={c.fill.text}
+											className={cn("opacity-30", {
+												"opacity-100":
+													activeIdx === i ||
+													activeIdx === null,
+											})}
+										/>
+									))}
+								</Pie>
 
-							<ChartLegend
-								content={<ChartLegendContent nameKey="name" />}
-								className="mt-6 -translate-y-2 flex-wrap gap-2 *:basis-1/4 *:justify-center"
-							/>
-						</PieChart>
+								<ChartLegend
+									content={<ChartLegendContent nameKey="name" />}
+									className="mt-6 -translate-y-2 flex-wrap gap-2 *:basis-1/4 *:justify-center"
+								/>
+							</PieChart>
 					}
 				</ChartContainer>
 			</CardContent>
