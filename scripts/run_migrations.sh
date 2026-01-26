@@ -25,25 +25,33 @@ FILE_EXTENSION=".sql"
 DB_URL_ROOT="postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DATABASE"
 DB_COMMAND="psql $DB_URL_ROOT"
 
-echo "INFO: Running migrations from $SQL_DIR/better-auth-migrations.sql"
-$DB_COMMAND -f "$SQL_DIR/better-auth-migrations.sql"
-if [ $? -ne 0 ]; then
-    echo "ERROR: Failed to run migrations from $SQL_DIR/better-auth-migrations.sql"
-    exit 1
-fi
+# Function to run a single migration file
+run_migration() {
+    local migration_file="$1"
+    echo "INFO: Running migration from $migration_file"
+    $DB_COMMAND -f "$migration_file"
+    if [ $? -ne 0 ]; then
+        echo "ERROR: Failed to run migration from $migration_file"
+        exit 1
+    fi
+    echo "INFO: Successfully completed $migration_file"
+}
 
-echo "INFO: Running migrations from $SQL_DIR/init.sql"
-$DB_COMMAND -f "$SQL_DIR/init.sql"
-if [ $? -ne 0 ]; then
-    echo "ERROR: Failed to run migrations from $SQL_DIR/init.sql"
-    exit 1
-fi
+# Run migrations in order:
+# 1. better-auth-migrations.sql (auth tables)
+# 2. init.sql (core schema)
+# 3. All migration_*.sql files sorted by date
+# 4. functions.sql (database functions)
 
-echo "INFO: Running migrations from $SQL_DIR/migration_2026_01_11_feature_flags.sql"
-$DB_COMMAND -f "$SQL_DIR/migration_2026_01_11_feature_flags.sql"
-if [ $? -ne 0 ]; then
-    echo "ERROR: Failed to run migrations from $SQL_DIR/migration_2026_01_11_feature_flags.sql"
-    exit 1
-fi
+run_migration "$SQL_DIR/better-auth-migrations.sql"
+run_migration "$SQL_DIR/init.sql"
+
+# Run all dated migration files in sorted order
+echo "INFO: Running dated migrations in order..."
+for migration_file in $(ls "$SQL_DIR"/migration_*.sql 2>/dev/null | sort); do
+    run_migration "$migration_file"
+done
+
+run_migration "$SQL_DIR/functions.sql"
 
 echo "INFO: All migrations completed successfully."
