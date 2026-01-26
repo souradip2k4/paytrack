@@ -103,4 +103,49 @@ autogen_secret "POSTGRES_PASSWORD" "$(openssl rand -hex 32)"
 autogen_secret "POSTGRES_AUTH_ADMIN_PASSWORD" "$(openssl rand -hex 32)"
 autogen_secret "POSTGRES_SUBSCRIPTION_ADMIN_PASSWORD" "$(openssl rand -hex 32)"
 
+# ---- Create symlinks to .env in required directories ---- #
+create_symlink() {
+    local TARGET_DIR="$1"
+    local LINK_PATH="$TARGET_DIR/.env"
+    
+    if [ ! -d "$TARGET_DIR" ]; then
+        return 0
+    fi
+    
+    # Remove existing symlink or file
+    if [ -L "$LINK_PATH" ]; then
+        rm "$LINK_PATH"
+    elif [ -f "$LINK_PATH" ]; then
+        echo "WARN: $LINK_PATH is a regular file, skipping symlink"
+        return 0
+    fi
+    
+    # Create relative symlink
+    local RELATIVE_PATH
+    RELATIVE_PATH=$(python3 -c "import os.path; print(os.path.relpath('$ENV_FILE', '$TARGET_DIR'))")
+    ln -s "$RELATIVE_PATH" "$LINK_PATH"
+    echo "INFO: Created symlink $LINK_PATH -> $RELATIVE_PATH"
+}
+
+echo ""
+echo "INFO: Creating symlinks to .env..."
+
+# Symlink to infra/
+create_symlink "$GIT_ROOT/infra"
+
+# Symlink to apps/*/
+for dir in "$GIT_ROOT"/apps/*/; do
+    if [ -d "$dir" ]; then
+        create_symlink "$dir"
+    fi
+done
+
+# Symlink to packages/*/
+for dir in "$GIT_ROOT"/packages/*/; do
+    if [ -d "$dir" ]; then
+        create_symlink "$dir"
+    fi
+done
+
+echo ""
 echo "INFO: .env setup complete!"
