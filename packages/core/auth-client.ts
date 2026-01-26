@@ -2,6 +2,7 @@ import { polarClient } from "@polar-sh/better-auth/client";
 import { jwtClient, organizationClient } from "better-auth/client/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { createAuthClient } from "better-auth/react";
+import { accessControl, admin, editor, owner, viewer } from "./permissions";
 
 const authClient = createAuthClient({
 	baseURL: process.env.NEXT_PUBLIC_APP_URL!,
@@ -33,7 +34,15 @@ const authClient = createAuthClient({
 			}
 		},
 	},
-	plugins: [organizationClient(), polarClient(), jwtClient(), nextCookies()],
+	plugins: [organizationClient({
+		ac: accessControl,
+		roles: {
+			owner,
+			admin,
+			editor,
+			viewer,
+		},
+	}), polarClient(), jwtClient(), nextCookies()],
 });
 
 export { authClient };

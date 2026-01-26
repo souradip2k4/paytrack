@@ -38,7 +38,7 @@
 		"@budgetbee/core": "workspace:*",
 		"@budgetbee/ui": "workspace:*",
 		"@hono/zod-validator": "^0.5.0",
-		"@hookform/resolvers": "^5.2.1",
+		"@hookform/resolvers": "^5.2.2",
 		"@next/third-parties": "^15.3.1",
 		"@polar-sh/better-auth": "^1.1.0",
 		"@polar-sh/sdk": "^0.34.11",

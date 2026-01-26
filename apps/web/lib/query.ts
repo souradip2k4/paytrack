@@ -6,7 +6,7 @@ import {
 } from "@/lib/store";
 import { authClient } from "@budgetbee/core/auth-client";
 import { getDb } from "@budgetbee/core/db";
-import { PostgrestSingleResponse } from "@supabase/postgrest-js";
+import { PostgrestFilterBuilder, PostgrestSingleResponse } from "@supabase/postgrest-js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { toast } from "sonner";
@@ -109,6 +109,8 @@ export const useCategoryMutation = () => {
 					res = await db.rpc("delete_category", {
 						p_category_id: data.payload.id,
 						p_cascade_delete: true,
+						p_user_id: authData.user?.id,
+						p_organization_id: authData.session?.activeOrganizationId,
 					});
 				} else {
 					res = await db
@@ -165,6 +167,7 @@ export const useTransactions = () => {
 	const pageSize = useDisplayStore(s => s.display_page_size);
 	const applyFilter = useFilterStore(s => s.filter_apply);
 	const applyDisplay = useDisplayStore(s => s.apply_display);
+	const applyAuth = useAuth();
 
 	const query = useQuery<any>({
 		queryKey: ["tr", "get", filterStack, pageSize],
@@ -172,16 +175,12 @@ export const useTransactions = () => {
 			if (authData === null) return [];
 
 			const db = await getDb();
-			const res = await applyDisplay(
-				applyFilter(
-					db
-						.from("transactions")
-						.select("*")
-						.order("transaction_date", {
-							ascending: false,
-						}),
-				),
+			const query = applyAuth(db
+				.from("transactions")
+				.select("*")
 			);
+
+			const res = await applyDisplay(applyFilter(applyAuth(query)));
 
 			if (res.error) {
 				toast.error("Failed to fetch transactions");
@@ -210,6 +209,7 @@ export const useTransactionDistributionByCategories = () => {
 	const end_date = useChartStore(s => s.tr_chart_date_end);
 	const filterStack = useFilterStore(s => s.filter_stack);
 	const { data: authData, error: authError } = authClient.useSession();
+	if (authError) throw authError;
 	const res = useQuery({
 		queryKey: ["tr", "dist", start_date, end_date, filterStack],
 		queryFn: async () => {
@@ -232,4 +232,18 @@ export const useTransactionDistributionByCategories = () => {
 	});
 
 	return res;
+};
+
+export const useAuth = () => {
+	const { data: authData, error: authError } = authClient.useSession();
+	const withAuth = React.useCallback((query: PostgrestFilterBuilder<{ PostgrestVersion: "12" }, any, any, any>) => {
+		if (authError) throw authError
+		if (!authData?.session?.activeOrganizationId) {
+			query.is("organization_id", null).eq("user_id", authData?.user?.id);
+		} else {
+			query.eq("organization_id", authData?.session?.activeOrganizationId);
+		}
+		return query;
+	}, [authData])
+	return withAuth;
 };

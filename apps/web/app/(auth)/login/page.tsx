@@ -15,7 +15,7 @@ import { Label } from "@budgetbee/ui/core/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -29,6 +29,8 @@ type FieldValues = z.infer<typeof schema>;
 
 export default function LoginPage() {
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const redirectUrl = searchParams.get("redirect") || "/transactions";
 
 	const [error, setError] = React.useState<string | undefined>();
 	const [pending, startTransition] = React.useTransition();
@@ -47,6 +49,7 @@ export default function LoginPage() {
 				email: e.email,
 				password: e.password,
 				rememberMe: true,
+				callbackURL: redirectUrl,
 			});
 			if (res.error) {
 				// if not a known error, don't show the error
@@ -55,7 +58,7 @@ export default function LoginPage() {
 				return setError(res.error.message);
 			}
 			if (res.data) {
-				router.push("/transactions");
+				router.push(redirectUrl);
 			}
 		});
 	};
@@ -67,11 +70,11 @@ export default function LoginPage() {
 		startTransition(async () => {
 			const res = await authClient.signIn.social({
 				provider: "google",
-				callbackURL: "/transactions",
+				callbackURL: redirectUrl,
 			});
 			if (res.error) setError(res.error.message);
 			if (res.data && res.data.redirect) {
-				router.push(res.data.url || "/transactions");
+				router.push(res.data.url || redirectUrl);
 			}
 		});
 	};
@@ -155,7 +158,7 @@ export default function LoginPage() {
 											strokeWidth={2}
 											aria-hidden="true"
 										/>
-									:	<EyeOff
+										: <EyeOff
 											size={16}
 											strokeWidth={2}
 											aria-hidden="true"

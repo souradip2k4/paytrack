@@ -13,15 +13,21 @@ import {
 	ArrowBigUp,
 	ArrowUpRight,
 	Bolt,
+	Building2,
 	Command,
 	Home,
 	ReceiptCent,
 	UserCircle,
+	BellPlus,
 	type LucideIcon,
+	Users,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
+import { useFeatureFlag } from "@/components/feature-flag-provider";
+import { authClient } from "@budgetbee/core/auth-client";
+import { useActiveMember } from "@/lib/organization";
 
 interface NavMainItem {
 	group_title?: string;
@@ -48,12 +54,12 @@ export const navs: NavMainItem[] = [
 				icon: ReceiptCent,
 				shortcutKey: "t",
 			},
-			/*{
-                title: "Subscriptions",
-                url: "/subscriptions",
-                icon: BellPlus,
-                shortcutKey: "s",
-            },*/
+			{
+				title: "Subscriptions",
+				url: "/subscriptions",
+				icon: BellPlus,
+				shortcutKey: "s",
+			},
 		],
 	},
 	{
@@ -72,6 +78,12 @@ export const navs: NavMainItem[] = [
 				shortcutKey: "a",
 			},
 			{
+				title: "Your organization",
+				url: "/organizations/settings",
+				icon: Users,
+				shortcutKey: "o",
+			},
+			{
 				title: "Shortcuts",
 				url: "/shortcuts",
 				icon: Command,
@@ -82,6 +94,16 @@ export const navs: NavMainItem[] = [
 
 export function NavMain() {
 	const pathname = usePathname();
+	const { data: authData } = authClient.useSession()
+
+	const { isEnabled: isSubscriptionEnabled } = useFeatureFlag("useSubscriptions");
+
+	React.useEffect(() => {
+		if (isSubscriptionEnabled) {
+
+		}
+	}, [isSubscriptionEnabled]);
+
 	return (
 		<React.Fragment>
 			{navs.map((x, i) => (
@@ -95,11 +117,13 @@ export function NavMain() {
 						<SidebarGroupContent>
 							<SidebarMenu>
 								{x.items.map((item, i) => {
+									/*if (item.title === "Subscriptions" && !isSubscriptionEnabled) return null;*/
+
 									const isActive = pathname.startsWith(
 										item.url,
 									);
 									return (
-										<SidebarMenuItem key={i}>
+										<SidebarMenuItem hidden={item.title === "Your organization" && !authData?.session.activeOrganizationId} key={i}>
 											<SidebarMenuButton
 												size="sm"
 												className={cn({
@@ -114,9 +138,9 @@ export function NavMain() {
 													{item.title}
 													{(item.title === "Help" ||
 														item.title ===
-															"Shortcuts") && (
-														<ArrowUpRight className="size-4" />
-													)}
+														"Shortcuts") && (
+															<ArrowUpRight className="size-4" />
+														)}
 													{item.shortcutKey && (
 														<kbd
 															className={cn(
@@ -142,19 +166,4 @@ export function NavMain() {
 			))}
 		</React.Fragment>
 	);
-}
-
-{
-	/*{
-                title: "Subscriptions",
-                url: "/subscriptions",
-                icon: BellPlus,
-                shortcutKey: "s",
-            },
-            {
-                title: "Budgets",
-                url: "/budgets",
-                icon: DiamondPercent,
-                shortcutKey: "b",
-            },*/
 }

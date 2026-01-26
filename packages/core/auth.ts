@@ -1,4 +1,4 @@
-import { polar as polarClient } from "@budgetbee/billing";
+import { isTeamsOrHigher, polar as polarClient } from "@budgetbee/billing";
 import { resend, resetPassword, verificationLink } from "@budgetbee/email";
 import {
 	checkout,
@@ -11,6 +11,7 @@ import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 import { bearer, customSession, jwt, organization } from "better-auth/plugins";
 import { getAuthAdminClient, getSubscriptionAdminClient } from "./db-pool";
+import { accessControl, owner, admin, editor, viewer } from "./permissions";
 
 const authAdminClient = getAuthAdminClient();
 const subscriptionAdminClient = getSubscriptionAdminClient();
@@ -138,19 +139,49 @@ export const auth = betterAuth({
 		}),
 
 		organization({
-			autoCreateOrganizationOnSignUp: true,
+			allowUserToCreateOrganization: async (user) => {
+				if (!user.emailVerified) return false;
+				const subscriptionRes = await subscriptionAdminClient.query(`SELECT product_id FROM app_subscriptions where user_id = $1 and period_start <= now() and period_end >= now()`, [user.id]);
+				return subscriptionRes.rows.length > 0 && (subscriptionRes.rows.filter(x => isTeamsOrHigher(x.product_id)).length > 0);
+			},
+			organizationLimit: 5,
+			membershipLimit: 50, // Maximum 50 members per organization
+			creatorRole: "owner",
+			ac: accessControl,
+			roles: {
+				owner,
+				admin,
+				editor,
+				viewer,
+			},
+			invitationExpiresIn: 60 * 60 * 24 * 7, // 7 days in seconds
+			requireEmailVerificationOnInvitation: true,
 			cancelPendingInvitationsOnReInvite: true,
 			sendInvitationEmail: async data => {
+				const inviteLink = `${process.env.NEXT_PUBLIC_APP_URL}/invitations/${data.id}`;
 				const { data: success, error } = await resend.emails.send({
 					from: `${process.env.SMTP_SENDER_NAME} <${process.env.SMTP_MAIL}>`,
-					to: [data.invitation.email],
-					subject: "You've been invited to join a team",
-					text: `You've been invited to join ${data.organization.name} by ${data.inviter.user.name}.\nIf this wasn't you, you can ignore this email.`,
+					to: [data.email],
+					subject: `You've been invited to join ${data.organization.name}`,
+					html: `
+						<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+							<h2>You've been invited!</h2>
+							<p>${data.inviter.user.name} has invited you to join <strong>${data.organization.name}</strong> on Budgetbee.</p>
+							<p>You'll be joining as a <strong>${data.role}</strong>.</p>
+							<p style="margin: 24px 0;">
+								<a href="${inviteLink}" style="background-color: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+									Accept Invitation
+								</a>
+							</p>
+							<p style="color: #666; font-size: 14px;">
+								This invitation will expire in 7 days. If you didn't expect this invitation, you can safely ignore this email.
+							</p>
+						</div>
+					`,
 				});
-				if (error) console.error(error);
-				if (success) console.log(success);
+				if (error) console.error("Failed to send invitation email:", error);
+				if (success) console.log("Invitation email sent:", success.id);
 			},
-			invitationExpiresIn: 24 * 7,
 			schema: {
 				organization: {
 					modelName: "organizations",
@@ -170,6 +201,7 @@ export const auth = betterAuth({
 					modelName: "invitations",
 					fields: {
 						organizationId: "organization_id",
+						createdAt: "created_at",
 						expiresAt: "expires_at",
 						inviterId: "inviter_id",
 					},
@@ -297,7 +329,20 @@ export const auth = betterAuth({
 
 		jwt({
 			jwt: {
-				definePayload: ({ user, session }) => {
+				definePayload: async ({ user, session }) => {
+					let organizationRole: string | null = null;
+
+					// Fetch the user's role in the active organization
+					if (session.activeOrganizationId) {
+						const result = await authAdminClient.query(
+							`SELECT role FROM members WHERE user_id = $1 AND organization_id = $2 LIMIT 1`,
+							[user.id, session.activeOrganizationId]
+						);
+						if (result.rows.length > 0) {
+							organizationRole = result.rows[0].role;
+						}
+					}
+
 					return {
 						sub: user.id,
 						user_id: user.id,
@@ -305,6 +350,7 @@ export const auth = betterAuth({
 						email: user.email,
 						claims: {
 							organization_id: session.activeOrganizationId,
+							organization_role: organizationRole,
 							subscription: session.subscription,
 						},
 					};
@@ -319,6 +365,7 @@ export const auth = betterAuth({
 						publicKey: "public_key",
 						privateKey: "private_key",
 						createdAt: "created_at",
+						expiresAt: "expires_at",
 					},
 				},
 			},

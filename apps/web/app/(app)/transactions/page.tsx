@@ -65,7 +65,7 @@ export default function Page() {
 									<X /> Cancel
 								</Button>
 							</React.Fragment>
-						:	<Tooltip delayDuration={750}>
+							: <Tooltip delayDuration={750}>
 								<TooltipTrigger asChild>
 									<Button
 										size="sm"
@@ -93,7 +93,7 @@ export default function Page() {
 				</div>
 			</div>
 
-			<div className="p-4">
+			<div className="p-4 space-y-4">
 				<TransactionsTable ref={transactionTableRef} />
 			</div>
 		</div>

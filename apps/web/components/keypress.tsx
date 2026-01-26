@@ -19,6 +19,7 @@ export function Keypress() {
 			t: handleNavigation("/transactions"),
 			x: handleNavigation("/settings"),
 			a: handleNavigation("/accounts"),
+			o: handleNavigation("/organizations/settings")
 		}),
 		[handleNavigation],
 	);

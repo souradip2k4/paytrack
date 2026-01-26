@@ -56,7 +56,7 @@ export function TransactionDialog() {
 	const queryClient = useQueryClient();
 	const { data: authData } = authClient.useSession();
 
-	const { mutateAsync, isPending } = useMutation({
+	const { mutateAsync: createTransaction, isPending } = useMutation({
 		mutationKey: ["tr", "post"],
 		mutationFn: async (data: FieldValues) => {
 			if (!authData || !authData.user || !authData.user.id) return;
@@ -66,11 +66,23 @@ export function TransactionDialog() {
 				...rest,
 				transaction_date: transaction_date?.toISOString(),
 				user_id: authData.user.id,
+				organization_id: authData.session?.activeOrganizationId,
 			});
 			if (res.error) throw res.error;
 			return res.data;
 		},
-		onError: () => toast.error("Failed to create transaction"),
+		onError: (error: any) => {
+			// Check for RLS permission violation (PostgreSQL error code 42501 or message contains "row-level security")
+			if (
+				error?.code === "42501" ||
+				error?.message?.includes("row-level security") ||
+				error?.message?.includes("insufficient_privilege")
+			) {
+				toast.error("Insufficient permissions to create transaction");
+			} else {
+				toast.error("Failed to create transaction");
+			}
+		},
 		onSuccess: () => {
 			toast.success("Transaction created successfully");
 			queryClient.invalidateQueries({
@@ -111,7 +123,7 @@ export function TransactionDialog() {
 	const currency = watch("currency");
 
 	const onSubmit = async (e: FieldValues) => {
-		await mutateAsync(e);
+		await createTransaction(e);
 		reset();
 	};
 

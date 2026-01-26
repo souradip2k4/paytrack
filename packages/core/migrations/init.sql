@@ -32,17 +32,71 @@ $$ LANGUAGE plpgsql STABLE;
 
 CREATE OR REPLACE FUNCTION org_id () RETURNS text SECURITY DEFINER AS $$
 BEGIN
-    RETURN COALESCE(
-      current_setting('request.jwt.claims', true)::jsonb ->> 'claims' ->> 'organization_id'
-    );
+    RETURN current_setting('request.jwt.claims', true)::jsonb -> 'claims' ->> 'organization_id';
 END
 $$ LANGUAGE plpgsql STABLE;
 
 CREATE OR REPLACE FUNCTION org_role () RETURNS text SECURITY DEFINER AS $$
 BEGIN
-    RETURN COALESCE(
-      current_setting('request.jwt.claims', true)::jsonb ->> 'claims' ->> 'organization_role'
-    );
+    RETURN current_setting('request.jwt.claims', true)::jsonb -> 'claims' ->> 'organization_role';
+END
+$$ LANGUAGE plpgsql STABLE;
+
+/* ========================================================================== */
+/* ACCESS CONTROL FUNCTION */
+/* ========================================================================== */
+/*
+ * check_ac - Check if a role has permission to perform an action on a resource
+ * 
+ * @param p_role - The role to check (owner, admin, editor, viewer)
+ * @param p_resource - The resource to check (transaction, subscription, accounts)
+ * @param p_action - The action to check (list, get, create, update, delete)
+ * @returns BOOLEAN - true if permitted, false otherwise
+ *
+ * Permissions mirror TypeScript definitions:
+ * - owner:  transaction, subscription, accounts -> all actions
+ * - admin:  transaction, subscription, accounts -> all actions
+ * - editor: transaction, subscription, accounts -> all actions
+ * - viewer: transaction, subscription, accounts -> list, get only
+ */
+CREATE OR REPLACE FUNCTION check_ac (p_role TEXT, p_resource TEXT, p_action TEXT) RETURNS BOOLEAN SECURITY DEFINER AS $$
+DECLARE
+    v_allowed_actions TEXT[];
+BEGIN
+    -- Define permissions based on role and resource
+    CASE p_role
+        WHEN 'owner', 'admin', 'editor' THEN
+            -- Full CRUD access for owner, admin, and editor
+            CASE p_resource
+                WHEN 'transaction', 'subscription', 'accounts' THEN
+                    v_allowed_actions := ARRAY['list', 'get', 'create', 'update', 'delete'];
+                ELSE
+                    RETURN FALSE; -- Unknown resource
+            END CASE;
+        WHEN 'viewer' THEN
+            -- Read-only access for viewer
+            CASE p_resource
+                WHEN 'transaction', 'subscription', 'accounts' THEN
+                    v_allowed_actions := ARRAY['list', 'get'];
+                ELSE
+                    RETURN FALSE; -- Unknown resource
+            END CASE;
+        ELSE
+            RETURN FALSE; -- Unknown role
+    END CASE;
+    
+    -- Check if the action is in the allowed actions
+    RETURN p_action = ANY(v_allowed_actions);
+END
+$$ LANGUAGE plpgsql STABLE;
+
+/*
+ * check_ac_current - Check if the current user's role has permission
+ * Uses org_role() to get the current user's organization role from JWT
+ */
+CREATE OR REPLACE FUNCTION check_ac_current (p_resource TEXT, p_action TEXT) RETURNS BOOLEAN SECURITY DEFINER AS $$
+BEGIN
+    RETURN check_ac(org_role(), p_resource, p_action);
 END
 $$ LANGUAGE plpgsql STABLE;
 
@@ -212,17 +266,119 @@ alter table tags enable row level security;
 
 alter table transactions enable row level security;
 
-CREATE POLICY limit_categories ON categories FOR ALL TO authenticated USING (user_id = uid ())
-WITH
-	CHECK (user_id = uid ());
+DROP POLICY IF EXISTS limit_categories ON categories;
 
-CREATE POLICY limit_tags ON tags FOR ALL TO authenticated USING (user_id = uid ())
+CREATE POLICY limit_categories ON categories FOR ALL TO authenticated USING (
+	organization_id = org_id ()
+	OR (
+		organization_id IS NULL
+		AND user_id = uid ()
+	)
+)
 WITH
-	CHECK (user_id = uid ());
+	CHECK (
+		organization_id = org_id ()
+		OR (
+			organization_id IS NULL
+			AND user_id = uid ()
+		)
+	);
 
-CREATE POLICY limit_transactions ON transactions FOR ALL TO authenticated USING (user_id = uid ())
+DROP POLICY IF EXISTS limit_tags ON tags;
+
+CREATE POLICY limit_tags ON tags FOR ALL TO authenticated USING (
+	organization_id = org_id ()
+	OR (
+		organization_id IS NULL
+		AND user_id = uid ()
+	)
+)
 WITH
-	CHECK (user_id = uid ());
+	CHECK (
+		organization_id = org_id ()
+		OR (
+			organization_id IS NULL
+			AND user_id = uid ()
+		)
+	);
+
+DROP POLICY IF EXISTS limit_transactions ON transactions;
+
+DROP POLICY IF EXISTS limit_transactions_select ON transactions;
+
+DROP POLICY IF EXISTS limit_transactions_insert ON transactions;
+
+DROP POLICY IF EXISTS limit_transactions_update ON transactions;
+
+DROP POLICY IF EXISTS limit_transactions_delete ON transactions;
+
+/* SELECT policy - requires 'list' or 'get' permission */
+CREATE POLICY limit_transactions_select ON transactions FOR
+SELECT
+	TO authenticated USING (
+		(
+			organization_id IS NULL
+			AND user_id = uid ()
+		)
+		OR (
+			organization_id = org_id ()
+			AND (
+				check_ac_current ('transaction', 'list')
+				OR check_ac_current ('transaction', 'get')
+			)
+		)
+	);
+
+/* INSERT policy - requires 'create' permission */
+CREATE POLICY limit_transactions_insert ON transactions FOR INSERT TO authenticated
+WITH
+	CHECK (
+		(
+			organization_id IS NULL
+			AND user_id = uid ()
+		)
+		OR (
+			organization_id = org_id ()
+			AND check_ac_current ('transaction', 'create')
+		)
+	);
+
+/* UPDATE policy - requires 'update' permission */
+CREATE POLICY limit_transactions_update ON transactions
+FOR UPDATE
+	TO authenticated USING (
+		(
+			organization_id IS NULL
+			AND user_id = uid ()
+		)
+		OR (
+			organization_id = org_id ()
+			AND check_ac_current ('transaction', 'update')
+		)
+	)
+WITH
+	CHECK (
+		(
+			organization_id IS NULL
+			AND user_id = uid ()
+		)
+		OR (
+			organization_id = org_id ()
+			AND check_ac_current ('transaction', 'update')
+		)
+	);
+
+/* DELETE policy - requires 'delete' permission */
+CREATE POLICY limit_transactions_delete ON transactions FOR DELETE TO authenticated USING (
+	(
+		organization_id IS NULL
+		AND user_id = uid ()
+	)
+	OR (
+		organization_id = org_id ()
+		AND check_ac_current ('transaction', 'delete')
+	)
+);
 
 /* ========================================================================== */
 /* TRIGGERS */

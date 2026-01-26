@@ -23,8 +23,11 @@ BEGIN
     SELECT SUM(tr.amount), ca.name, ca.id as category_id
     FROM get_filtered_transactions (v_filters) tr
     LEFT JOIN categories ca ON tr.category_id=ca.id
-    WHERE tr.user_id = v_user_id
-    AND (tr.organization_id = v_organization_id OR tr.organization_id IS NULL)
+    WHERE 
+        CASE 
+            WHEN v_organization_id IS NOT NULL THEN tr.organization_id = v_organization_id
+            ELSE tr.user_id = v_user_id AND tr.organization_id IS NULL
+        END
     GROUP BY ca.id;
 END
 $$ LANGUAGE plpgsql STABLE;
@@ -65,8 +68,11 @@ WITH daily_transactions AS (
         COALESCE(SUM(tr.amount) FILTER (WHERE tr.amount > 0), 0) AS debit,
         COALESCE(SUM(tr.amount), 0) AS balance
     FROM get_filtered_transactions (v_filters) tr
-    WHERE tr.user_id = v_user_id
-    AND (tr.organization_id = v_organization_id OR tr.organization_id IS NULL)
+    WHERE 
+        CASE 
+            WHEN v_organization_id IS NOT NULL THEN tr.organization_id = v_organization_id
+            ELSE tr.user_id = v_user_id AND tr.organization_id IS NULL
+        END
     GROUP BY DATE (tr.transaction_date), tr.category_id
 )
 SELECT t.category_id, t.day, t.credit, t.debit, t.balance, c.name
@@ -113,8 +119,11 @@ SELECT
     (COALESCE(SUM(tr.amount) FILTER (WHERE tr.amount > 0), 0))::NUMERIC(10, 2) AS debit,
     (COALESCE(SUM(tr.amount), 0))::NUMERIC(10, 2) AS balance
 FROM get_filtered_transactions (v_filters) tr
-WHERE tr.user_id = v_user_id
-AND (tr.organization_id = v_organization_id OR tr.organization_id IS NULL)
+WHERE 
+    CASE 
+        WHEN v_organization_id IS NOT NULL THEN tr.organization_id = v_organization_id
+        ELSE tr.user_id = v_user_id AND tr.organization_id IS NULL
+    END
 GROUP BY DATE (tr.transaction_date), tr.status;
 
 END
@@ -244,14 +253,6 @@ REVOKE ALL ON FUNCTION get_filtered_transactions (JSONB)
 FROM
 	anon,
 	authenticated;
-
-REVOKE ALL ON FUNCTION get_filtered_transactions (JSONB)
-FROM
-	anon,
-	authenticated;
-
-GRANT
-EXECUTE ON FUNCTION get_filtered_transactions (JSONB) TO authenticated;
 
 GRANT
 EXECUTE ON FUNCTION get_filtered_transactions (JSONB) TO authenticated;
