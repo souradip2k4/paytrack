@@ -62,7 +62,9 @@ create-roles:
 migrate:
 	./scripts/run_migrations.sh
 
-db-setup: docker-up
+db-setup:
+	@echo "Starting PostgreSQL..."
+	cd infra && PGRST_JWT_SECRET="ignore" docker compose up -d bu-postgres
 	@echo "Waiting for PostgreSQL to be ready..."
 	@echo "Streaming container logs (press Ctrl+C to abort):"
 	@echo "=================================================="
