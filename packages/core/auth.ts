@@ -228,6 +228,14 @@ export const auth = betterAuth({
 							productId: process.env.POLAR_PRODUCT_PRO_YEARLY!,
 							slug: "pro-yearly",
 						},
+						{
+							productId: process.env.POLAR_PRODUCT_TEAMS!,
+							slug: "teams",
+						},
+						{
+							productId: process.env.POLAR_PRODUCT_TEAMS_YEARLY!,
+							slug: "teams-yearly",
+						}
 					],
 					successUrl: "/welcome?id={CHECKOUT_ID}",
 					authenticatedUsersOnly: true,
