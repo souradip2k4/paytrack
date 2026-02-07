@@ -19,6 +19,7 @@ import {
 } from "@budgetbee/ui/core/dialog";
 import { Input } from "@budgetbee/ui/core/input";
 import { Label } from "@budgetbee/ui/core/label";
+import { RadioGroup, RadioGroupItem } from "@budgetbee/ui/core/radio-group";
 import {
 	Select,
 	SelectContent,
@@ -27,6 +28,7 @@ import {
 	SelectValue,
 } from "@budgetbee/ui/core/select";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { BarChart, Binary, LineChart, PieChart } from "lucide-react";
 import { nanoid } from "nanoid";
 import * as React from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -42,6 +44,7 @@ const CHART_TYPES = [
 	{ value: "bar", label: "Bar Chart" },
 	{ value: "line", label: "Line Chart" },
 	{ value: "donut", label: "Donut Chart" },
+	{ value: "number", label: "Number" },
 ] as const;
 
 // UI label: "Transaction Type" - maps to metric field
@@ -71,7 +74,7 @@ const formSchema = z.object({
 	chartType: ChartTypeSchema,
 	metric: MetricSchema,
 	aggregation: AggregationSchema,
-	interval: IntervalSchema,
+	interval: IntervalSchema.optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -86,10 +89,10 @@ const defaultValues: FormValues = {
 };
 
 export function WidgetSettingsDialog() {
-	const settingsOpen = useDashboardStore((s) => s.settingsOpen);
-	const settingsWidget = useDashboardStore((s) => s.settingsWidget);
-	const closeWidgetSettings = useDashboardStore((s) => s.closeWidgetSettings);
-	const saveWidget = useDashboardStore((s) => s.saveWidget);
+	const settingsOpen = useDashboardStore(s => s.settingsOpen);
+	const settingsWidget = useDashboardStore(s => s.settingsWidget);
+	const closeWidgetSettings = useDashboardStore(s => s.closeWidgetSettings);
+	const saveWidget = useDashboardStore(s => s.saveWidget);
 
 	const titleInputId = React.useId();
 	const metricSelectId = React.useId();
@@ -103,11 +106,25 @@ export function WidgetSettingsDialog() {
 		control,
 		handleSubmit,
 		register,
+		watch,
+		setValue,
 		formState: { errors },
 	} = useForm<FormValues>({
 		resolver: zodResolver(formSchema),
 		defaultValues,
 	});
+
+	const chartType = watch("chartType");
+	const metric = watch("metric");
+	const isNumber = chartType === "number";
+	const isDonut = chartType === "donut";
+
+	// Reset "balance" to "credit" when switching to donut (pie charts don't support mixed +/- values)
+	React.useEffect(() => {
+		if (isDonut && metric === "balance") {
+			setValue("metric", "credit");
+		}
+	}, [isDonut, metric, setValue]);
 
 	React.useEffect(() => {
 		if (settingsOpen) {
@@ -118,7 +135,7 @@ export function WidgetSettingsDialog() {
 					chartType: settingsWidget.chartType,
 					metric: settingsWidget.metric,
 					aggregation: settingsWidget.aggregation ?? "sum",
-					interval: settingsWidget.interval,
+					interval: settingsWidget.interval ?? "day",
 				});
 			} else {
 				reset(defaultValues);
@@ -127,6 +144,9 @@ export function WidgetSettingsDialog() {
 	}, [settingsOpen, settingsWidget, reset]);
 
 	const onSubmit = (data: FormValues) => {
+		const isNumberWidget = data.chartType === "number";
+		const isDonutWidget = data.chartType === "donut";
+		const omitInterval = isNumberWidget || isDonutWidget;
 		const config: WidgetConfig = {
 			id: settingsWidget?.id ?? nanoid(12),
 			title: data.title,
@@ -134,12 +154,12 @@ export function WidgetSettingsDialog() {
 			chartType: data.chartType,
 			metric: data.metric,
 			aggregation: data.aggregation,
-			interval: data.interval,
+			interval: omitInterval ? undefined : data.interval,
 			layout: settingsWidget?.layout ?? {
 				x: 0,
 				y: Infinity,
-				w: 6,
-				h: 4,
+				w: isNumberWidget ? 3 : 6,
+				h: isNumberWidget ? 2 : 4,
 				minW: 2,
 				minH: 2,
 			},
@@ -150,7 +170,9 @@ export function WidgetSettingsDialog() {
 	};
 
 	return (
-		<Dialog open={settingsOpen} onOpenChange={(open) => !open && closeWidgetSettings()}>
+		<Dialog
+			open={settingsOpen}
+			onOpenChange={open => !open && closeWidgetSettings()}>
 			<DialogContent className="gap-0 p-0">
 				<form className="contents" onSubmit={handleSubmit(onSubmit)}>
 					<DialogHeader className="border-b p-4 px-6">
@@ -162,7 +184,9 @@ export function WidgetSettingsDialog() {
 					<div className="flex flex-col gap-4 p-6">
 						{/* TITLE INPUT */}
 						<div className="flex flex-col gap-2">
-							<Label htmlFor={titleInputId} className="text-muted-foreground">
+							<Label
+								htmlFor={titleInputId}
+								className="text-muted-foreground">
 								Title
 							</Label>
 							<Input
@@ -177,8 +201,77 @@ export function WidgetSettingsDialog() {
 							)}
 						</div>
 
-						<div className="grid grid-cols-2 gap-x-2 gap-y-4">
-							{/* METRIC SELECT (dataSource field) */}
+						{/* CHART TYPE SELECT */}
+						<div className="flex flex-col gap-2">
+							<Label
+								htmlFor={chartTypeSelectId}
+								className="text-muted-foreground">
+								Chart Type
+							</Label>
+							<Controller
+								name="chartType"
+								control={control}
+								render={({ field }) => (
+									<RadioGroup
+										className="grid-cols-4"
+										defaultValue="bar"
+										value={field.value}
+										onValueChange={field.onChange}>
+										{CHART_TYPES.map((ct, index) => {
+											const key = (index + 1).toString();
+											let Icon = null;
+											switch (ct.value) {
+												case "bar":
+													Icon = BarChart;
+													break;
+												case "line":
+													Icon = LineChart;
+													break;
+												case "donut":
+													Icon = PieChart;
+													break;
+												case "number":
+													Icon = Binary;
+													break;
+											}
+											return (
+												<div className="border-input shadow-xs has-data-[state=checked]:border-primary/50 has-focus-visible:border-ring has-focus-visible:ring-[3px] has-focus-visible:ring-ring/50 relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-6 text-center outline-none transition-[color,box-shadow]">
+													<RadioGroupItem
+														className="sr-only"
+														id={
+															chartTypeSelectId +
+															key
+														}
+														value={ct.value}
+													/>
+													<Icon
+														aria-hidden="true"
+														className="opacity-60"
+														size={20}
+													/>
+													<label
+														className="text-foreground cursor-pointer text-xs font-medium leading-none after:absolute after:inset-0"
+														htmlFor={
+															chartTypeSelectId +
+															key
+														}>
+														{ct.label}
+													</label>
+												</div>
+											);
+										})}
+									</RadioGroup>
+								)}
+							/>
+							{errors.chartType && (
+								<p className="text-destructive text-sm">
+									{errors.chartType.message}
+								</p>
+							)}
+						</div>
+
+						{/* METRIC SELECT (dataSource field) - hidden for number */}
+						{!isNumber && (
 							<div className="flex flex-col gap-2">
 								<Label
 									htmlFor={metricSelectId}
@@ -189,16 +282,24 @@ export function WidgetSettingsDialog() {
 									name="dataSource"
 									control={control}
 									render={({ field }) => (
-										<Select value={field.value} onValueChange={field.onChange}>
-											<SelectTrigger id={metricSelectId} className="w-full">
+										<Select
+											value={field.value}
+											onValueChange={field.onChange}>
+											<SelectTrigger
+												id={metricSelectId}
+												className="w-full">
 												<SelectValue placeholder="Select metric" />
 											</SelectTrigger>
 											<SelectContent>
-												{DATA_SOURCE_OPTIONS.map((item) => (
-													<SelectItem key={item.value} value={item.value}>
-														{item.label}
-													</SelectItem>
-												))}
+												{DATA_SOURCE_OPTIONS.map(
+													item => (
+														<SelectItem
+															key={item.value}
+															value={item.value}>
+															{item.label}
+														</SelectItem>
+													),
+												)}
 											</SelectContent>
 										</Select>
 									)}
@@ -209,39 +310,9 @@ export function WidgetSettingsDialog() {
 									</p>
 								)}
 							</div>
+						)}
 
-							{/* CHART TYPE SELECT */}
-							<div className="flex flex-col gap-2">
-								<Label
-									htmlFor={chartTypeSelectId}
-									className="text-muted-foreground">
-									Chart Type
-								</Label>
-								<Controller
-									name="chartType"
-									control={control}
-									render={({ field }) => (
-										<Select value={field.value} onValueChange={field.onChange}>
-											<SelectTrigger id={chartTypeSelectId} className="w-full">
-												<SelectValue placeholder="Select chart type" />
-											</SelectTrigger>
-											<SelectContent>
-												{CHART_TYPES.map((item) => (
-													<SelectItem key={item.value} value={item.value}>
-														{item.label}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-									)}
-								/>
-								{errors.chartType && (
-									<p className="text-destructive text-sm">
-										{errors.chartType.message}
-									</p>
-								)}
-							</div>
-
+						<div className="grid grid-cols-2 gap-x-2 gap-y-4">
 							{/* TRANSACTION TYPE SELECT (metric field) */}
 							<div className="flex flex-col gap-2">
 								<Label
@@ -253,13 +324,23 @@ export function WidgetSettingsDialog() {
 									name="metric"
 									control={control}
 									render={({ field }) => (
-										<Select value={field.value} onValueChange={field.onChange}>
-											<SelectTrigger id={transactionTypeSelectId} className="w-full">
+										<Select
+											value={field.value}
+											onValueChange={field.onChange}>
+											<SelectTrigger
+												id={transactionTypeSelectId}
+												className="w-full">
 												<SelectValue placeholder="Select transaction type" />
 											</SelectTrigger>
 											<SelectContent>
-												{TRANSACTION_TYPES.map((item) => (
-													<SelectItem key={item.value} value={item.value}>
+												{TRANSACTION_TYPES.filter(
+													item =>
+														!isDonut ||
+														item.value !== "balance",
+												).map(item => (
+													<SelectItem
+														key={item.value}
+														value={item.value}>
 														{item.label}
 													</SelectItem>
 												))}
@@ -285,13 +366,19 @@ export function WidgetSettingsDialog() {
 									name="aggregation"
 									control={control}
 									render={({ field }) => (
-										<Select value={field.value} onValueChange={field.onChange}>
-											<SelectTrigger id={aggregationSelectId} className="w-full">
+										<Select
+											value={field.value}
+											onValueChange={field.onChange}>
+											<SelectTrigger
+												id={aggregationSelectId}
+												className="w-full">
 												<SelectValue placeholder="Select aggregation" />
 											</SelectTrigger>
 											<SelectContent>
-												{AGGREGATIONS.map((item) => (
-													<SelectItem key={item.value} value={item.value}>
+												{AGGREGATIONS.map(item => (
+													<SelectItem
+														key={item.value}
+														value={item.value}>
 														{item.label}
 													</SelectItem>
 												))}
@@ -306,37 +393,45 @@ export function WidgetSettingsDialog() {
 								)}
 							</div>
 
-							{/* INTERVAL SELECT */}
-							<div className="col-span-2 flex flex-col gap-2">
-								<Label
-									htmlFor={intervalSelectId}
-									className="text-muted-foreground">
-									Interval
-								</Label>
-								<Controller
-									name="interval"
-									control={control}
-									render={({ field }) => (
-										<Select value={field.value} onValueChange={field.onChange}>
-											<SelectTrigger id={intervalSelectId} className="w-full">
-												<SelectValue placeholder="Select interval" />
-											</SelectTrigger>
-											<SelectContent>
-												{INTERVALS.map((item) => (
-													<SelectItem key={item.value} value={item.value}>
-														{item.label}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
+							{/* INTERVAL SELECT - hidden for number and donut */}
+							{!isNumber && !isDonut && (
+								<div className="col-span-2 flex flex-col gap-2">
+									<Label
+										htmlFor={intervalSelectId}
+										className="text-muted-foreground">
+										Interval
+									</Label>
+									<Controller
+										name="interval"
+										control={control}
+										render={({ field }) => (
+											<Select
+												value={field.value}
+												onValueChange={field.onChange}>
+												<SelectTrigger
+													id={intervalSelectId}
+													className="w-full">
+													<SelectValue placeholder="Select interval" />
+												</SelectTrigger>
+												<SelectContent>
+													{INTERVALS.map(item => (
+														<SelectItem
+															key={item.value}
+															value={item.value}>
+															{item.label}
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
+										)}
+									/>
+									{errors.interval && (
+										<p className="text-destructive text-sm">
+											{errors.interval.message}
+										</p>
 									)}
-								/>
-								{errors.interval && (
-									<p className="text-destructive text-sm">
-										{errors.interval.message}
-									</p>
-								)}
-							</div>
+								</div>
+							)}
 						</div>
 					</div>
 

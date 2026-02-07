@@ -35,7 +35,7 @@ export const WidgetConfigSchema = z.object({
 	dataSource: DataSourceSchema,
 	metric: MetricSchema,
 	aggregation: AggregationSchema.optional(),
-	interval: IntervalSchema,
+	interval: IntervalSchema.optional(),
 	layout: WidgetLayoutSchema,
 });
 export type WidgetConfig = z.infer<typeof WidgetConfigSchema>;

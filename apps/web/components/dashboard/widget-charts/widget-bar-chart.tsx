@@ -42,7 +42,7 @@ export function WidgetBarChart({ data, widget }: WidgetBarChartProps) {
 			const id = row.metric ?? "Other";
 			ids.add(id);
 			grouped[periodKey][id] =
-				(grouped[periodKey][id] || 0) + Math.abs(Number(row.aggregate));
+				(grouped[periodKey][id] || 0) + Number(row.aggregate);
 		}
 
 		const periods = Object.keys(grouped).sort();
@@ -86,6 +86,7 @@ export function WidgetBarChart({ data, widget }: WidgetBarChartProps) {
 					tickLine={false}
 					axisLine={false}
 					tickMargin={8}
+					reversed={widget.metric === "debit"}
 					tickFormatter={(value: number) => {
 						if (Number.isNaN(value)) return "";
 						return Intl.NumberFormat("en-US", {

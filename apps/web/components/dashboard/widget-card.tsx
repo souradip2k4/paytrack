@@ -22,10 +22,10 @@ export function WidgetCard({ widget }: WidgetCardProps) {
 	const deleteWidget = useDashboardStore(s => s.deleteWidget);
 
 	return (
-		<Card className="flex h-full flex-col overflow-hidden py-0">
+		<Card className="flex h-full flex-col gap-0 overflow-hidden py-0">
 			<CardHeader className="[.border-b]:pb-2 flex flex-row items-center gap-2 border-b px-3 py-2">
 				{isEditing && (
-					<div className="drag-handle cursor-grab active:cursor-grabbing">
+					<div className="drag-handle -ml-1 flex cursor-grab items-center rounded px-0.5 py-1 active:cursor-grabbing">
 						<GripVertical className="text-muted-foreground size-4" />
 					</div>
 				)}

@@ -151,7 +151,7 @@ DECLARE
     column_name text;
     value_array text[];
 BEGIN
-    query_sql := 'SELECT id, amount, currency, user_id, organization_id, external_id, category_id, reference_no, name, description, status, source, metadata, transaction_date, created_at, updated_at FROM transactions';
+    query_sql := 'SELECT * FROM transactions';
 
     IF filters IS NULL OR jsonb_typeof(filters) != 'array' OR jsonb_array_length(filters) = 0 THEN
         RETURN QUERY EXECUTE query_sql;
@@ -302,18 +302,18 @@ DROP FUNCTION IF EXISTS get_transaction_aggregate;
 -- p_metric: column name to group by (can be status, category_id, currency, etc.)
 -- p_interval: interval to group by (can be day, week, month)
 -- p_aggregate_fn: aggregate function (can be sum, avg, count, min, max)
---   - sum: total amount in the bucket
---   - avg: total amount / days in the interval (daily average for that period)
---   - count: number of transactions in the bucket
---   - min: minimum transaction amount in the bucket
---   - max: maximum transaction amount in the bucket
+-- p_transaction_type: transaction type filter (credit, debit, balance)
+--   - credit: only negative amounts, returned as positive
+--   - debit: only positive amounts
+--   - balance: all amounts as-is
 CREATE OR REPLACE FUNCTION get_transaction_aggregate(
     p_user_id TEXT,
     p_organization_id TEXT,
     p_filters JSONB,
     p_metric TEXT,
     p_interval TEXT,
-    p_aggregate_fn TEXT
+    p_aggregate_fn TEXT,
+    p_transaction_type TEXT
 )
 RETURNS TABLE (
     period TIMESTAMP,
@@ -323,6 +323,8 @@ RETURNS TABLE (
 DECLARE
     clean_metric TEXT;
     clean_interval TEXT;
+    amount_expr TEXT;
+    type_filter TEXT;
     agg_expression TEXT;
     query_str TEXT;
 BEGIN
@@ -336,30 +338,47 @@ BEGIN
         RAISE EXCEPTION 'Invalid interval: %. Allowed: day, week, month', p_interval;
     END IF;
 
+    -- Validate transaction type
+    IF p_transaction_type NOT IN ('credit', 'debit', 'balance') THEN
+        RAISE EXCEPTION 'Invalid transaction type: %. Allowed: credit, debit, balance', p_transaction_type;
+    END IF;
+
     clean_metric := quote_ident(p_metric);
     clean_interval := quote_literal(p_interval);
+
+    -- Build amount expression and type filter based on transaction type
+    CASE p_transaction_type
+        WHEN 'credit' THEN
+            amount_expr := 'tr.amount';
+            type_filter := 'AND tr.amount > 0';
+        WHEN 'debit' THEN
+            amount_expr := 'tr.amount';
+            type_filter := 'AND tr.amount < 0';
+        WHEN 'balance' THEN
+            amount_expr := 'tr.amount';
+            type_filter := '';
+    END CASE;
 
     -- Build the aggregation expression
     -- For 'avg', we calculate sum / days_in_interval to get daily average
     CASE p_aggregate_fn
         WHEN 'sum' THEN
-            agg_expression := 'sum(tr.amount)';
+            agg_expression := format('sum(%s)', amount_expr);
         WHEN 'avg' THEN
             CASE p_interval
                 WHEN 'day' THEN
-                    agg_expression := 'sum(tr.amount)';  -- daily is just sum (1 day)
+                    agg_expression := format('sum(%s)', amount_expr);  -- daily is just sum (1 day)
                 WHEN 'week' THEN
-                    agg_expression := 'sum(tr.amount) / 7.0';
+                    agg_expression := format('sum(%s) / 7.0', amount_expr);
                 WHEN 'month' THEN
-                    -- Use actual days in the month for that period
-                    agg_expression := 'sum(tr.amount) / EXTRACT(DAY FROM (date_trunc(''month'', min(tr.transaction_date)) + interval ''1 month'' - interval ''1 day''))';
+                    agg_expression := format('sum(%s) / EXTRACT(DAY FROM (date_trunc(''month'', min(tr.transaction_date)) + interval ''1 month'' - interval ''1 day''))', amount_expr);
             END CASE;
         WHEN 'count' THEN
             agg_expression := 'count(*)';
         WHEN 'min' THEN
-            agg_expression := 'min(tr.amount)';
+            agg_expression := format('min(%s)', amount_expr);
         WHEN 'max' THEN
-            agg_expression := 'max(tr.amount)';
+            agg_expression := format('max(%s)', amount_expr);
     END CASE;
 
     query_str := format(
@@ -373,6 +392,7 @@ BEGIN
                 WHEN %L IS NOT NULL THEN tr.organization_id = %L
                 ELSE tr.user_id = %L AND tr.organization_id IS NULL
             END
+            %s
          GROUP BY 1, 2
          ORDER BY 1 DESC, 2 ASC',
         clean_interval,
@@ -381,17 +401,107 @@ BEGIN
         p_filters,
         p_organization_id,
         p_organization_id,
-        p_user_id
+        p_user_id,
+        type_filter
     );
 
     RETURN QUERY EXECUTE query_str;
 END;
 $$ LANGUAGE plpgsql STABLE;
 
-REVOKE ALL ON FUNCTION get_transaction_aggregate (TEXT, TEXT, JSONB, TEXT, TEXT, TEXT)
+REVOKE ALL ON FUNCTION get_transaction_aggregate (TEXT, TEXT, JSONB, TEXT, TEXT, TEXT, TEXT)
 FROM
     anon,
     authenticated;
 
 GRANT
-EXECUTE ON FUNCTION get_transaction_aggregate (TEXT, TEXT, JSONB, TEXT, TEXT, TEXT) TO authenticated;
+EXECUTE ON FUNCTION get_transaction_aggregate (TEXT, TEXT, JSONB, TEXT, TEXT, TEXT, TEXT) TO authenticated;
+
+/* ========================================================================== */
+DROP FUNCTION IF EXISTS get_transaction_stat;
+
+-- Returns a single aggregate number over all filtered transactions.
+-- p_user_id: user id for filtering (used when p_organization_id is NULL)
+-- p_organization_id: organization id for filtering (takes precedence over p_user_id)
+-- p_filters: JSONB array of UI filters for get_filtered_transactions
+-- p_aggregate_fn: aggregate function (sum, avg, count, min, max)
+-- p_transaction_type: transaction type filter (credit, debit, balance)
+--   - credit: only negative amounts, returned as positive
+--   - debit: only positive amounts
+--   - balance: all amounts as-is
+CREATE OR REPLACE FUNCTION get_transaction_stat(
+    p_user_id TEXT,
+    p_organization_id TEXT,
+    p_filters JSONB,
+    p_aggregate_fn TEXT,
+    p_transaction_type TEXT
+)
+RETURNS TABLE (
+    aggregate NUMERIC
+) SECURITY INVOKER AS $$
+DECLARE
+    amount_expr TEXT;
+    type_filter TEXT;
+    agg_expression TEXT;
+    query_str TEXT;
+BEGIN
+    -- Validate aggregate function
+    IF p_aggregate_fn NOT IN ('sum', 'avg', 'count', 'min', 'max') THEN
+        RAISE EXCEPTION 'Invalid aggregate: %. Allowed: sum, avg, count, min, max', p_aggregate_fn;
+    END IF;
+
+    -- Validate transaction type
+    IF p_transaction_type NOT IN ('credit', 'debit', 'balance') THEN
+        RAISE EXCEPTION 'Invalid transaction type: %. Allowed: credit, debit, balance', p_transaction_type;
+    END IF;
+
+    -- Build amount expression and type filter based on transaction type
+    CASE p_transaction_type
+        WHEN 'credit' THEN
+            amount_expr := 'tr.amount';
+            type_filter := 'AND tr.amount > 0';
+        WHEN 'debit' THEN
+            amount_expr := 'tr.amount';
+            type_filter := 'AND tr.amount < 0';
+        WHEN 'balance' THEN
+            amount_expr := 'tr.amount';
+            type_filter := '';
+    END CASE;
+
+    -- Build the aggregation expression
+    CASE p_aggregate_fn
+        WHEN 'sum'   THEN agg_expression := format('COALESCE(sum(%s), 0)', amount_expr);
+        WHEN 'avg'   THEN agg_expression := format('COALESCE(avg(%s), 0)', amount_expr);
+        WHEN 'count' THEN agg_expression := 'count(*)';
+        WHEN 'min'   THEN agg_expression := format('COALESCE(min(%s), 0)', amount_expr);
+        WHEN 'max'   THEN agg_expression := format('COALESCE(max(%s), 0)', amount_expr);
+    END CASE;
+
+    query_str := format(
+        'SELECT (%s)::NUMERIC AS aggregate
+         FROM get_filtered_transactions(%L::jsonb) tr
+         WHERE
+            CASE
+                WHEN %L IS NOT NULL THEN tr.organization_id = %L
+                ELSE tr.user_id = %L AND tr.organization_id IS NULL
+            END
+            %s',
+        agg_expression,
+        p_filters,
+        p_organization_id,
+        p_organization_id,
+        p_user_id,
+        type_filter
+    );
+
+    RETURN QUERY EXECUTE query_str;
+END;
+$$ LANGUAGE plpgsql STABLE;
+
+REVOKE ALL ON FUNCTION get_transaction_stat (TEXT, TEXT, JSONB, TEXT, TEXT)
+FROM
+    anon,
+    authenticated;
+
+GRANT
+EXECUTE ON FUNCTION get_transaction_stat (TEXT, TEXT, JSONB, TEXT, TEXT) TO authenticated;

@@ -1,6 +1,5 @@
 "use client";
 
-import { CreateDashboardDialog } from "@/components/dashboard/create-dashboard-dialog";
 import {
 	useDashboardMutation,
 	useDashboardViews,
@@ -12,18 +11,12 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@budgetbee/ui/core/card";
-import { LayoutDashboard, Plus, Trash2 } from "lucide-react";
+import { LayoutDashboard, Trash2 } from "lucide-react";
 import Link from "next/link";
-import * as React from "react";
 
 export default function DashboardsPage() {
 	const { data: dashboards, isLoading } = useDashboardViews();
 	const mutation = useDashboardMutation();
-	const [createOpen, setCreateOpen] = React.useState(false);
-
-	const handleCreate = (name: string) => {
-		mutation.mutate({ type: "create", payload: { name } });
-	};
 
 	const handleDelete = (
 		id: string,
@@ -36,14 +29,6 @@ export default function DashboardsPage() {
 
 	return (
 		<div className="p-4">
-			<div className="mb-4 flex items-center justify-between">
-				<h1 className="text-lg">Dashboards</h1>
-				<Button size="sm" onClick={() => setCreateOpen(true)}>
-					<Plus className="size-4" />
-					New Dashboard
-				</Button>
-			</div>
-
 			{isLoading ?
 				<div className="text-muted-foreground py-12 text-center text-sm">
 					Loading dashboards...
@@ -58,7 +43,7 @@ export default function DashboardsPage() {
 			:	<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 					{dashboards.map(d => (
 						<Link key={d.id} href={`/dashboards/${d.id}`}>
-							<Card className="hover:bg-accent/50 cursor-pointer transition-colors">
+							<Card className="hover:bg-accent/50 cursor-pointer gap-0 transition-colors">
 								<CardHeader className="flex flex-row items-center justify-between pb-2">
 									<CardTitle className="text-sm font-medium">
 										{d.name}
@@ -86,12 +71,6 @@ export default function DashboardsPage() {
 					))}
 				</div>
 			}
-
-			<CreateDashboardDialog
-				open={createOpen}
-				onOpenChange={setCreateOpen}
-				onCreate={handleCreate}
-			/>
 		</div>
 	);
 }

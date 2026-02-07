@@ -11,9 +11,14 @@ import React from "react";
 import { navs } from "./sidebar/nav-main";
 import { TransactionDialog } from "./transaction-editor";
 import { ViewCategoryPopover } from "./view-category-popover";
+import { DashboardBreadcrumb } from "./dashboard/dashboard-breadcrumb";
+import { DashboardListActions } from "./dashboard/dashboard-list-actions";
 
 export function AppHeader() {
 	const pathname = usePathname();
+
+	const isDashboardDetail = pathname.startsWith("/dashboards/") && pathname !== "/dashboards";
+	const isDashboardList = pathname === "/dashboards";
 
 	const match = React.useMemo(() => {
 		for (const nav of navs) {
@@ -22,6 +27,10 @@ export function AppHeader() {
 		}
 		return undefined;
 	}, [pathname]);
+
+	if (isDashboardDetail) {
+		return <DashboardBreadcrumb />;
+	}
 
 	return (
 		<React.Fragment>
@@ -39,7 +48,13 @@ export function AppHeader() {
 				<h1 className="text-muted-foreground m-0">{match?.title}</h1>
 			</div>
 
-			{pathname.startsWith("/transactions") && (
+			{isDashboardList && (
+			<div className="ml-auto flex gap-2">
+				<DashboardListActions />
+			</div>
+		)}
+
+		{pathname.startsWith("/transactions") && (
 				<div className="ml-auto flex gap-2">
 					<Tooltip delayDuration={750}>
 						<TooltipTrigger asChild>

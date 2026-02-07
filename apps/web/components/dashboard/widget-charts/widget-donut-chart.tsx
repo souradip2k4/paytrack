@@ -40,8 +40,10 @@ export function WidgetDonutChart({ data, widget }: WidgetDonutChartProps) {
 		const grouped: Record<string, number> = {};
 		for (const row of data) {
 			const key = row.metric ?? "Other";
-			grouped[key] = (grouped[key] || 0) + Math.abs(Number(row.aggregate));
+			grouped[key] = (grouped[key] || 0) + Number(row.aggregate);
 		}
+
+		const isDebit = widget.metric === "debit";
 
 		return Object.entries(grouped).map(([metricId, amount], i) => {
 			const statusColor = STATUS_COLORS[metricId.toLowerCase()];
@@ -61,11 +63,13 @@ export function WidgetDonutChart({ data, widget }: WidgetDonutChartProps) {
 			return {
 				name: cat?.name ?? metricId,
 				metricId,
-				amount,
+				amount: isDebit ? Math.abs(amount) : amount,
 				fill,
 			};
 		});
-	}, [data, categoryMap, resolvedTheme, widget.dataSource]);
+	}, [data, categoryMap, resolvedTheme, widget.dataSource, widget.metric]);
+
+	const isDebit = widget.metric === "debit";
 
 	const chartConfig = React.useMemo(() => {
 		const cfg: Record<string, { label: string; color: string }> = {};
@@ -88,7 +92,26 @@ export function WidgetDonutChart({ data, widget }: WidgetDonutChartProps) {
 			<PieChart>
 				<ChartTooltip
 					cursor={false}
-					content={<ChartTooltipContent hideLabel />}
+					content={
+						<ChartTooltipContent
+							hideLabel
+							formatter={(value, name) => {
+								const v = Number(value);
+								const display = isDebit ? -v : v;
+								return (
+									<>
+										<span>{name}</span>
+										<span className="ml-auto font-mono tabular-nums">
+											{Intl.NumberFormat("en-US", {
+												style: "currency",
+												currency: "USD",
+											}).format(display)}
+										</span>
+									</>
+								);
+							}}
+						/>
+					}
 				/>
 				<Pie
 					data={processedData}

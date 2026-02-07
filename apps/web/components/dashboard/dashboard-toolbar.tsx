@@ -1,5 +1,10 @@
 "use client";
 
+import {
+	FilterClear,
+	FilterDialog,
+	FilterPills,
+} from "@/components/filter-dropdown";
 import { useDashboardMutation } from "@/lib/query/dashboard-queries";
 import { useDashboardStore } from "@/lib/store";
 import type { DashboardView, WidgetConfig } from "@/lib/types/dashboard";
@@ -56,47 +61,52 @@ export function DashboardToolbar({ dashboard }: DashboardToolbarProps) {
 		openWidgetSettings(null);
 	};
 
-	return (
-		<div className="flex items-center justify-between border-b px-4 py-2">
-			<div className="flex items-center gap-2">
-				{isEditing ?
+	if (isEditing) {
+		return (
+			<div className="flex items-center justify-between border-b px-4 py-2">
+				<div className="flex items-center gap-2">
 					<Input
 						value={draftName}
 						onChange={e => setDraftName(e.target.value)}
 						className="h-8 w-60"
 					/>
-				:	<h1>{dashboard.name}</h1>}
-			</div>
-			<div className="flex items-center gap-2">
-				{isEditing ?
-					<>
-						<Button
-							size="sm"
-							variant="outline"
-							onClick={handleAddWidget}>
-							<Plus className="mr-1 size-4" />
-							Add Widget
-						</Button>
-						<Button
-							size="sm"
-							variant="outline"
-							onClick={handleCancel}>
-							<X className="mr-1 size-4" />
-							Cancel
-						</Button>
-						<Button
-							size="sm"
-							onClick={handleSave}
-							disabled={mutation.isPending}>
-							<Save className="mr-1 size-4" />
-							Save
-						</Button>
-					</>
-				:	<Button size="sm" variant="outline" onClick={handleEdit}>
-						<Pencil className="mr-1 size-4" />
-						Edit
+				</div>
+				<div className="flex items-center gap-2">
+					<Button
+						size="sm"
+						variant="outline"
+						onClick={handleAddWidget}>
+						<Plus className="size-4" />
+						Add Widget
 					</Button>
-				}
+					<Button size="sm" variant="outline" onClick={handleCancel}>
+						<X className="size-4" />
+						Cancel
+					</Button>
+					<Button
+						size="sm"
+						onClick={handleSave}
+						disabled={mutation.isPending}>
+						<Save className="size-4" />
+						Save
+					</Button>
+				</div>
+			</div>
+		);
+	}
+
+	return (
+		<div className="flex items-start justify-between border-b p-2">
+			<div className="flex flex-wrap gap-2">
+				<FilterDialog />
+				<FilterClear />
+				<FilterPills />
+			</div>
+			<div className="flex gap-2">
+				<Button size="sm" variant="outline" onClick={handleEdit}>
+					<Pencil className="mr-1 size-4" />
+					Edit
+				</Button>
 			</div>
 		</div>
 	);

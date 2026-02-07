@@ -1,32 +1,28 @@
 "use client";
 
 import type { WidgetConfig } from "@/lib/types/dashboard";
-import type { WidgetDataRow } from "@/lib/query/dashboard-queries";
+import type { WidgetStatRow } from "@/lib/query/dashboard-queries";
 import * as React from "react";
 
 interface WidgetNumberCardProps {
-	data: WidgetDataRow[];
+	stat: WidgetStatRow;
 	widget: WidgetConfig;
 }
 
-export function WidgetNumberCard({ data, widget }: WidgetNumberCardProps) {
-	const total = React.useMemo(() => {
-		if (!data || data.length === 0) return 0;
-		return data.reduce((sum, row) => sum + Math.abs(Number(row.aggregate)), 0);
-	}, [data]);
-
+export function WidgetNumberCard({ stat, widget }: WidgetNumberCardProps) {
 	const formatted = React.useMemo(() => {
+		const value = Number(stat.aggregate);
 		if (widget.aggregation === "count") {
 			return Intl.NumberFormat("en-US", {
 				maximumFractionDigits: 0,
-			}).format(total);
+			}).format(value);
 		}
 		return Intl.NumberFormat("en-US", {
 			style: "currency",
 			currency: "USD",
 			maximumFractionDigits: 2,
-		}).format(total);
-	}, [total, widget.aggregation]);
+		}).format(value);
+	}, [stat.aggregate, widget.aggregation]);
 
 	const label = React.useMemo(() => {
 		const parts: string[] = [];
