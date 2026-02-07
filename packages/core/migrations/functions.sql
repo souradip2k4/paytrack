@@ -291,3 +291,107 @@ FROM
 
 GRANT
 EXECUTE ON FUNCTION delete_category (UUID, BOOLEAN) TO authenticated;
+
+
+/* ========================================================================== */
+DROP FUNCTION IF EXISTS get_transaction_aggregate;
+
+-- p_user_id: user id for filtering (used when p_organization_id is NULL)
+-- p_organization_id: organization id for filtering (takes precedence over p_user_id)
+-- p_filters: JSONB array of UI filters for get_filtered_transactions
+-- p_metric: column name to group by (can be status, category_id, currency, etc.)
+-- p_interval: interval to group by (can be day, week, month)
+-- p_aggregate_fn: aggregate function (can be sum, avg, count, min, max)
+--   - sum: total amount in the bucket
+--   - avg: total amount / days in the interval (daily average for that period)
+--   - count: number of transactions in the bucket
+--   - min: minimum transaction amount in the bucket
+--   - max: maximum transaction amount in the bucket
+CREATE OR REPLACE FUNCTION get_transaction_aggregate(
+    p_user_id TEXT,
+    p_organization_id TEXT,
+    p_filters JSONB,
+    p_metric TEXT,
+    p_interval TEXT,
+    p_aggregate_fn TEXT
+)
+RETURNS TABLE (
+    period TIMESTAMP,
+    metric TEXT,
+    aggregate NUMERIC
+) SECURITY INVOKER AS $$
+DECLARE
+    clean_metric TEXT;
+    clean_interval TEXT;
+    agg_expression TEXT;
+    query_str TEXT;
+BEGIN
+    -- Validate aggregate function
+    IF p_aggregate_fn NOT IN ('sum', 'avg', 'count', 'min', 'max') THEN
+        RAISE EXCEPTION 'Invalid aggregate: %. Allowed: sum, avg, count, min, max', p_aggregate_fn;
+    END IF;
+
+    -- Validate interval
+    IF p_interval NOT IN ('day', 'week', 'month') THEN
+        RAISE EXCEPTION 'Invalid interval: %. Allowed: day, week, month', p_interval;
+    END IF;
+
+    clean_metric := quote_ident(p_metric);
+    clean_interval := quote_literal(p_interval);
+
+    -- Build the aggregation expression
+    -- For 'avg', we calculate sum / days_in_interval to get daily average
+    CASE p_aggregate_fn
+        WHEN 'sum' THEN
+            agg_expression := 'sum(tr.amount)';
+        WHEN 'avg' THEN
+            CASE p_interval
+                WHEN 'day' THEN
+                    agg_expression := 'sum(tr.amount)';  -- daily is just sum (1 day)
+                WHEN 'week' THEN
+                    agg_expression := 'sum(tr.amount) / 7.0';
+                WHEN 'month' THEN
+                    -- Use actual days in the month for that period
+                    agg_expression := 'sum(tr.amount) / EXTRACT(DAY FROM (date_trunc(''month'', min(tr.transaction_date)) + interval ''1 month'' - interval ''1 day''))';
+            END CASE;
+        WHEN 'count' THEN
+            agg_expression := 'count(*)';
+        WHEN 'min' THEN
+            agg_expression := 'min(tr.amount)';
+        WHEN 'max' THEN
+            agg_expression := 'max(tr.amount)';
+    END CASE;
+
+    query_str := format(
+        'SELECT
+            date_trunc(%s, tr.transaction_date) AS period,
+            CAST(tr.%s AS TEXT) AS metric,
+            (%s)::NUMERIC AS aggregate
+         FROM get_filtered_transactions(%L::jsonb) tr
+         WHERE
+            CASE
+                WHEN %L IS NOT NULL THEN tr.organization_id = %L
+                ELSE tr.user_id = %L AND tr.organization_id IS NULL
+            END
+         GROUP BY 1, 2
+         ORDER BY 1 DESC, 2 ASC',
+        clean_interval,
+        clean_metric,
+        agg_expression,
+        p_filters,
+        p_organization_id,
+        p_organization_id,
+        p_user_id
+    );
+
+    RETURN QUERY EXECUTE query_str;
+END;
+$$ LANGUAGE plpgsql STABLE;
+
+REVOKE ALL ON FUNCTION get_transaction_aggregate (TEXT, TEXT, JSONB, TEXT, TEXT, TEXT)
+FROM
+    anon,
+    authenticated;
+
+GRANT
+EXECUTE ON FUNCTION get_transaction_aggregate (TEXT, TEXT, JSONB, TEXT, TEXT, TEXT) TO authenticated;
