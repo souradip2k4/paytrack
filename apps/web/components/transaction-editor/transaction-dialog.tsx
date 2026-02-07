@@ -25,9 +25,12 @@ import {
 } from "@budgetbee/ui/core/tooltip";
 
 import currenciesJson from "@/lib/currencies.json";
+import { evaluateExpression } from "@/lib/math-parser";
+import { useCategories } from "@/lib/query";
 import { useStore } from "@/lib/store/store";
-import { cn } from "@budgetbee/ui/lib/utils";
 import { getDb } from "@budgetbee/core/db";
+import { Kbd } from "@budgetbee/ui/core/kbd";
+import { cn } from "@budgetbee/ui/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -36,15 +39,31 @@ import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
-import { Kbd } from "@budgetbee/ui/core/kbd";
 import { CurrencyPicker } from "./currency-picker";
 import { StatusPicker } from "./status-picker";
-import { useCategories } from "@/lib/query";
 
 const schema = z.object({
 	name: z.string().max(50).optional(),
 	currency: z.string().length(3),
-	amount: z.number("*Required"),
+	amount: z.union([z.string(), z.number()]).transform((val, ctx) => {
+		if (typeof val === "number") return val;
+		if (val === "") {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "Required",
+			});
+			return z.NEVER;
+		}
+		try {
+			return evaluateExpression(val);
+		} catch (e) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "Invalid expression",
+			});
+			return z.NEVER;
+		}
+	}),
 	transaction_date: z.coerce.date().optional(),
 	status: z.enum(["paid", "pending", "overdue"]).default("paid"),
 	category_id: z.string().optional(),
@@ -96,7 +115,7 @@ export function TransactionDialog() {
 		},
 	});
 
-	const { data: categories } = useCategories()
+	const { data: categories } = useCategories();
 
 	const [defaultLocalCurrency, _] = useLocalStorage(
 		"last_used_currency",
@@ -109,7 +128,9 @@ export function TransactionDialog() {
 		reset,
 		control,
 		watch,
-		formState: { isValid },
+		setValue,
+		trigger,
+		formState: { isValid, errors },
 	} = useForm({
 		resolver: zodResolver(schema),
 		defaultValues: {
@@ -171,10 +192,34 @@ export function TransactionDialog() {
 								id={amountId}
 								className="peer w-full pe-12 ps-12"
 								placeholder="Transaction amount (eg, -57.21)"
-								type="number"
+								type="text"
+								aria-invalid={!!errors.amount}
+								onKeyDown={async e => {
+									if (e.key !== "Enter") return;
+									const val = e.currentTarget.value;
+									try {
+										const result = evaluateExpression(val);
+										setValue("amount", result);
+										await trigger("amount");
+									} catch (e) {
+										// Allow the user to see the invalid expression so they can fix it
+										await trigger("amount");
+									}
+								}}
 								{...register("amount", {
-									valueAsNumber: true,
 									required: true,
+									onBlur: async e => {
+										const val = e.target.value;
+										try {
+											const result =
+												evaluateExpression(val);
+											setValue("amount", result);
+											await trigger("amount");
+										} catch (e) {
+											// Allow the user to see the invalid expression so they can fix it
+											await trigger("amount");
+										}
+									},
 								})}
 							/>
 
@@ -265,12 +310,12 @@ export function TransactionDialog() {
 									value ?
 										value instanceof Date ?
 											value
-											: new Date(value as string)
-										: undefined;
+										:	new Date(value as string)
+									:	undefined;
 								const formatedDate =
 									date ?
 										format(date, "dd MMM yyyy")
-										: "Pick a date";
+									:	"Pick a date";
 								return (
 									<DatePicker
 										modal
@@ -395,7 +440,9 @@ export function TransactionDialog() {
 													variant="outline"
 													className="gap-1.5 rounded-full capitalize">
 													<React.Fragment>
-														{categories?.find(c => c.id === value)?.name ?? "Category"}
+														{categories?.find(
+															c => c.id === value,
+														)?.name ?? "Category"}
 													</React.Fragment>
 												</Badge>
 											</TooltipTrigger>
