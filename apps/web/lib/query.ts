@@ -6,7 +6,10 @@ import {
 } from "@/lib/store";
 import { authClient } from "@budgetbee/core/auth-client";
 import { getDb } from "@budgetbee/core/db";
-import { PostgrestFilterBuilder, PostgrestSingleResponse } from "@supabase/postgrest-js";
+import {
+	PostgrestFilterBuilder,
+	PostgrestSingleResponse,
+} from "@supabase/postgrest-js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { toast } from "sonner";
@@ -42,17 +45,14 @@ export const useSubscriptions = () => {
 };
 
 export const useCategories = () => {
-	const { data } = authClient.useSession();
+	const { withAuth, user_id, active_organization_id } = useAuthGuard();
 	const query = useQuery({
-		queryKey: ["cat", "get", data?.user?.id],
+		queryKey: ["cat", "get", user_id, active_organization_id],
 		queryFn: async () => {
-			if (!data || !data.user.id) return [];
+			if (!user_id) return [];
 			const db = await getDb();
-			const res = await db
-				.from("categories")
-				.select("*")
-				.eq("user_id", data.user.id)
-				.order("name");
+			const query = db.from("categories").select("*").order("name");
+			const res = await withAuth(query);
 			if (res.error) return [];
 			return res.data;
 		},
@@ -64,10 +64,11 @@ export const useCategoryMap = () => {
 	const { data } = useCategories();
 	return React.useMemo(() => {
 		if (!data) return new Map();
+		// @ts-ignore
 		return data.reduce((acc, cat) => {
 			acc.set(cat.id, cat);
 			return acc;
-		}, new Map<string, typeof data[0]>());
+		}, new Map<string, (typeof data)[0]>());
 	}, [data]);
 };
 
@@ -110,7 +111,8 @@ export const useCategoryMutation = () => {
 						p_category_id: data.payload.id,
 						p_cascade_delete: true,
 						p_user_id: authData.user?.id,
-						p_organization_id: authData.session?.activeOrganizationId,
+						p_organization_id:
+							authData.session?.activeOrganizationId,
 					});
 				} else {
 					res = await db
@@ -161,35 +163,36 @@ export const useCategoryMutation = () => {
 };
 
 export const useTransactions = () => {
-	const { data: authData, error: authError } = authClient.useSession();
+	const { error: authError } = authClient.useSession();
 
 	const filterStack = useFilterStore(s => s.filter_stack);
 	const pageSize = useDisplayStore(s => s.display_page_size);
 	const applyFilter = useFilterStore(s => s.filter_apply);
 	const applyDisplay = useDisplayStore(s => s.apply_display);
-	const applyAuth = useAuth();
+
+	const { withAuth, user_id, active_organization_id } = useAuthGuard();
 
 	const query = useQuery<any>({
-		queryKey: ["tr", "get", filterStack, pageSize],
+		queryKey: [
+			"tr",
+			"get",
+			filterStack,
+			pageSize,
+			user_id,
+			active_organization_id,
+		],
 		queryFn: async () => {
-			if (authData === null) return [];
-
+			if (!user_id) return [];
 			const db = await getDb();
-			const query = applyAuth(db
-				.from("transactions")
-				.select("*")
-			);
-
-			const res = await applyDisplay(applyFilter(applyAuth(query)));
-
+			const query = db.from("transactions").select("*");
+			const res = await applyDisplay(applyFilter(withAuth(query)));
 			if (res.error) {
 				toast.error("Failed to fetch transactions");
 				return [];
 			}
-
 			return res.data;
 		},
-		enabled: authError === null && authData !== null,
+		enabled: authError === null && user_id !== null,
 	});
 
 	return query;
@@ -236,14 +239,61 @@ export const useTransactionDistributionByCategories = () => {
 
 export const useAuth = () => {
 	const { data: authData, error: authError } = authClient.useSession();
-	const withAuth = React.useCallback((query: PostgrestFilterBuilder<{ PostgrestVersion: "12" }, any, any, any>) => {
-		if (authError) throw authError
-		if (!authData?.session?.activeOrganizationId) {
-			query.is("organization_id", null).eq("user_id", authData?.user?.id);
-		} else {
-			query.eq("organization_id", authData?.session?.activeOrganizationId);
-		}
-		return query;
-	}, [authData])
+	const withAuth = React.useCallback(
+		(
+			query: PostgrestFilterBuilder<
+				{ PostgrestVersion: "12" },
+				any,
+				any,
+				any
+			>,
+		) => {
+			if (authError) throw authError;
+			if (!authData?.session?.activeOrganizationId) {
+				query
+					.is("organization_id", null)
+					.eq("user_id", authData?.user?.id);
+			} else {
+				query.eq(
+					"organization_id",
+					authData?.session?.activeOrganizationId,
+				);
+			}
+			return query;
+		},
+		[authData],
+	);
 	return withAuth;
+};
+
+export const useAuthGuard = () => {
+	const { data: authData, error: authError } = authClient.useSession();
+	const withAuth = React.useCallback(
+		(
+			query: PostgrestFilterBuilder<
+				{ PostgrestVersion: "12" },
+				any,
+				any,
+				any
+			>,
+		) => {
+			if (authError) throw authError;
+			if (!authData?.session?.activeOrganizationId) {
+				return query
+					.is("organization_id", null)
+					.eq("user_id", authData?.user?.id);
+			} else {
+				return query.eq(
+					"organization_id",
+					authData?.session?.activeOrganizationId,
+				);
+			}
+		},
+		[authData?.session?.activeOrganizationId, authData?.user?.id],
+	);
+	return {
+		withAuth,
+		user_id: authData?.user?.id,
+		active_organization_id: authData?.session?.activeOrganizationId,
+	};
 };
