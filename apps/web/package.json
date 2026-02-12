@@ -82,6 +82,7 @@
 		"tailwind-merge": "^3.2.0",
 		"tailwindcss": "^4.1.4",
 		"tailwindcss-animate": "^1.0.7",
+		"xlsx": "https://cdn.sheetjs.com/xlsx-latest/xlsx-latest.tgz",
 		"zod": "^4.3.6",
 		"zustand": "^5.0.3"
 	},

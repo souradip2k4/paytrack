@@ -1,4 +1,5 @@
 import { DateFormatPicker } from "@/components/settings/date-format-picker";
+import { ExportTransactions } from "@/components/settings/export-transactions";
 import { ThemeRadioGroup } from "@/components/theme-radio-group";
 import { Separator } from "@budgetbee/ui/core/separator";
 
@@ -18,6 +19,18 @@ export default function Page() {
 				<h3>Date and time</h3>
 			</div>
 			<DateFormatPicker />
+			<Separator className="col-span-2 my-4" />
+
+			<div>
+				<h3>Export Transactions</h3>
+				<p className="text-muted-foreground">
+					Download your transactions in CSV, Excel, or JSON format.
+				</p>
+			</div>
+			<div className="flex items-center gap-1">
+				<div className="grow" />
+				<ExportTransactions />
+			</div>
 			<Separator className="col-span-2 my-4" />
 		</div>
 	);
