@@ -2,6 +2,13 @@
 
 import { Checkbox } from "@budgetbee/ui/core/checkbox";
 import {
+	ContextMenu,
+	ContextMenuContent,
+	ContextMenuItem,
+	ContextMenuSeparator,
+	ContextMenuTrigger,
+} from "@budgetbee/ui/core/context-menu";
+import {
 	Empty,
 	EmptyDescription,
 	EmptyHeader,
@@ -17,14 +24,20 @@ import {
 	TableRow,
 } from "@budgetbee/ui/core/table";
 
-import { useTransactions } from "@/lib/query";
+import {
+	useCategoryMap,
+	useTransactionMutation,
+	useTransactions,
+} from "@/lib/query";
 import { useDisplayStore, useStore } from "@/lib/store";
 import { cn } from "@budgetbee/ui/lib/utils";
 import {
+	Cell,
 	ColumnDef,
 	ColumnFiltersState,
 	ColumnPinningState,
 	GroupingState,
+	Row,
 	SortingState,
 	flexRender,
 	getCoreRowModel,
@@ -40,10 +53,14 @@ import {
 	ArrowUp,
 	ChevronDown,
 	ChevronRight,
+	ClipboardCopy,
 	FolderOpen,
 	LoaderCircle,
+	Plus,
+	Trash2,
 } from "lucide-react";
 import React from "react";
+import { toast } from "sonner";
 import { ColumnHeaderMenu } from "./column-header-menu";
 import {
 	EditableAmountCell,
@@ -198,6 +215,90 @@ function getCommonPinningStyles(column: {
 	};
 }
 
+function getCellDisplayValue(
+	cell: Cell<any, unknown>,
+	categoryMap: Map<string, any>,
+): string {
+	const columnId = cell.column.id;
+	const value = cell.getValue();
+
+	if (columnId === "category_id") {
+		const cat = categoryMap.get(value as string);
+		return cat?.name ?? "";
+	}
+
+	if (value instanceof Date) return value.toISOString();
+	if (value == null) return "";
+	return String(value);
+}
+
+function CellContextMenu({
+	cell,
+	row,
+	children,
+}: {
+	cell: Cell<any, unknown>;
+	row: Row<any>;
+	children: React.ReactNode;
+}) {
+	const categoryMap = useCategoryMap();
+	const { mutate } = useTransactionMutation();
+
+	const handleCopy = () => {
+		const text = getCellDisplayValue(cell, categoryMap);
+		navigator.clipboard.writeText(text);
+		toast.success("Copied to clipboard");
+	};
+
+	const handleInsert = (position: "above" | "below") => {
+		const currentDate = row.original.transaction_date;
+		mutate({
+			type: "create",
+			payload: {
+				amount: 0,
+				status: "paid",
+				name: "",
+				transaction_date: currentDate ?? new Date().toISOString(),
+			},
+		});
+		toast.success(`Row added ${position}`);
+	};
+
+	const handleDelete = () => {
+		mutate({
+			type: "delete",
+			payload: { id: row.original.id },
+		});
+		toast.success("Transaction deleted");
+	};
+
+	return (
+		<ContextMenu>
+			<ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
+			<ContextMenuContent>
+				<ContextMenuItem onClick={handleCopy}>
+					<ClipboardCopy />
+					Copy value
+				</ContextMenuItem>
+				<ContextMenuSeparator />
+				<ContextMenuItem onClick={() => handleInsert("above")}>
+					<Plus />
+					Insert row above
+				</ContextMenuItem>
+				<ContextMenuItem onClick={() => handleInsert("below")}>
+					<Plus />
+					Insert row below
+				</ContextMenuItem>
+				<ContextMenuSeparator />
+				<ContextMenuItem variant="destructive" onClick={handleDelete}>
+					<Trash2 />
+					Delete row
+				</ContextMenuItem>
+			</ContextMenuContent>
+		</ContextMenu>
+	);
+}
+
 export function TransactionsTableV2() {
 	const { data, isLoading } = useTransactions();
 	const transactions = React.useMemo(() => data || [], [data]);
@@ -289,7 +390,9 @@ export function TransactionsTableV2() {
 			ref={scrollRef}
 			className="max-h-[calc(100vh-6rem)] overflow-auto"
 			style={columnSizeVars as React.CSSProperties}>
-			<Table style={{ minWidth: `${table.getTotalSize()}px` }}>
+			<Table
+				style={{ minWidth: `${table.getTotalSize()}px` }}
+				className="border-b">
 				<TableHeader className="bg-card sticky top-0 z-10">
 					{table.getHeaderGroups().map(headerGroup => (
 						<TableRow key={headerGroup.id}>
@@ -403,56 +506,79 @@ export function TransactionsTableV2() {
 											getCommonPinningStyles(cell.column);
 										const isPinned =
 											cell.column.getIsPinned();
-										return (
-											<TableCell
-												key={cell.id}
-												className={cn(
-													"not-last:border-r flex items-center p-0 [&:has(>[role='checkbox'])]:justify-center",
-													isPinned && "bg-card",
-												)}
-												style={{
-													width: `var(--col-${cell.column.id}-size)`,
-													minWidth: `var(--col-${cell.column.id}-size)`,
-													maxWidth: `var(--col-${cell.column.id}-size)`,
-													height: `${virtualRow.size}px`,
-													...pinStyles,
-												}}>
-												{cell.getIsGrouped() ?
-													<button
-														onClick={row.getToggleExpandedHandler()}
-														className="flex h-full w-full items-center gap-1 px-2">
-														{row.getIsExpanded() ?
-															<ChevronDown className="size-4 shrink-0" />
-														:	<ChevronRight className="size-4 shrink-0" />
-														}
-														{flexRender(
-															cell.column
-																.columnDef.cell,
-															cell.getContext(),
-														)}
-														<span className="text-muted-foreground ml-1 shrink-0 text-xs">
-															(
-															{row.subRows.length}
-															)
-														</span>
-													</button>
-												: cell.getIsAggregated() ?
-													flexRender(
-														cell.column.columnDef
-															.aggregatedCell ??
-															cell.column
-																.columnDef.cell,
-														cell.getContext(),
-													)
-												: cell.getIsPlaceholder() ?
-													null
-												:	flexRender(
+
+										const cellContent =
+											cell.getIsGrouped() ?
+												<button
+													onClick={row.getToggleExpandedHandler()}
+													className="flex h-full w-full items-center gap-1 px-2">
+													{row.getIsExpanded() ?
+														<ChevronDown className="size-4 shrink-0" />
+													:	<ChevronRight className="size-4 shrink-0" />
+													}
+													{flexRender(
 														cell.column.columnDef
 															.cell,
 														cell.getContext(),
-													)
-												}
-											</TableCell>
+													)}
+													<span className="text-muted-foreground ml-1 shrink-0 text-xs">
+														({row.subRows.length})
+													</span>
+												</button>
+											: cell.getIsAggregated() ?
+												flexRender(
+													cell.column.columnDef
+														.aggregatedCell ??
+														cell.column.columnDef
+															.cell,
+													cell.getContext(),
+												)
+											: cell.getIsPlaceholder() ? null
+											: flexRender(
+													cell.column.columnDef.cell,
+													cell.getContext(),
+												);
+
+										if (cell.column.id === "select") {
+											return (
+												<TableCell
+													key={cell.id}
+													className={cn(
+														"not-last:border-r flex items-center p-0 [&:has(>[role='checkbox'])]:justify-center",
+														isPinned && "bg-card",
+													)}
+													style={{
+														width: `var(--col-${cell.column.id}-size)`,
+														minWidth: `var(--col-${cell.column.id}-size)`,
+														maxWidth: `var(--col-${cell.column.id}-size)`,
+														height: `${virtualRow.size}px`,
+														...pinStyles,
+													}}>
+													{cellContent}
+												</TableCell>
+											);
+										}
+
+										return (
+											<CellContextMenu
+												key={cell.id}
+												cell={cell}
+												row={row}>
+												<TableCell
+													className={cn(
+														"not-last:border-r flex items-center p-0",
+														isPinned && "bg-card",
+													)}
+													style={{
+														width: `var(--col-${cell.column.id}-size)`,
+														minWidth: `var(--col-${cell.column.id}-size)`,
+														maxWidth: `var(--col-${cell.column.id}-size)`,
+														height: `${virtualRow.size}px`,
+														...pinStyles,
+													}}>
+													{cellContent}
+												</TableCell>
+											</CellContextMenu>
 										);
 									})}
 								</TableRow>
@@ -462,7 +588,7 @@ export function TransactionsTableV2() {
 							<TableCell
 								colSpan={columnSpan}
 								className="h-[50vh] p-0 text-center">
-								<Empty className="from-muted/50 to-background h-full bg-gradient-to-b from-30%">
+								<Empty className="from-muted/50 to-background bg-linear-to-b h-full from-30%">
 									<EmptyHeader>
 										<EmptyMedia variant="icon">
 											<FolderOpen className="size-4" />

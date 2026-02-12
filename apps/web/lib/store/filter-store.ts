@@ -9,7 +9,8 @@ export type FilterFields =
 	| "status"
 	| "created_at"
 	| "updated_at"
-	| "transaction_date";
+	| "transaction_date"
+	| "user";
 export type FilterOperations =
 	| "eq"
 	| "gt"
@@ -31,6 +32,7 @@ export const allowed_operations_map: Record<FilterFields, FilterOperations[]> =
 		created_at: ["from", "to", "between"],
 		updated_at: ["from", "to", "between"],
 		transaction_date: ["from", "to", "between"],
+		user: ["is", "is not", "is empty"],
 	};
 
 /**
@@ -148,6 +150,7 @@ export const useFilterStore = create<FilterStore>()(
 					created_at: "created_at",
 					updated_at: "updated_at",
 					transaction_date: "transaction_date",
+					user: "user_id",
 				};
 
 				for (const { field, operation, values } of get().filter_stack) {
@@ -166,7 +169,7 @@ export const useFilterStore = create<FilterStore>()(
 						continue;
 					}
 
-					if (field === "category" || field === "status") {
+					if (field === "category" || field === "status" || field === "user") {
 						if (operation === "is empty") {
 							q.is(mapped_field, null);
 							continue;
@@ -230,11 +233,40 @@ export const useFilterStore = create<FilterStore>()(
 	),
 );
 
+/**
+ * If no transaction_date filter exists in the serialized stack,
+ * injects a default "from" filter set to 1 year ago.
+ * This acts as a soft cap — user-applied date filters override it.
+ */
+export const withDefaultDateRange = (
+	serialized: ReturnType<typeof serializeFilterStack>,
+) => {
+	const hasDateFilter = serialized.some(
+		f => f.field === "transaction_date",
+	);
+	if (hasDateFilter) return serialized;
+
+	const oneYearAgo = new Date();
+	oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+	oneYearAgo.setHours(0, 0, 0, 0);
+
+	return [
+		...serialized,
+		{
+			field: "transaction_date" as const,
+			operation: "from" as const,
+			value: oneYearAgo,
+		},
+	];
+};
+
 export const serializeFilterStack = (stack: FilterStackItem[]) => {
 	return stack.map(stackItem => {
 		const field = stackItem.field;
-		let value = [];
-		if (field === "category" || field === "status")
+		let value: any = [];
+		if (field === "category" || field === "status" || field === "user")
+			value = stackItem.values.map(v => v.value);
+		else if (stackItem.operation === "between")
 			value = stackItem.values.map(v => v.value);
 		else value = stackItem.values[0]?.value;
 		return {

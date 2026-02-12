@@ -16,7 +16,12 @@ export function FilterOperationSelect({ idx }: { idx: number }) {
 	const operations = availableOperations[stack[idx].field];
 	const setOperation = (value: FilterOperations, idx: number) =>
 		useFilterStore.setState(s => {
-			s.filter_stack[idx].operation = value;
+			const entry = s.filter_stack[idx];
+			entry.operation = value;
+			// When switching away from "between", keep only the first value
+			if (value !== "between" && entry.values.length > 1) {
+				entry.values = [entry.values[0]];
+			}
 			return { ...s, filter_stack: [...s.filter_stack] };
 		});
 	return (

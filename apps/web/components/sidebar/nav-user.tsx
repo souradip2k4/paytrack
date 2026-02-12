@@ -3,6 +3,7 @@
 import { TUseSession } from "@/lib/query";
 import { useStore } from "@/lib/store";
 import { avatarUrl } from "@/lib/utils";
+import { isTeamsOrHigher } from "@budgetbee/billing";
 import { authClient } from "@budgetbee/core/auth-client";
 import { Avatar, AvatarFallback, AvatarImage } from "@budgetbee/ui/core/avatar";
 import { Badge } from "@budgetbee/ui/core/badge";
@@ -59,8 +60,6 @@ export function NavUser() {
 		window.location.reload();
 	};
 
-
-
 	const initial = React.useMemo(
 		() => getInitials(authData?.user?.name),
 		[authData],
@@ -84,8 +83,9 @@ export function NavUser() {
 							className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
 							{isSessionLoading || isOrganizationsLoading ?
 								<Skeleton className="bg-secondary-foreground/20 h-8 w-8 rounded-full" />
-								: <Avatar className="h-8 w-8 rounded-lg">
-									{!authData?.session.activeOrganizationId && (
+							:	<Avatar className="h-8 w-8 rounded-lg">
+									{!authData?.session
+										.activeOrganizationId && (
 										<AvatarImage
 											src={avatarUrl(
 												authData?.user.image,
@@ -94,7 +94,12 @@ export function NavUser() {
 										/>
 									)}
 									<AvatarFallback className="rounded-lg">
-										{!authData?.session.activeOrganizationId ? initial : getInitials(activeOrganizationName)}
+										{(
+											!authData?.session
+												.activeOrganizationId
+										) ?
+											initial
+										:	getInitials(activeOrganizationName)}
 									</AvatarFallback>
 								</Avatar>
 							}
@@ -102,14 +107,14 @@ export function NavUser() {
 							<div className="grid flex-1 text-left text-sm leading-tight">
 								{isSessionLoading || isOrganizationsLoading ?
 									<Skeleton className="bg-secondary-foreground/20 h-3 w-12" />
-									: <span className="truncate">
+								:	<span className="truncate">
 										{activeOrganizationName ||
 											authData?.user.name}
 									</span>
 								}
 								{isSessionLoading ?
 									<Skeleton className="bg-secondary-foreground/20 mt-1 h-3 w-full" />
-									: <span className="text-muted-foreground truncate text-xs">
+								:	<span className="text-muted-foreground truncate text-xs">
 										{authData?.user.email}
 									</span>
 								}
@@ -126,7 +131,7 @@ export function NavUser() {
 							<div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
 								{isSessionLoading ?
 									<Skeleton className="bg-secondary-foreground/20 h-8 w-8 rounded-full" />
-									: <Avatar className="h-8 w-8 rounded-lg">
+								:	<Avatar className="h-8 w-8 rounded-lg">
 										<AvatarImage
 											src={avatarUrl(
 												authData?.user.image,
@@ -141,13 +146,13 @@ export function NavUser() {
 								<div className="grid flex-1 text-left text-sm leading-tight">
 									{isSessionLoading ?
 										<Skeleton className="bg-secondary-foreground/20 h-3 w-12" />
-										: <span className="truncate">
+									:	<span className="truncate">
 											{authData?.user.name}
 										</span>
 									}
 									{isSessionLoading ?
 										<Skeleton className="bg-secondary-foreground/20 mt-1 h-3 w-full" />
-										: <span className="text-muted-foreground truncate text-xs">
+									:	<span className="text-muted-foreground truncate text-xs">
 											{authData?.user.email}
 										</span>
 									}
@@ -213,11 +218,16 @@ export function NavUser() {
 									<span className="flex-1 truncate">
 										Create organization
 									</span>
-									{!authData?.subscription?.isSubscribed ?
+									{(
+										!authData?.subscription?.isSubscribed &&
+										!isTeamsOrHigher(
+											authData?.subscription?.productId,
+										)
+									) ?
 										<Badge className="border-none bg-gradient-to-tr from-green-200/75 via-green-500/75 to-teal-500/75">
-											PRO
+											TEAM
 										</Badge>
-										: null}
+									:	null}
 								</Link>
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
@@ -229,7 +239,7 @@ export function NavUser() {
 									<ReceiptCent />
 									View billing portal
 								</DropdownMenuItem>
-								: <DropdownMenuItem
+							:	<DropdownMenuItem
 									onClick={() =>
 										useStore.setState({
 											modal_upgrade_plan_open: true,

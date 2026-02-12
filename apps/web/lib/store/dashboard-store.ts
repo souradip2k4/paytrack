@@ -1,7 +1,10 @@
-import { create } from "zustand";
 import type { WidgetConfig } from "@/lib/types/dashboard";
+import { create } from "zustand";
 
 export type DashboardStore = {
+	create_dashboard_dialog_open: boolean;
+	set_create_dashboard_dialog_open: (open: boolean) => void;
+
 	// Editing state
 	isEditing: boolean;
 	setIsEditing: (editing: boolean) => void;
@@ -23,23 +26,27 @@ export type DashboardStore = {
 	resetDraft: (widgets: WidgetConfig[]) => void;
 };
 
-export const useDashboardStore = create<DashboardStore>()((set) => ({
+export const useDashboardStore = create<DashboardStore>()(set => ({
+	create_dashboard_dialog_open: false,
+	set_create_dashboard_dialog_open: (create_dashboard_dialog_open: boolean) =>
+		set({ create_dashboard_dialog_open }),
+
 	isEditing: false,
-	setIsEditing: (editing) => set({ isEditing: editing }),
+	setIsEditing: editing => set({ isEditing: editing }),
 
 	draftWidgets: [],
-	setDraftWidgets: (widgets) => set({ draftWidgets: widgets }),
+	setDraftWidgets: widgets => set({ draftWidgets: widgets }),
 
 	updateWidgetLayout: (id, layout) =>
-		set((state) => ({
-			draftWidgets: state.draftWidgets.map((w) =>
-				w.id === id ? { ...w, layout } : w
+		set(state => ({
+			draftWidgets: state.draftWidgets.map(w =>
+				w.id === id ? { ...w, layout } : w,
 			),
 		})),
 
-	saveWidget: (widget) =>
-		set((state) => {
-			const idx = state.draftWidgets.findIndex((w) => w.id === widget.id);
+	saveWidget: widget =>
+		set(state => {
+			const idx = state.draftWidgets.findIndex(w => w.id === widget.id);
 			if (idx >= 0) {
 				const next = [...state.draftWidgets];
 				next[idx] = widget;
@@ -48,15 +55,17 @@ export const useDashboardStore = create<DashboardStore>()((set) => ({
 			return { draftWidgets: [...state.draftWidgets, widget] };
 		}),
 
-	deleteWidget: (id) =>
-		set((state) => ({
-			draftWidgets: state.draftWidgets.filter((w) => w.id !== id),
+	deleteWidget: id =>
+		set(state => ({
+			draftWidgets: state.draftWidgets.filter(w => w.id !== id),
 		})),
 
 	settingsOpen: false,
 	settingsWidget: null,
-	openWidgetSettings: (widget) => set({ settingsOpen: true, settingsWidget: widget }),
-	closeWidgetSettings: () => set({ settingsOpen: false, settingsWidget: null }),
+	openWidgetSettings: widget =>
+		set({ settingsOpen: true, settingsWidget: widget }),
+	closeWidgetSettings: () =>
+		set({ settingsOpen: false, settingsWidget: null }),
 
-	resetDraft: (widgets) => set({ draftWidgets: widgets, isEditing: false }),
+	resetDraft: widgets => set({ draftWidgets: widgets, isEditing: false }),
 }));

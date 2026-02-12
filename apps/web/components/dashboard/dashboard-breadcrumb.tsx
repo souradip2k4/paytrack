@@ -22,8 +22,10 @@ export function DashboardBreadcrumb() {
 			<BreadcrumbList>
 				<BreadcrumbItem>
 					<BreadcrumbLink asChild>
-						<Link href="/dashboards" className="flex items-center gap-1.5">
-							<LayoutDashboard className="size-3.5" />
+						<Link
+							href="/dashboards"
+							className="flex items-center gap-2 text-sm">
+							<LayoutDashboard className="m-1 size-4" />
 							Dashboards
 						</Link>
 					</BreadcrumbLink>

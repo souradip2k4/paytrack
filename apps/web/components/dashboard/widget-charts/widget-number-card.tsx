@@ -1,7 +1,7 @@
 "use client";
 
-import type { WidgetConfig } from "@/lib/types/dashboard";
 import type { WidgetStatRow } from "@/lib/query/dashboard-queries";
+import type { WidgetConfig } from "@/lib/types/dashboard";
 import * as React from "react";
 
 interface WidgetNumberCardProps {
@@ -17,19 +17,22 @@ export function WidgetNumberCard({ stat, widget }: WidgetNumberCardProps) {
 				maximumFractionDigits: 0,
 			}).format(value);
 		}
-		return Intl.NumberFormat("en-US", {
-			style: "currency",
-			currency: "USD",
-			maximumFractionDigits: 2,
-		}).format(value);
+		return Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(
+			value,
+		);
 	}, [stat.aggregate, widget.aggregation]);
 
 	const label = React.useMemo(() => {
 		const parts: string[] = [];
 		if (widget.aggregation) {
-			parts.push(widget.aggregation.charAt(0).toUpperCase() + widget.aggregation.slice(1));
+			parts.push(
+				widget.aggregation.charAt(0).toUpperCase() +
+					widget.aggregation.slice(1),
+			);
 		}
-		parts.push(widget.metric.charAt(0).toUpperCase() + widget.metric.slice(1));
+		parts.push(
+			widget.metric.charAt(0).toUpperCase() + widget.metric.slice(1),
+		);
 		return parts.join(" ");
 	}, [widget.aggregation, widget.metric]);
 

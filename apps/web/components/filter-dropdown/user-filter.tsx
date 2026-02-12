@@ -1,5 +1,9 @@
-import { useCategories } from "@/lib/query";
+"use client";
+
 import { useFilterStore } from "@/lib/store";
+import { avatarUrl } from "@/lib/utils";
+import { authClient } from "@budgetbee/core/auth-client";
+import { Avatar, AvatarFallback, AvatarImage } from "@budgetbee/ui/core/avatar";
 import { Checkbox } from "@budgetbee/ui/core/checkbox";
 import {
 	Command,
@@ -9,13 +13,21 @@ import {
 	CommandItem,
 	CommandList,
 } from "@budgetbee/ui/core/command";
+import { useQuery } from "@tanstack/react-query";
 import { LoaderIcon } from "lucide-react";
-import { CategoryBadge } from "../category-badge";
 
-export function CategoryFilter({ id }: { id: string }) {
-	const { data, isLoading } = useCategories();
+export function UserFilter({ id }: { id: string }) {
 	const stack = useFilterStore(s => s.filter_stack);
 	const toggle = useFilterStore(s => s.filter_toggle);
+
+	const { data, isLoading } = useQuery({
+		queryKey: ["organizations", "members", "filter"],
+		queryFn: async () => {
+			const res = await authClient.organization.listMembers();
+			if (res.error) throw new Error(res.error.message);
+			return res.data?.members ?? [];
+		},
+	});
 
 	return (
 		<Command>
@@ -34,36 +46,44 @@ export function CategoryFilter({ id }: { id: string }) {
 				)}
 
 				<CommandGroup>
-					{data?.map((c, i) => {
+					{data?.map((member, i) => {
 						const idx = stack.findIndex(x => x.id === id);
 						const checked =
 							idx >= 0 ?
 								stack[idx].values.findIndex(
-									x => x.id === c.id,
+									x => x.id === member.userId,
 								) >= 0
 							:	false;
 						return (
 							<CommandItem
 								key={i}
-								value={c.id}
-								keywords={[c.name]}
+								value={member.userId}
+								keywords={[
+									member.user.name,
+									member.user.email,
+								]}
 								onSelect={() =>
 									toggle(
-										"category",
+										"user",
 										"is",
 										{
-											id: c.id,
-											label: c.name,
-											value: c.id,
+											id: member.userId,
+											label: member.user.name,
+											value: member.userId,
 										},
 										id,
 									)
 								}>
 								<Checkbox aria-disabled checked={checked} />
-								<CategoryBadge
-									category={c.name}
-									color={c.color}
-								/>
+								<Avatar className="size-5">
+									<AvatarImage
+										src={avatarUrl(member.user.image)}
+									/>
+									<AvatarFallback className="text-[10px]">
+										{member.user.name?.charAt(0)}
+									</AvatarFallback>
+								</Avatar>
+								{member.user.name}
 							</CommandItem>
 						);
 					})}

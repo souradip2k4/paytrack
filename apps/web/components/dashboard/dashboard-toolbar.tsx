@@ -86,7 +86,7 @@ export function DashboardToolbar({ dashboard }: DashboardToolbarProps) {
 					<Button
 						size="sm"
 						onClick={handleSave}
-						disabled={mutation.isPending}>
+						isLoading={mutation.isPending}>
 						<Save className="size-4" />
 						Save
 					</Button>

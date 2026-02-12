@@ -13,10 +13,15 @@ import {
 } from "@budgetbee/ui/core/card";
 import { LayoutDashboard, Trash2 } from "lucide-react";
 import Link from "next/link";
+import * as React from "react";
 
 export default function DashboardsPage() {
 	const { data: dashboards, isLoading } = useDashboardViews();
-	const mutation = useDashboardMutation();
+	const { mutateAsync: deleteDashboard, isPending: isDeleting } =
+		useDashboardMutation();
+
+	// only used to show loading state
+	const [deleteId, setDeleteId] = React.useState<string | null>(null);
 
 	const handleDelete = (
 		id: string,
@@ -24,7 +29,8 @@ export default function DashboardsPage() {
 	) => {
 		e.preventDefault();
 		e.stopPropagation();
-		mutation.mutate({ type: "delete", payload: { id } });
+		setDeleteId(id);
+		deleteDashboard({ type: "delete", payload: { id } });
 	};
 
 	return (
@@ -52,6 +58,9 @@ export default function DashboardsPage() {
 										variant="ghost"
 										size="icon"
 										className="size-7"
+										isLoading={
+											isDeleting && deleteId === d.id
+										}
 										onClick={(
 											e: React.MouseEvent<HTMLButtonElement>,
 										) => handleDelete(d.id, e)}>

@@ -283,7 +283,9 @@ export type TransactionMutationProps =
 	| { type: "bulk_delete"; payload: { ids: string[] } }
 	| {
 			type: "bulk_update";
-			payload: { updates: { id: string; patch: Record<string, unknown> }[] };
+			payload: {
+				updates: { id: string; patch: Record<string, unknown> }[];
+			};
 	  };
 
 export const useTransactionMutation = () => {
@@ -402,8 +404,7 @@ export const useTransactionMutation = () => {
 					localDb.mutation_queue,
 					async () => {
 						for (const { id, patch } of data.payload.updates) {
-							const existing =
-								await localDb.transactions.get(id);
+							const existing = await localDb.transactions.get(id);
 							const diff = computePatch(
 								(existing ?? {}) as Record<string, unknown>,
 								patch,

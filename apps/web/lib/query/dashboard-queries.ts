@@ -1,4 +1,8 @@
-import { serializeFilterStack, useFilterStore } from "@/lib/store/filter-store";
+import {
+	serializeFilterStack,
+	useFilterStore,
+	withDefaultDateRange,
+} from "@/lib/store/filter-store";
 import {
 	computePatch,
 	enqueueMutation,
@@ -39,7 +43,9 @@ export const useDashboardViews = () => {
 
 			// Sort newest first by created_at
 			records.sort((a, b) =>
-				(b.created_at as string ?? "").localeCompare(a.created_at as string ?? ""),
+				((b.created_at as string) ?? "").localeCompare(
+					(a.created_at as string) ?? "",
+				),
 			);
 
 			triggerPull("dashboard_views", queryClient, user_id, orgId).catch(
@@ -246,7 +252,7 @@ export const useWidgetData = (widget: WidgetConfig | null) => {
 	const filterStack = useFilterStore(s => s.filter_stack);
 
 	// Serialize filter stack to JSONB format for the SQL function
-	const filters = serializeFilterStack(filterStack);
+	const filters = withDefaultDateRange(serializeFilterStack(filterStack));
 
 	return useQuery({
 		queryKey: [
@@ -295,7 +301,7 @@ export const useWidgetData = (widget: WidgetConfig | null) => {
 export const useWidgetStat = (widget: WidgetConfig | null) => {
 	const { data: authData } = authClient.useSession();
 	const filterStack = useFilterStore(s => s.filter_stack);
-	const filters = serializeFilterStack(filterStack);
+	const filters = withDefaultDateRange(serializeFilterStack(filterStack));
 
 	return useQuery({
 		queryKey: [

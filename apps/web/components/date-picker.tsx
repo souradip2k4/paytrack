@@ -72,25 +72,15 @@ const defaultDates = [
 
 const { parse: parseDatetime } = fzDatetime();
 
-export function DatePicker(props: DatePickerProps) {
-	const {
-		modal = false,
-		open,
-		onOpenChange,
-		defaultOpen,
-		asChild = false,
-		children,
-		date,
-		defaultDate = new Date(),
-		onDateChange,
-		className,
-		...rest
-	} = props;
-	const dateValue = React.useMemo(
-		() => date || defaultDate,
-		[date, defaultDate],
-	);
+export type DatePickerInlineProps = {
+	date?: Date;
+	onDateChange?: OnDateChange;
+};
 
+export function DatePickerInline({
+	date,
+	onDateChange,
+}: DatePickerInlineProps) {
 	const onSelect = (e: string) => {
 		if (onDateChange) onDateChange(new Date(e));
 		setCommandInput(format(e, "yyyy-MM-dd"));
@@ -129,6 +119,129 @@ export function DatePicker(props: DatePickerProps) {
 	const [calendarOpen, setCalendarOpen] = React.useState(false);
 
 	return (
+		<React.Fragment>
+			{calendarOpen && (
+				<div className="mb-1 space-y-1">
+					<Calendar
+						mode="single"
+						selected={date}
+						onSelect={e => {
+							if (e) {
+								onSelect(e.toISOString());
+								setCommandInput(format(e, "yyyy-MM-dd"));
+							}
+							setCalendarOpen(false);
+						}}
+						captionLayout="dropdown"
+					/>
+					<Separator />
+					<Button
+						size="sm"
+						variant="ghost"
+						className="w-full"
+						onClick={() => setCalendarOpen(false)}>
+						<ChevronLeft /> Back
+					</Button>
+				</div>
+			)}
+
+			{!calendarOpen && (
+				<Command>
+					<CommandInput
+						placeholder="Type: 21 Feb or 24/03..."
+						value={commandInput}
+						onValueChange={setCommandInput}
+					/>
+					<CommandList>
+						<CommandEmpty>No results.</CommandEmpty>
+
+						<CommandGroup heading="Suggested">
+							{inferredDates.map((inferredDate, i) => (
+								<CommandItem
+									key={i}
+									onSelect={onSelect}
+									value={inferredDate.date.toISOString()}
+									keywords={[
+										format(
+											inferredDate.date,
+											"dd MMMM yyyy",
+										),
+										format(
+											inferredDate.date,
+											"dd MMM yyyy",
+										),
+										commandInput,
+									]}>
+									{format(
+										inferredDate.date,
+										"dd MMMM yyyy",
+									)}
+									<CommandShortcut>↵</CommandShortcut>
+								</CommandItem>
+							))}
+						</CommandGroup>
+
+						<CommandSeparator />
+
+						<CommandGroup>
+							{defaultDates.map((ql, i) => (
+								<CommandItem
+									id={
+										"date-picker-default-date-" +
+										(i + 1)
+									}
+									key={i}
+									onSelect={onSelect}
+									value={ql.value}
+									keywords={ql.keywords}
+									ref={i < 3 ? refs[i] : undefined}>
+									{ql.label}
+									{i < 3 && (
+										<CommandShortcut>
+											CTRL+{i + 1}
+										</CommandShortcut>
+									)}
+								</CommandItem>
+							))}
+						</CommandGroup>
+					</CommandList>
+
+					<CommandSeparator />
+
+					<CommandGroup forceMount>
+						<CommandItem
+							ref={pickDateRef}
+							onSelect={() => setCalendarOpen(true)}>
+							Pick a date
+							<CommandShortcut>CTRL+↵</CommandShortcut>
+						</CommandItem>
+					</CommandGroup>
+				</Command>
+			)}
+		</React.Fragment>
+	);
+}
+
+export function DatePicker(props: DatePickerProps) {
+	const {
+		modal = false,
+		open,
+		onOpenChange,
+		defaultOpen,
+		asChild = false,
+		children,
+		date,
+		defaultDate = new Date(),
+		onDateChange,
+		className,
+		...rest
+	} = props;
+	const dateValue = React.useMemo(
+		() => date || defaultDate,
+		[date, defaultDate],
+	);
+
+	return (
 		<Popover
 			modal={modal}
 			open={open}
@@ -151,105 +264,10 @@ export function DatePicker(props: DatePickerProps) {
 			<PopoverContent
 				className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"
 				align="start">
-				{calendarOpen && (
-					<div className="mb-1 space-y-1">
-						<Calendar
-							mode="single"
-							selected={dateValue}
-							onSelect={e => {
-								if (e) {
-									onSelect(e.toISOString());
-									setCommandInput(format(e, "yyyy-MM-dd"));
-								}
-								setCalendarOpen(false);
-							}}
-							captionLayout="dropdown"
-						/>
-						<Separator />
-						<Button
-							size="sm"
-							variant="ghost"
-							className="w-full"
-							onClick={() => setCalendarOpen(false)}>
-							<ChevronLeft /> Back
-						</Button>
-					</div>
-				)}
-
-				{!calendarOpen && (
-					<Command>
-						<CommandInput
-							placeholder="Type: 21 Feb or 24/03..."
-							value={commandInput}
-							onValueChange={setCommandInput}
-						/>
-						<CommandList>
-							<CommandEmpty>No results.</CommandEmpty>
-
-							<CommandGroup heading="Suggested">
-								{inferredDates.map((inferredDate, i) => (
-									<CommandItem
-										key={i}
-										// ref={i === 0 ? firstSuggestionRef : null}
-										onSelect={onSelect}
-										value={inferredDate.date.toISOString()}
-										keywords={[
-											format(
-												inferredDate.date,
-												"dd MMMM yyyy",
-											),
-											format(
-												inferredDate.date,
-												"dd MMM yyyy",
-											),
-											commandInput,
-										]}>
-										{format(
-											inferredDate.date,
-											"dd MMMM yyyy",
-										)}
-										<CommandShortcut>↵</CommandShortcut>
-									</CommandItem>
-								))}
-							</CommandGroup>
-
-							<CommandSeparator />
-
-							<CommandGroup>
-								{defaultDates.map((ql, i) => (
-									<CommandItem
-										id={
-											"date-picker-default-date-" +
-											(i + 1)
-										}
-										key={i}
-										onSelect={onSelect}
-										value={ql.value}
-										keywords={ql.keywords}
-										ref={i < 3 ? refs[i] : undefined}>
-										{ql.label}
-										{i < 3 && (
-											<CommandShortcut>
-												CTRL+{i + 1}
-											</CommandShortcut>
-										)}
-									</CommandItem>
-								))}
-							</CommandGroup>
-						</CommandList>
-
-						<CommandSeparator />
-
-						<CommandGroup forceMount>
-							<CommandItem
-								ref={pickDateRef}
-								onSelect={() => setCalendarOpen(true)}>
-								Pick a date
-								<CommandShortcut>CTRL+↵</CommandShortcut>
-							</CommandItem>
-						</CommandGroup>
-					</Command>
-				)}
+				<DatePickerInline
+					date={dateValue}
+					onDateChange={onDateChange}
+				/>
 			</PopoverContent>
 		</Popover>
 	);
