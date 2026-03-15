@@ -8,6 +8,7 @@ import { useCategories, useTransactionMutation } from "@/lib/query";
 import { useLocalSettingsStore } from "@/lib/store";
 import { avatarUrl } from "@/lib/utils";
 import { authClient } from "@budgetbee/core/auth-client";
+import { Avatar, AvatarImage } from "@budgetbee/ui/core/avatar";
 import { Badge } from "@budgetbee/ui/core/badge";
 import { Input } from "@budgetbee/ui/core/input";
 import { Skeleton } from "@budgetbee/ui/core/skeleton";
@@ -72,26 +73,35 @@ function useInlineEdit<T>(
 		[save, transform],
 	);
 
-	return { editing, save, startEditing, setEditing, onKeyDown, onBlur, inputRef };
+	return {
+		editing,
+		save,
+		startEditing,
+		setEditing,
+		onKeyDown,
+		onBlur,
+		inputRef,
+	};
 }
 
 // --- Amount Cell ---
 
 export const EditableAmountCell: ColumnDefTemplate<
 	CellContext<any, unknown>
-> = ({ row }) => {
+> = ({ row, column }) => {
 	const amount = parseFloat(row.getValue("amount"));
 	const currency = row.original.currency;
 	const formattedAmount = formatMoney(amount, currency);
 	const amountColor =
 		amount > 0 ? "text-emerald-500" : "text-muted-foreground";
+	const isEditable = !column.getIsGrouped();
 
 	const { editing, startEditing, onKeyDown, onBlur, inputRef } =
 		useInlineEdit(row.original.id, "amount", amount, raw =>
 			parseFloat(raw),
 		);
 
-	if (editing) {
+	if (isEditable && editing) {
 		return (
 			<Input
 				ref={inputRef}
@@ -108,10 +118,11 @@ export const EditableAmountCell: ColumnDefTemplate<
 	return (
 		<div
 			className={cn(
-				"font-medium cursor-text flex h-full w-full items-center",
+				"flex h-full w-full items-center px-2 font-medium",
 				amountColor,
+				isEditable && "cursor-text",
 			)}
-			onClick={startEditing}>
+			onClick={isEditable ? startEditing : undefined}>
 			<p className="whitespace-nowrap">{formattedAmount}</p>
 		</div>
 	);
@@ -123,11 +134,12 @@ export const EditableTitleCell: ColumnDefTemplate<
 	CellContext<any, unknown>
 > = ({ row, column }) => {
 	const defaultName: string = row.getValue(column.id) ?? "";
+	const isEditable = !column.getIsGrouped();
 
 	const { editing, startEditing, onKeyDown, onBlur, inputRef } =
 		useInlineEdit(row.original.id, "name", defaultName);
 
-	if (editing) {
+	if (isEditable && editing) {
 		return (
 			<Input
 				ref={inputRef}
@@ -142,8 +154,11 @@ export const EditableTitleCell: ColumnDefTemplate<
 
 	return (
 		<div
-			className="flex h-full w-full cursor-text items-center"
-			onClick={startEditing}>
+			className={cn(
+				"flex h-full w-full items-center px-2",
+				isEditable && "cursor-text",
+			)}
+			onClick={isEditable ? startEditing : undefined}>
 			<p
 				className={cn("overflow-hidden text-ellipsis", {
 					"text-muted-foreground italic": !defaultName,
@@ -158,8 +173,9 @@ export const EditableTitleCell: ColumnDefTemplate<
 
 export const EditableStatusCell: ColumnDefTemplate<
 	CellContext<any, unknown>
-> = ({ row }) => {
+> = ({ row, column }) => {
 	const status = row.getValue<string>("status");
+	const isEditable = !column.getIsGrouped();
 	const { mutate } = useTransactionMutation();
 
 	const handleChange = React.useCallback(
@@ -173,9 +189,17 @@ export const EditableStatusCell: ColumnDefTemplate<
 		[row.original.id, status, mutate],
 	);
 
+	if (!isEditable) {
+		return (
+			<span className="flex h-full w-full items-center px-2">
+				<StatusBadge status={status} variant="ghost" />
+			</span>
+		);
+	}
+
 	return (
 		<StatusPicker value={status} onValueChange={handleChange}>
-			<span className="flex h-full w-full cursor-pointer items-center">
+			<span className="flex h-full w-full cursor-pointer items-center px-2">
 				<StatusBadge status={status} variant="ghost" />
 			</span>
 		</StatusPicker>
@@ -186,8 +210,9 @@ export const EditableStatusCell: ColumnDefTemplate<
 
 export const EditableCategoryCell: ColumnDefTemplate<
 	CellContext<any, unknown>
-> = ({ row }) => {
+> = ({ row, column }) => {
 	const categoryId = row.original.category_id;
+	const isEditable = !column.getIsGrouped();
 	const { data: categories, isLoading } = useCategories();
 	const { mutate } = useTransactionMutation();
 
@@ -209,19 +234,29 @@ export const EditableCategoryCell: ColumnDefTemplate<
 
 	if (isLoading) return <Skeleton className="h-4 w-16" />;
 
+	const display = (
+		<span
+			className={cn(
+				"flex h-full w-full items-center px-2",
+				isEditable && "cursor-pointer",
+			)}>
+			{category ?
+				<CategoryBadge
+					category={category.name}
+					color={category.color}
+				/>
+			:	<span className="text-muted-foreground text-xs italic">
+					none
+				</span>
+			}
+		</span>
+	);
+
+	if (!isEditable) return display;
+
 	return (
 		<CategoryPicker value={categoryId} onValueChange={handleChange}>
-			<span className="flex h-full w-full cursor-pointer items-center">
-				{category ?
-					<CategoryBadge
-						category={category.name}
-						color={category.color}
-					/>
-				:	<span className="text-muted-foreground text-xs italic">
-						none
-					</span>
-				}
-			</span>
+			{display}
 		</CategoryPicker>
 	);
 };
@@ -241,10 +276,9 @@ export const EditableTransactionDateCell: ColumnDefTemplate<
 	CellContext<any, unknown>
 > = ({ row, column }) => {
 	const rawDate = row.getValue(column.id) as string;
+	const isEditable = !column.getIsGrouped();
 	const dateFormat = useLocalSettingsStore(s => s.settings_date_format);
-	const relativeDates = useLocalSettingsStore(
-		s => s.settings_relative_dates,
-	);
+	const relativeDates = useLocalSettingsStore(s => s.settings_relative_dates);
 	const { mutate } = useTransactionMutation();
 
 	const handleChange = React.useCallback(
@@ -260,29 +294,38 @@ export const EditableTransactionDateCell: ColumnDefTemplate<
 		[row.original.id, mutate],
 	);
 
+	const display = (
+		<span
+			className={cn(
+				"flex h-full w-full items-center px-2",
+				isEditable && "cursor-pointer",
+			)}>
+			<p className="text-muted-foreground">
+				{formatDate(new Date(rawDate), dateFormat, relativeDates)}
+			</p>
+		</span>
+	);
+
+	if (!isEditable) return display;
+
 	return (
 		<DatePicker date={new Date(rawDate)} onDateChange={handleChange}>
-			<span className="flex h-full w-full cursor-pointer items-center">
-				<p className="text-muted-foreground">
-					{formatDate(new Date(rawDate), dateFormat, relativeDates)}
-				</p>
-			</span>
+			{display}
 		</DatePicker>
 	);
 };
 
 // --- Created At / Updated At (read-only date cells) ---
 
-export const ReadonlyDateCell: ColumnDefTemplate<
-	CellContext<any, unknown>
-> = ({ row, column }) => {
+export const ReadonlyDateCell: ColumnDefTemplate<CellContext<any, unknown>> = ({
+	row,
+	column,
+}) => {
 	const date = row.getValue(column.id) as string;
 	const dateFormat = useLocalSettingsStore(s => s.settings_date_format);
-	const relativeDates = useLocalSettingsStore(
-		s => s.settings_relative_dates,
-	);
+	const relativeDates = useLocalSettingsStore(s => s.settings_relative_dates);
 	return (
-		<p className="text-muted-foreground">
+		<p className="text-muted-foreground px-2">
 			{formatDate(new Date(date), dateFormat, relativeDates)}
 		</p>
 	);
@@ -298,11 +341,12 @@ export const ReadonlyCreatorCell: ColumnDefTemplate<
 	if (isPending) return <Skeleton className="h-4 w-16" />;
 
 	return (
-		<Badge variant="secondary" className="rounded-full">
-			<img
-				className="h-4 w-4 rounded-full"
-				src={avatarUrl(data?.user.image)}
-			/>{" "}
+		<Badge variant="secondary" className="mx-2 rounded-md">
+			<Avatar className="size-4 rounded-lg">
+				{data?.user.image && (
+					<AvatarImage src={avatarUrl(data.user.image)} />
+				)}
+			</Avatar>
 			{data?.user.name} (you)
 		</Badge>
 	);

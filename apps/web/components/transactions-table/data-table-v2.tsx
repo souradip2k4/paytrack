@@ -23,16 +23,28 @@ import { cn } from "@budgetbee/ui/lib/utils";
 import {
 	ColumnDef,
 	ColumnFiltersState,
+	ColumnPinningState,
+	GroupingState,
 	SortingState,
 	flexRender,
 	getCoreRowModel,
+	getExpandedRowModel,
 	getFilteredRowModel,
+	getGroupedRowModel,
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { ArrowDown, ArrowUp, FolderOpen, LoaderCircle } from "lucide-react";
+import {
+	ArrowDown,
+	ArrowUp,
+	ChevronDown,
+	ChevronRight,
+	FolderOpen,
+	LoaderCircle,
+} from "lucide-react";
 import React from "react";
+import { ColumnHeaderMenu } from "./column-header-menu";
 import {
 	EditableAmountCell,
 	EditableCategoryCell,
@@ -66,33 +78,60 @@ const columns: ColumnDef<any>[] = [
 			/>
 		),
 		size: 48,
+		minSize: 48,
 		enableSorting: false,
 		enableHiding: false,
+		enableGrouping: false,
+		enableResizing: false,
 	},
 	{
 		accessorKey: "amount",
 		header: "Amount",
 		cell: EditableAmountCell,
 		size: 120,
+		minSize: 80,
 		enableHiding: false,
+		aggregatedCell: ({ getValue }) => {
+			const sum = getValue<number>();
+			return (
+				<span className="text-muted-foreground px-2 text-sm font-medium">
+					Sum: {sum?.toFixed(2) ?? "—"}
+				</span>
+			);
+		},
+		aggregationFn: "sum",
 	},
 	{
 		accessorKey: "name",
 		header: "Title",
 		cell: EditableTitleCell,
 		size: 480,
+		minSize: 120,
+		aggregatedCell: () => null,
 	},
 	{
 		accessorKey: "status",
 		header: "Status",
 		cell: EditableStatusCell,
 		size: 120,
+		minSize: 80,
+		aggregatedCell: ({ row }) => (
+			<span className="text-muted-foreground px-2 text-sm">
+				{row.subRows.length} items
+			</span>
+		),
 	},
 	{
 		accessorKey: "category_id",
 		header: "Category",
 		cell: EditableCategoryCell,
 		size: 160,
+		minSize: 100,
+		aggregatedCell: ({ row }) => (
+			<span className="text-muted-foreground px-2 text-sm">
+				{row.subRows.length} items
+			</span>
+		),
 	},
 	{
 		accessorKey: "transaction_date",
@@ -100,6 +139,12 @@ const columns: ColumnDef<any>[] = [
 		cell: EditableTransactionDateCell,
 		sortingFn: "datetime",
 		size: 180,
+		minSize: 120,
+		getGroupingValue: (row: any) =>
+			row.transaction_date ?
+				new Date(row.transaction_date).toISOString().slice(0, 10)
+			:	"",
+		aggregatedCell: () => null,
 	},
 	{
 		accessorKey: "created_at",
@@ -107,6 +152,12 @@ const columns: ColumnDef<any>[] = [
 		cell: ReadonlyDateCell,
 		sortingFn: "datetime",
 		size: 150,
+		minSize: 100,
+		getGroupingValue: (row: any) =>
+			row.created_at ?
+				new Date(row.created_at).toISOString().slice(0, 10)
+			:	"",
+		aggregatedCell: () => null,
 	},
 	{
 		accessorKey: "updated_at",
@@ -114,6 +165,12 @@ const columns: ColumnDef<any>[] = [
 		cell: ReadonlyDateCell,
 		sortingFn: "datetime",
 		size: 150,
+		minSize: 100,
+		getGroupingValue: (row: any) =>
+			row.updated_at ?
+				new Date(row.updated_at).toISOString().slice(0, 10)
+			:	"",
+		aggregatedCell: () => null,
 	},
 	{
 		accessorKey: "user_id",
@@ -121,8 +178,25 @@ const columns: ColumnDef<any>[] = [
 		cell: ReadonlyCreatorCell,
 		sortingFn: "datetime",
 		size: 250,
+		minSize: 120,
+		aggregatedCell: () => null,
 	},
 ];
+
+function getCommonPinningStyles(column: {
+	getIsPinned: () => false | "left" | "right";
+	getStart: (pos?: "left" | "right") => number;
+	getAfter: (pos?: "left" | "right") => number;
+}): React.CSSProperties {
+	const pinned = column.getIsPinned();
+	if (!pinned) return {};
+	return {
+		position: "sticky",
+		left: pinned === "left" ? `${column.getStart("left")}px` : undefined,
+		right: pinned === "right" ? `${column.getAfter("right")}px` : undefined,
+		zIndex: 1,
+	};
+}
 
 export function TransactionsTableV2() {
 	const { data, isLoading } = useTransactions();
@@ -142,6 +216,9 @@ export function TransactionsTableV2() {
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] =
 		React.useState<ColumnFiltersState>([]);
+	const [grouping, setGrouping] = React.useState<GroupingState>([]);
+	const [columnPinning, setColumnPinning] =
+		React.useState<ColumnPinningState>({ left: ["select"], right: [] });
 
 	const table = useReactTable({
 		data: transactions,
@@ -153,11 +230,18 @@ export function TransactionsTableV2() {
 		onRowSelectionChange: setRowSelection,
 		onColumnFiltersChange: setColumnFilters,
 		getFilteredRowModel: getFilteredRowModel(),
+		onGroupingChange: setGrouping,
+		getGroupedRowModel: getGroupedRowModel(),
+		getExpandedRowModel: getExpandedRowModel(),
+		onColumnPinningChange: setColumnPinning,
+		columnResizeMode: "onChange",
 		state: {
 			sorting,
 			columnVisibility,
 			rowSelection,
 			columnFilters,
+			grouping,
+			columnPinning,
 		},
 	});
 
@@ -184,50 +268,93 @@ export function TransactionsTableV2() {
 		.getAllColumns()
 		.filter(column => column.getIsVisible()).length;
 
+	const columnSizeVars = React.useMemo(() => {
+		const headers = table.getFlatHeaders();
+		const vars: Record<string, string> = {};
+		for (const header of headers) {
+			vars[`--header-${header.id}-size`] = `${header.getSize()}px`;
+			vars[`--col-${header.column.id}-size`] =
+				`${header.column.getSize()}px`;
+		}
+		return vars;
+	}, [
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		table.getState().columnSizingInfo,
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		table.getState().columnSizing,
+	]);
+
 	return (
-		<div ref={scrollRef} className="max-h-[calc(100vh-6rem)] overflow-auto">
-			<Table>
+		<div
+			ref={scrollRef}
+			className="max-h-[calc(100vh-6rem)] overflow-auto"
+			style={columnSizeVars as React.CSSProperties}>
+			<Table style={{ minWidth: `${table.getTotalSize()}px` }}>
 				<TableHeader className="bg-card sticky top-0 z-10">
 					{table.getHeaderGroups().map(headerGroup => (
 						<TableRow key={headerGroup.id}>
-							{headerGroup.headers.map(header => (
-								<TableHead
-									key={header.id}
-									onClick={() =>
-										header.column.getCanSort() &&
-										header.column.toggleSorting(
-											header.column.getIsSorted() ===
-												"asc",
-										)
-									}
-									className={cn(
-										"select-none",
-										header.column.getCanSort() &&
-											"hover:bg-accent/50 cursor-pointer",
-									)}
-									style={{
-										width: `${header.getSize()}px`,
-										minWidth: `${header.getSize()}px`,
-										maxWidth: `${header.getSize()}px`,
-									}}>
-									<span className="flex gap-2 border-r-red-500 [&:has(>[role='checkbox'])]:justify-center">
-										{header.isPlaceholder ? null : (
-											flexRender(
-												header.column.columnDef.header,
-												header.getContext(),
-											)
+							{headerGroup.headers.map(header => {
+								const pinStyles = getCommonPinningStyles(
+									header.column,
+								);
+								const isPinned = header.column.getIsPinned();
+								return (
+									<TableHead
+										key={header.id}
+										colSpan={header.colSpan}
+										className={cn(
+											"group/header relative select-none",
+											isPinned && "bg-card",
 										)}
-										{header.column.getIsSorted() ?
-											(
-												header.column.getIsSorted() ===
-												"asc"
-											) ?
-												<ArrowUp className="h-4 w-4" />
-											:	<ArrowDown className="h-4 w-4" />
-										:	null}
-									</span>
-								</TableHead>
-							))}
+										style={{
+											width: `var(--header-${header.id}-size)`,
+											minWidth: `var(--header-${header.id}-size)`,
+											maxWidth: `var(--header-${header.id}-size)`,
+											...pinStyles,
+										}}>
+										<span className="flex items-center gap-1 [&:has(>[role='checkbox'])]:justify-center">
+											{header.isPlaceholder ? null : (
+												flexRender(
+													header.column.columnDef
+														.header,
+													header.getContext(),
+												)
+											)}
+											{header.column.getIsSorted() ?
+												(
+													header.column.getIsSorted() ===
+													"asc"
+												) ?
+													<ArrowUp className="size-3.5 shrink-0" />
+												:	<ArrowDown className="size-3.5 shrink-0" />
+
+											:	null}
+											{header.id !== "select" && (
+												<ColumnHeaderMenu
+													column={header.column}
+												/>
+											)}
+										</span>
+										{header.column.getCanResize() && (
+											<div
+												onDoubleClick={() =>
+													header.column.resetSize()
+												}
+												onMouseDown={header.getResizeHandler()}
+												onTouchStart={header.getResizeHandler()}
+												className={cn(
+													"absolute right-0 top-0 h-full w-1 cursor-col-resize touch-none select-none",
+													(
+														header.column.getIsResizing()
+													) ?
+														"bg-primary"
+													:	"hover:bg-border",
+												)}
+											/>
+										)}
+									</TableHead>
+								);
+							})}
 						</TableRow>
 					))}
 				</TableHeader>
@@ -265,29 +392,69 @@ export function TransactionsTableV2() {
 										position: "absolute",
 										top: 0,
 										left: 0,
-										width: "100%",
+										width: `${table.getTotalSize()}px`,
+										minWidth: "100%",
 										height: `${virtualRow.size}px`,
 										transform: `translateY(${virtualRow.start}px)`,
 									}}
 									className="flex">
-									{row.getVisibleCells().map(cell => (
-										<TableCell
-											key={cell.id}
-											className={cn(
-												"not-last:border-r flex items-center p-0 px-2 [&:has(>[role='checkbox'])]:justify-center",
-											)}
-											style={{
-												width: `${cell.column.getSize()}px`,
-												minWidth: `${cell.column.getSize()}px`,
-												maxWidth: `${cell.column.getSize()}px`,
-												height: `${virtualRow.size}px`,
-											}}>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext(),
-											)}
-										</TableCell>
-									))}
+									{row.getVisibleCells().map(cell => {
+										const pinStyles =
+											getCommonPinningStyles(cell.column);
+										const isPinned =
+											cell.column.getIsPinned();
+										return (
+											<TableCell
+												key={cell.id}
+												className={cn(
+													"not-last:border-r flex items-center p-0 [&:has(>[role='checkbox'])]:justify-center",
+													isPinned && "bg-card",
+												)}
+												style={{
+													width: `var(--col-${cell.column.id}-size)`,
+													minWidth: `var(--col-${cell.column.id}-size)`,
+													maxWidth: `var(--col-${cell.column.id}-size)`,
+													height: `${virtualRow.size}px`,
+													...pinStyles,
+												}}>
+												{cell.getIsGrouped() ?
+													<button
+														onClick={row.getToggleExpandedHandler()}
+														className="flex h-full w-full items-center gap-1 px-2">
+														{row.getIsExpanded() ?
+															<ChevronDown className="size-4 shrink-0" />
+														:	<ChevronRight className="size-4 shrink-0" />
+														}
+														{flexRender(
+															cell.column
+																.columnDef.cell,
+															cell.getContext(),
+														)}
+														<span className="text-muted-foreground ml-1 shrink-0 text-xs">
+															(
+															{row.subRows.length}
+															)
+														</span>
+													</button>
+												: cell.getIsAggregated() ?
+													flexRender(
+														cell.column.columnDef
+															.aggregatedCell ??
+															cell.column
+																.columnDef.cell,
+														cell.getContext(),
+													)
+												: cell.getIsPlaceholder() ?
+													null
+												:	flexRender(
+														cell.column.columnDef
+															.cell,
+														cell.getContext(),
+													)
+												}
+											</TableCell>
+										);
+									})}
 								</TableRow>
 							);
 						})

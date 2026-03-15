@@ -69,7 +69,8 @@ const schema = z.object({
 type FieldValues = z.infer<typeof schema>;
 
 export function TransactionDialog() {
-	const { mutateAsync: createTransaction, isPending } = useTransactionMutation();
+	const { mutateAsync: createTransaction, isPending } =
+		useTransactionMutation();
 
 	const handleCreate = async (data: FieldValues) => {
 		const { transaction_date, ...rest } = data;
@@ -77,7 +78,8 @@ export function TransactionDialog() {
 			type: "create",
 			payload: {
 				...rest,
-				transaction_date: transaction_date?.toISOString() ?? new Date().toISOString(),
+				transaction_date:
+					transaction_date?.toISOString() ?? new Date().toISOString(),
 			},
 		});
 		toast.success("Transaction created successfully");
