@@ -292,7 +292,6 @@ FROM
 GRANT
 EXECUTE ON FUNCTION delete_category (UUID, BOOLEAN) TO authenticated;
 
-
 /* ========================================================================== */
 DROP FUNCTION IF EXISTS get_transaction_aggregate;
 
@@ -306,20 +305,15 @@ DROP FUNCTION IF EXISTS get_transaction_aggregate;
 --   - credit: only negative amounts, returned as positive
 --   - debit: only positive amounts
 --   - balance: all amounts as-is
-CREATE OR REPLACE FUNCTION get_transaction_aggregate(
-    p_user_id TEXT,
-    p_organization_id TEXT,
-    p_filters JSONB,
-    p_metric TEXT,
-    p_interval TEXT,
-    p_aggregate_fn TEXT,
-    p_transaction_type TEXT
-)
-RETURNS TABLE (
-    period TIMESTAMP,
-    metric TEXT,
-    aggregate NUMERIC
-) SECURITY INVOKER AS $$
+CREATE OR REPLACE FUNCTION get_transaction_aggregate (
+	p_user_id TEXT,
+	p_organization_id TEXT,
+	p_filters JSONB,
+	p_metric TEXT,
+	p_interval TEXT,
+	p_aggregate_fn TEXT,
+	p_transaction_type TEXT
+) RETURNS TABLE (period TIMESTAMP, metric TEXT, aggregate NUMERIC) SECURITY INVOKER AS $$
 DECLARE
     clean_metric TEXT;
     clean_interval TEXT;
@@ -411,8 +405,8 @@ $$ LANGUAGE plpgsql STABLE;
 
 REVOKE ALL ON FUNCTION get_transaction_aggregate (TEXT, TEXT, JSONB, TEXT, TEXT, TEXT, TEXT)
 FROM
-    anon,
-    authenticated;
+	anon,
+	authenticated;
 
 GRANT
 EXECUTE ON FUNCTION get_transaction_aggregate (TEXT, TEXT, JSONB, TEXT, TEXT, TEXT, TEXT) TO authenticated;
@@ -429,16 +423,13 @@ DROP FUNCTION IF EXISTS get_transaction_stat;
 --   - credit: only negative amounts, returned as positive
 --   - debit: only positive amounts
 --   - balance: all amounts as-is
-CREATE OR REPLACE FUNCTION get_transaction_stat(
-    p_user_id TEXT,
-    p_organization_id TEXT,
-    p_filters JSONB,
-    p_aggregate_fn TEXT,
-    p_transaction_type TEXT
-)
-RETURNS TABLE (
-    aggregate NUMERIC
-) SECURITY INVOKER AS $$
+CREATE OR REPLACE FUNCTION get_transaction_stat (
+	p_user_id TEXT,
+	p_organization_id TEXT,
+	p_filters JSONB,
+	p_aggregate_fn TEXT,
+	p_transaction_type TEXT
+) RETURNS TABLE (aggregate NUMERIC) SECURITY INVOKER AS $$
 DECLARE
     amount_expr TEXT;
     type_filter TEXT;
@@ -500,8 +491,8 @@ $$ LANGUAGE plpgsql STABLE;
 
 REVOKE ALL ON FUNCTION get_transaction_stat (TEXT, TEXT, JSONB, TEXT, TEXT)
 FROM
-    anon,
-    authenticated;
+	anon,
+	authenticated;
 
 GRANT
 EXECUTE ON FUNCTION get_transaction_stat (TEXT, TEXT, JSONB, TEXT, TEXT) TO authenticated;

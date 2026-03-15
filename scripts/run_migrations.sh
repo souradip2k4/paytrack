@@ -42,6 +42,7 @@ run_migration() {
 # 2. init.sql (core schema)
 # 3. All migration_*.sql files sorted by date
 # 4. functions.sql (database functions)
+# 5. rls.sql (row level security)
 
 run_migration "$SQL_DIR/better-auth-migrations.sql"
 run_migration "$SQL_DIR/init.sql"
@@ -53,5 +54,6 @@ for migration_file in $(ls "$SQL_DIR"/migration_*.sql 2>/dev/null | sort); do
 done
 
 run_migration "$SQL_DIR/functions.sql"
+run_migration "$SQL_DIR/rls.sql"
 
 echo "INFO: All migrations completed successfully."

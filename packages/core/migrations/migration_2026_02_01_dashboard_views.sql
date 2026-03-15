@@ -2,67 +2,37 @@
 /* DASHBOARD VIEWS TABLE */
 /* ========================================================================== */
 CREATE TABLE dashboard_views (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(255) NOT NULL DEFAULT 'My Dashboard',
-    user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
-    organization_id TEXT REFERENCES organizations(id) ON DELETE CASCADE,
-    widgets JSONB NOT NULL DEFAULT '[]'::jsonb,
-    is_default BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT current_timestamp,
-    updated_at TIMESTAMP DEFAULT current_timestamp
+	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	name VARCHAR(255) NOT NULL DEFAULT 'My Dashboard',
+	user_id TEXT REFERENCES users (id) ON DELETE CASCADE,
+	organization_id TEXT REFERENCES organizations (id) ON DELETE CASCADE,
+	widgets JSONB NOT NULL DEFAULT '[]'::jsonb,
+	is_default BOOLEAN DEFAULT FALSE,
+	created_at TIMESTAMP DEFAULT current_timestamp,
+	updated_at TIMESTAMP DEFAULT current_timestamp
 );
-
-/* ========================================================================== */
-/* RLS POLICIES (same pattern as categories) */
-/* ========================================================================== */
-ALTER TABLE dashboard_views ENABLE ROW LEVEL SECURITY;
-
-DROP POLICY IF EXISTS limit_dashboard_views ON dashboard_views;
-
-CREATE POLICY limit_dashboard_views ON dashboard_views FOR ALL TO authenticated USING (
-    organization_id = org_id()
-    OR (
-        organization_id IS NULL
-        AND user_id = uid()
-    )
-)
-WITH CHECK (
-    organization_id = org_id()
-    OR (
-        organization_id IS NULL
-        AND user_id = uid()
-    )
-);
-
-/* ========================================================================== */
-/* GRANTS */
-/* ========================================================================== */
-GRANT ALL PRIVILEGES ON dashboard_views TO authenticated;
-
-REVOKE ALL ON dashboard_views FROM anon;
-REVOKE TRIGGER, TRUNCATE ON dashboard_views FROM authenticated;
 
 /* ========================================================================== */
 /* TRIGGER: auto-update updated_at */
 /* ========================================================================== */
 CREATE TRIGGER set_dashboard_views_updated_at BEFORE
 UPDATE ON dashboard_views FOR EACH ROW
-EXECUTE FUNCTION set_updated_at_timestamp();
+EXECUTE FUNCTION set_updated_at_timestamp ();
 
 /* ========================================================================== */
 /* FUNCTION: get_transaction_aggregate */
 /* Returns a single numeric aggregate (sum/average/count) for a metric */
 /* ========================================================================== */
 DROP FUNCTION IF EXISTS get_transaction_aggregate;
-CREATE OR REPLACE FUNCTION get_transaction_aggregate(
-    group_by_metric TEXT,
-    time_interval TEXT,
-    agg_function TEXT
-)
-RETURNS TABLE (
-    period TIMESTAMP,
-    metric_value TEXT,
-    aggregate_result NUMERIC
+
+CREATE OR REPLACE FUNCTION get_transaction_aggregate (
+	group_by_metric TEXT,
+	time_interval TEXT,
+	agg_function TEXT
+) RETURNS TABLE (
+	period TIMESTAMP,
+	metric_value TEXT,
+	aggregate_result NUMERIC
 ) AS $$
 DECLARE
     clean_metric TEXT;
