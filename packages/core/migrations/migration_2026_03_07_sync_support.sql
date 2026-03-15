@@ -36,7 +36,7 @@ ALTER TABLE dashboard_views
 ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP DEFAULT NULL;
 
 -- indexes for cursor-based pull queries
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_transactions_sync ON transactions (updated_at)
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_categories_sync ON categories (updated_at)
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_subscriptions_sync ON subscriptions (updated_at)
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_dashboard_views_sync ON dashboard_views (updated_at)
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_transactions_sync ON transactions (updated_at);
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_categories_sync ON categories (updated_at);
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_subscriptions_sync ON subscriptions (updated_at);
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_dashboard_views_sync ON dashboard_views (updated_at);
