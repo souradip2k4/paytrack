@@ -1,25 +1,53 @@
 import { serializeFilterStack, useFilterStore } from "@/lib/store/filter-store";
+import {
+	computePatch,
+	enqueueMutation,
+	flushQueue,
+	getLocalDb,
+	useSyncStore,
+} from "@/lib/sync";
 import type { DashboardView, WidgetConfig } from "@/lib/types/dashboard";
 import { authClient } from "@budgetbee/core/auth-client";
 import { getDb } from "@budgetbee/core/db";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { nanoid } from "nanoid";
 import { toast } from "sonner";
 import { useAuthGuard } from "../query";
+import { triggerPull } from "../sync/pull";
 
 export const useDashboardViews = () => {
-	const { withAuth, user_id, active_organization_id } = useAuthGuard();
+	const { user_id, active_organization_id } = useAuthGuard();
+	const queryClient = useQueryClient();
+
 	return useQuery({
 		queryKey: ["dashboard", "list", user_id, active_organization_id],
+		staleTime: 0,
 		queryFn: async () => {
 			if (!user_id) return [];
-			const db = await getDb();
-			const query = db
-				.from("dashboard_views")
-				.select("*")
-				.order("created_at", { ascending: false });
-			const res = await withAuth(query);
-			if (res.error) return [];
-			return res.data as (DashboardView & {
+
+			const localDb = getLocalDb();
+			const orgId = active_organization_id ?? null;
+
+			const records = await localDb.dashboard_views
+				.filter(
+					r =>
+						r.deleted_at === null &&
+						(orgId !== null ?
+							r.organization_id === orgId
+						:	r.organization_id === null && r.user_id === user_id),
+				)
+				.toArray();
+
+			// Sort newest first by created_at
+			records.sort((a, b) =>
+				(b.created_at as string ?? "").localeCompare(a.created_at as string ?? ""),
+			);
+
+			triggerPull("dashboard_views", queryClient, user_id, orgId).catch(
+				console.error,
+			);
+
+			return records as unknown as (DashboardView & {
 				id: string;
 				created_at: string;
 				updated_at: string;
@@ -30,16 +58,27 @@ export const useDashboardViews = () => {
 };
 
 export const useDashboardView = (id: string | undefined) => {
-	const { withAuth, user_id, active_organization_id } = useAuthGuard();
+	const { user_id, active_organization_id } = useAuthGuard();
+	const queryClient = useQueryClient();
+
 	return useQuery({
 		queryKey: ["dashboard", "get", id, user_id, active_organization_id],
+		staleTime: 0,
 		queryFn: async () => {
 			if (!id || !user_id) return null;
-			const db = await getDb();
-			const query = db.from("dashboard_views").select("*").eq("id", id);
-			const res = await withAuth(query).single();
-			if (res.error) return null;
-			return res.data as DashboardView & {
+
+			const localDb = getLocalDb();
+
+			const record = await localDb.dashboard_views.get(id);
+			if (!record || record.deleted_at !== null) return null;
+
+			// Background pull to refresh this specific record
+			const orgId = active_organization_id ?? null;
+			triggerPull("dashboard_views", queryClient, user_id, orgId).catch(
+				console.error,
+			);
+
+			return record as unknown as DashboardView & {
 				id: string;
 				created_at: string;
 				updated_at: string;
@@ -65,6 +104,7 @@ export type DashboardMutationProps =
 export const useDashboardMutation = () => {
 	const queryClient = useQueryClient();
 	const { data: authData } = authClient.useSession();
+
 	return useMutation({
 		mutationKey: [
 			"dashboard",
@@ -74,44 +114,110 @@ export const useDashboardMutation = () => {
 		],
 		mutationFn: async (data: DashboardMutationProps) => {
 			if (!authData?.user?.id) return;
-			const db = await getDb();
-			let res: any;
+
+			const localDb = getLocalDb();
+			const userId = authData.user.id;
+			const orgId = authData.session?.activeOrganizationId ?? null;
+			const syncClientId = useSyncStore.getState().clientId;
 
 			if (data.type === "create") {
-				res = await db
-					.from("dashboard_views")
-					.insert({
-						name: data.payload.name,
-						widgets: data.payload.widgets ?? [],
-						user_id: authData.user.id,
-						organization_id:
-							authData.session?.activeOrganizationId ?? null,
-					})
-					.select()
-					.single();
+				const id = nanoid();
+				const now = new Date().toISOString();
+				const record = {
+					id,
+					name: data.payload.name,
+					widgets: data.payload.widgets ?? [],
+					is_default: false,
+					user_id: userId,
+					organization_id: orgId,
+					created_at: now,
+					updated_at: now,
+					deleted_at: null,
+					_sync_state: "pending" as const,
+					_client_id: syncClientId,
+					_synced_at: null,
+				};
+				await localDb.transaction(
+					"rw",
+					localDb.dashboard_views,
+					localDb.mutation_queue,
+					async () => {
+						await localDb.dashboard_views.put(record);
+						await enqueueMutation({
+							table: "dashboard_views",
+							operation: "insert",
+							record_id: id,
+							patch: record,
+						});
+					},
+				);
+				queryClient.invalidateQueries({
+					queryKey: ["dashboard"],
+					exact: false,
+				});
+				flushQueue().catch(console.error);
+				return record;
 			} else if (data.type === "update") {
-				const update: Record<string, any> = {};
+				const existing = await localDb.dashboard_views.get(
+					data.payload.id,
+				);
+				const afterState: Record<string, unknown> = {};
 				if (data.payload.name !== undefined)
-					update.name = data.payload.name;
+					afterState.name = data.payload.name;
 				if (data.payload.widgets !== undefined)
-					update.widgets = data.payload.widgets;
+					afterState.widgets = data.payload.widgets;
 				if (data.payload.is_default !== undefined)
-					update.is_default = data.payload.is_default;
-				res = await db
-					.from("dashboard_views")
-					.update(update)
-					.eq("id", data.payload.id)
-					.select()
-					.single();
-			} else if (data.type === "delete") {
-				res = await db
-					.from("dashboard_views")
-					.delete()
-					.eq("id", data.payload.id);
-			}
+					afterState.is_default = data.payload.is_default;
 
-			if (res?.error) throw res.error;
-			return res?.data;
+				const patch = computePatch(existing ?? {}, afterState);
+				await localDb.transaction(
+					"rw",
+					localDb.dashboard_views,
+					localDb.mutation_queue,
+					async () => {
+						await localDb.dashboard_views.update(data.payload.id, {
+							...patch,
+							_sync_state: "pending",
+						});
+						await enqueueMutation({
+							table: "dashboard_views",
+							operation: "update",
+							record_id: data.payload.id,
+							patch,
+						});
+					},
+				);
+				queryClient.invalidateQueries({
+					queryKey: ["dashboard"],
+					exact: false,
+				});
+				flushQueue().catch(console.error);
+				return { id: data.payload.id, ...patch };
+			} else if (data.type === "delete") {
+				const now = new Date().toISOString();
+				await localDb.transaction(
+					"rw",
+					localDb.dashboard_views,
+					localDb.mutation_queue,
+					async () => {
+						await localDb.dashboard_views.update(data.payload.id, {
+							deleted_at: now,
+							_sync_state: "pending",
+						});
+						await enqueueMutation({
+							table: "dashboard_views",
+							operation: "delete",
+							record_id: data.payload.id,
+							patch: {},
+						});
+					},
+				);
+				queryClient.invalidateQueries({
+					queryKey: ["dashboard"],
+					exact: false,
+				});
+				flushQueue().catch(console.error);
+			}
 		},
 		onSuccess: (_, variables) => {
 			if (variables.type === "create") toast.success("Dashboard created");
@@ -119,11 +225,6 @@ export const useDashboardMutation = () => {
 				toast.success("Dashboard saved");
 			else if (variables.type === "delete")
 				toast.success("Dashboard deleted");
-
-			queryClient.invalidateQueries({
-				queryKey: ["dashboard"],
-				exact: false,
-			});
 		},
 		onError: () => {
 			toast.error("Failed to perform dashboard operation");
@@ -161,6 +262,7 @@ export const useWidgetData = (widget: WidgetConfig | null) => {
 		],
 		queryFn: async () => {
 			if (!widget || !authData?.user?.id) return null;
+			if (!navigator.onLine) return null;
 			const db = await getDb();
 
 			// Map dataSource to the metric field for get_transaction_aggregate
@@ -207,6 +309,7 @@ export const useWidgetStat = (widget: WidgetConfig | null) => {
 		],
 		queryFn: async () => {
 			if (!widget || !authData?.user?.id) return null;
+			if (!navigator.onLine) return null;
 			const db = await getDb();
 
 			const res = await db.rpc("get_transaction_stat", {
