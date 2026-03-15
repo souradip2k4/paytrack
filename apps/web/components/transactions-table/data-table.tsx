@@ -1,6 +1,5 @@
 "use client";
 
-import { authClient } from "@budgetbee/core/auth-client";
 import {
 	Empty,
 	EmptyDescription,
@@ -17,12 +16,10 @@ import {
 	TableRow,
 } from "@budgetbee/ui/core/table";
 
-import { useTransactions } from "@/lib/query";
+import { useTransactionMutation, useTransactions } from "@/lib/query";
 import { useDisplayStore, useStore } from "@/lib/store";
 import { useEditorStore } from "@/lib/store/editor-store";
 import { cn } from "@budgetbee/ui/lib/utils";
-import { getDb } from "@budgetbee/core/db";
-import { useQueryClient } from "@tanstack/react-query";
 import {
 	ColumnFiltersState,
 	SortingState,
@@ -35,6 +32,7 @@ import {
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { ArrowDown, ArrowUp, FolderOpen, LoaderCircle } from "lucide-react";
 import React from "react";
+import { toast } from "sonner";
 import { FieldValues, FormProvider, useForm } from "react-hook-form";
 import { columns } from "./columns";
 
@@ -43,9 +41,8 @@ export function TransactionsTable({
 }: {
 	ref: React.RefObject<HTMLFormElement>;
 }) {
-	const queryClient = useQueryClient();
-	const { data: authData } = authClient.useSession();
 	const { data, isLoading: isTransactionsLoading } = useTransactions();
+	const { mutateAsync: mutateTransaction } = useTransactionMutation();
 	const transactions = React.useMemo(() => data || [], [data]);
 
 	const columnVisibility = useDisplayStore(s => s.display_visibility_state);
@@ -110,9 +107,7 @@ export function TransactionsTable({
 	const formStates = useForm();
 
 	const onSubmit = async (e: FieldValues) => {
-		const db = await getDb();
-
-		const diffs: Record<string, string>[] = [];
+		const updates: { id: string; patch: Record<string, unknown> }[] = [];
 		const trUpdates: Record<string, Record<string, string>> = e.tr || {};
 		Object.entries(trUpdates).forEach(([rowId, trUpdatedRow]) => {
 			let diff: Record<string, any> = {};
@@ -121,8 +116,10 @@ export function TransactionsTable({
 			let numRowId = Number(rowId);
 			if (!Number.isSafeInteger(numRowId)) return;
 
+			const row = rows[numRowId];
+			if (!row) return;
+
 			for (const trKey of Object.keys(trUpdatedRow)) {
-				const row = rows[numRowId];
 				const updatedRow = trUpdatedRow[trKey];
 
 				if (trKey === "transaction_date") {
@@ -145,24 +142,23 @@ export function TransactionsTable({
 
 			if (diffCount <= 0) return;
 
-			const original = rows[numRowId].original;
-			Object.keys(original).forEach(key => {
-				if (diff[key] === undefined) diff[key] = original[key];
-			});
-
-			diff.user_id = authData?.user.id;
-			diff.organization_id = authData?.session.activeOrganizationId;
-			diffs.push(diff);
+			const original = row.original;
+			if (!original.id) return;
+			updates.push({ id: original.id as string, patch: diff });
 		});
-		db.from("transactions")
-			.upsert(diffs)
-			.then(() => {
-				window.alert("Transactions updated successfully.");
-				queryClient.invalidateQueries({ queryKey: ["transactions"] });
-				useEditorStore.setState({
-					is_editing: false,
-				});
+
+		if (updates.length === 0) return;
+
+		try {
+			await mutateTransaction({
+				type: "bulk_update",
+				payload: { updates },
 			});
+			toast.success("Transactions updated successfully.");
+			useEditorStore.setState({ is_editing: false });
+		} catch {
+			toast.error("Failed to update transactions.");
+		}
 	};
 
 	const columnSpan = table

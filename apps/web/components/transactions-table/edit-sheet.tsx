@@ -15,8 +15,7 @@ import {
 	SheetTitle,
 } from "@budgetbee/ui/core/sheet";
 
-import { getDb } from "@budgetbee/core/db";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTransactionMutation } from "@/lib/query";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { CategoryBadge } from "../category-badge";
@@ -36,34 +35,25 @@ export function EditSheet({ open, onOpenChange, transaction }) {
 		},
 	});
 
-	const queryClient = useQueryClient();
-
-	const { mutate: updateTransaction, isPending } = useMutation({
-		mutationFn: async data => {
-			if (!transaction?.id) return;
-
-			const db = await getDb();
-			const res = await db
-				.from("transactions")
-				.update(data)
-				.eq("id", transaction.id);
-
-			if (res.error) {
-				toast.error("Failed to update transaction");
-				return;
-			}
-
-			return res.data;
-		},
-		onSuccess: () => {
-			toast.success("Transaction updated successfully");
-			queryClient.invalidateQueries({ queryKey: ["tr", "get"] });
-			onOpenChange(false);
-		},
-	});
+	const { mutate: updateTransaction, isPending } = useTransactionMutation();
 
 	const onSubmit = data => {
-		updateTransaction(data);
+		if (!transaction?.id) return;
+		updateTransaction(
+			{
+				type: "update",
+				payload: { id: transaction.id, patch: data },
+			},
+			{
+				onSuccess: () => {
+					toast.success("Transaction updated successfully");
+					onOpenChange(false);
+				},
+				onError: () => {
+					toast.error("Failed to update transaction");
+				},
+			},
+		);
 	};
 
 	return (

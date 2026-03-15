@@ -1,7 +1,8 @@
 "use client";
 
+import { useTransactionMutation } from "@/lib/query";
 import { useDisplayStore, useStore } from "@/lib/store";
-import { getDb } from "@budgetbee/core/db";
+import { Button } from "@budgetbee/ui/core/button";
 import {
 	Dialog,
 	DialogClose,
@@ -12,41 +13,13 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@budgetbee/ui/core/dialog";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@budgetbee/ui/core/button";
 
 export function DeleteButton() {
 	const rowSelectionIds = useStore(s => s.row_selection_entries_ids);
 
-	const queryClient = useQueryClient();
-	const { mutateAsync, isPending } = useMutation({
-		mutationKey: ["tr", "many", "delete"],
-		mutationFn: async () => {
-			if (rowSelectionIds.length <= 0) return;
-			const db = await getDb();
-			const res = await db
-				.from("transactions")
-				.delete()
-				.in("id", rowSelectionIds);
-			if (res.error) throw res.error;
-		},
-		onSuccess: () => {
-			toast.success("Transactions deleted successfully.");
-			queryClient.invalidateQueries({
-				queryKey: ["tr", "get"],
-				exact: false,
-			});
-			queryClient.refetchQueries({
-				queryKey: ["tr", "get"],
-				exact: false,
-			});
-			useDisplayStore.setState({ display_row_selection_state: {} });
-			useStore.setState({ row_selection_entries_ids: [] });
-		},
-		onError: () => toast.error("Failed to delete transactions"),
-	});
+	const { mutateAsync, isPending } = useTransactionMutation();
 
 	if (rowSelectionIds.length <= 0) return null;
 
@@ -77,7 +50,21 @@ export function DeleteButton() {
 					<Button
 						size="sm"
 						isLoading={isPending}
-						onClick={() => mutateAsync()}>
+						onClick={async () => {
+							await mutateAsync({
+								type: "bulk_delete",
+								payload: { ids: rowSelectionIds },
+							});
+							toast.success(
+								"Transactions deleted successfully.",
+							);
+							useDisplayStore.setState({
+								display_row_selection_state: {},
+							});
+							useStore.setState({
+								row_selection_entries_ids: [],
+							});
+						}}>
 						Delete
 					</Button>
 				</DialogFooter>

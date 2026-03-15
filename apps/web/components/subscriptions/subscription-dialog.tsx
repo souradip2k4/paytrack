@@ -1,6 +1,13 @@
 "use client";
 
 import { CategoryPicker } from "@/components/category-picker";
+import { useStore } from "@/lib/store/store";
+import {
+	enqueueMutation,
+	flushQueue,
+	getLocalDb,
+	useSyncStore,
+} from "@/lib/sync";
 import { authClient } from "@budgetbee/core/auth-client";
 import { Button } from "@budgetbee/ui/core/button";
 import {
@@ -19,11 +26,9 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@budgetbee/ui/core/select";
-
-import { useStore } from "@/lib/store/store";
-import { getDb } from "@budgetbee/core/db";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { nanoid } from "nanoid";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -62,14 +67,37 @@ export function SubscriptionDialog() {
 		mutationKey: ["subscriptions", "post"],
 		mutationFn: async (data: FieldValues) => {
 			if (!authData || !authData.user || !authData.user.id) return;
-			const { ...rest } = data;
-			const db = await getDb();
-			const res = await db.from("subscriptions").insert({
-				...rest,
+			const id = nanoid();
+			const now = new Date().toISOString();
+			const syncClientId = useSyncStore.getState().clientId;
+			const record = {
+				...data,
+				id,
 				user_id: authData.user.id,
-			});
-			if (res.error) throw res.error;
-			return res.data;
+				organization_id: authData.session?.activeOrganizationId ?? null,
+				created_at: now,
+				updated_at: now,
+				deleted_at: null,
+				_sync_state: "pending" as const,
+				_client_id: syncClientId,
+				_synced_at: null,
+			};
+			const localDb = getLocalDb();
+			await localDb.transaction(
+				"rw",
+				localDb.subscriptions,
+				localDb.mutation_queue,
+				async () => {
+					await localDb.subscriptions.put(record);
+					await enqueueMutation({
+						table: "subscriptions",
+						operation: "insert",
+						record_id: id,
+						patch: record,
+					});
+				},
+			);
+			flushQueue().catch(console.error);
 		},
 		onError: () => toast.error("Failed to create subscription"),
 		onSuccess: () => {

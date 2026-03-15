@@ -4,7 +4,6 @@ import { CategoryPicker } from "@/components/category-picker";
 import { DatePicker } from "@/components/date-picker";
 import { StatusBadgeProps } from "@/components/status-badge";
 import { useLocalStorage } from "@/hooks/use-localstorage";
-import { authClient } from "@budgetbee/core/auth-client";
 import { Badge } from "@budgetbee/ui/core/badge";
 import { Button } from "@budgetbee/ui/core/button";
 import {
@@ -26,13 +25,11 @@ import {
 
 import currenciesJson from "@/lib/currencies.json";
 import { evaluateExpression } from "@/lib/math-parser";
-import { useCategories } from "@/lib/query";
+import { useCategories, useTransactionMutation } from "@/lib/query";
 import { useStore } from "@/lib/store/store";
-import { getDb } from "@budgetbee/core/db";
 import { Kbd } from "@budgetbee/ui/core/kbd";
 import { cn } from "@budgetbee/ui/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { PlusIcon } from "lucide-react";
 import React from "react";
@@ -72,48 +69,19 @@ const schema = z.object({
 type FieldValues = z.infer<typeof schema>;
 
 export function TransactionDialog() {
-	const queryClient = useQueryClient();
-	const { data: authData } = authClient.useSession();
+	const { mutateAsync: createTransaction, isPending } = useTransactionMutation();
 
-	const { mutateAsync: createTransaction, isPending } = useMutation({
-		mutationKey: ["tr", "post"],
-		mutationFn: async (data: FieldValues) => {
-			if (!authData || !authData.user || !authData.user.id) return;
-			const { transaction_date, ...rest } = data;
-			const db = await getDb();
-			const res = await db.from("transactions").insert({
+	const handleCreate = async (data: FieldValues) => {
+		const { transaction_date, ...rest } = data;
+		await createTransaction({
+			type: "create",
+			payload: {
 				...rest,
-				transaction_date: transaction_date?.toISOString(),
-				user_id: authData.user.id,
-				organization_id: authData.session?.activeOrganizationId,
-			});
-			if (res.error) throw res.error;
-			return res.data;
-		},
-		onError: (error: any) => {
-			// Check for RLS permission violation (PostgreSQL error code 42501 or message contains "row-level security")
-			if (
-				error?.code === "42501" ||
-				error?.message?.includes("row-level security") ||
-				error?.message?.includes("insufficient_privilege")
-			) {
-				toast.error("Insufficient permissions to create transaction");
-			} else {
-				toast.error("Failed to create transaction");
-			}
-		},
-		onSuccess: () => {
-			toast.success("Transaction created successfully");
-			queryClient.invalidateQueries({
-				queryKey: ["tr", "get"],
-				exact: false,
-			});
-			queryClient.refetchQueries({
-				queryKey: ["tr", "get"],
-				exact: false,
-			});
-		},
-	});
+				transaction_date: transaction_date?.toISOString() ?? new Date().toISOString(),
+			},
+		});
+		toast.success("Transaction created successfully");
+	};
 
 	const { data: categories } = useCategories();
 
@@ -144,7 +112,7 @@ export function TransactionDialog() {
 	const currency = watch("currency");
 
 	const onSubmit = async (e: FieldValues) => {
-		await createTransaction(e);
+		await handleCreate(e);
 		reset();
 	};
 
