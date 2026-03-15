@@ -25,7 +25,7 @@ export default function LandingPage() {
 					className={cn(
 						"text-accent-foreground hidden select-none items-center text-2xl font-[Instrument_Serif] lg:flex lg:text-5xl",
 					)}>
-					Seemlessly track your
+					Seamlessly track your
 					<span className="text-slider text-primary">
 						<span className="text-slider__word">finances</span>
 						<span className="text-slider__word">expense</span>
@@ -33,7 +33,7 @@ export default function LandingPage() {
 					</span>
 				</h1>
 				<h1 className="text-4xl font-[Instrument_Serif] lg:hidden">
-					Seemlessly track your{" "}
+					Seamlessly track your{" "}
 					<span className="text-primary">finances</span>
 				</h1>
 				<h2 className="text-muted-foreground text-lg leading-relaxed md:text-xl lg:w-1/2 lg:text-center">

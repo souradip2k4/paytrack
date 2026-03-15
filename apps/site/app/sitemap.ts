@@ -1,27 +1,36 @@
+import { getAllBlogPosts, getSiteUrl } from "@/lib/blog";
 import { MetadataRoute } from "next";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-	if (!process.env.NEXT_PUBLIC_SITE_URL)
-		throw Error("env: NEXT_PUBLIC_SITE_URL is not set");
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+	const siteUrl = getSiteUrl();
 
-	const sitemaps = [
+	const staticPages = [
+		"/blog",
 		"/pricing",
 		"/legal/privacy-policy",
 		"/legal/terms-and-conditions",
 		"/legal/refund-policy",
 		"/legal/cookie-policy",
 	].map(slug => ({
-		url: process.env.NEXT_PUBLIC_SITE_URL + slug,
+		url: siteUrl + slug,
 		lastModified: new Date(),
+	}));
+
+	const blogPosts = await getAllBlogPosts();
+	const blogPages = blogPosts.map(post => ({
+		url: `${siteUrl}${post.route}`,
+		lastModified: post.lastModified,
+		changeFrequency: "weekly" as const,
 	}));
 
 	return [
 		{
-			url: process.env.NEXT_PUBLIC_SITE_URL,
+			url: siteUrl,
 			priority: 1,
 			changeFrequency: "monthly",
 			lastModified: new Date(),
 		},
-		...sitemaps,
+		...staticPages,
+		...blogPages,
 	];
 }

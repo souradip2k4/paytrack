@@ -40,7 +40,7 @@ export default async function CMSPage({
 
 			{content && (
 				<article>
-					<MDXRenderer source={content!.compiledSource} />
+					<MDXRenderer source={content!.content} />
 				</article>
 			)}
 		</div>
