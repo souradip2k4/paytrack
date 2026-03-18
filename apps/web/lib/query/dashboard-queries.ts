@@ -10,7 +10,6 @@ import type { DashboardView, WidgetConfig } from "@/lib/types/dashboard";
 import { authClient } from "@budgetbee/core/auth-client";
 import { getDb } from "@budgetbee/core/db";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { nanoid } from "nanoid";
 import { toast } from "sonner";
 import { useAuthGuard } from "../query";
 import { triggerPull } from "../sync/pull";
@@ -121,7 +120,7 @@ export const useDashboardMutation = () => {
 			const syncClientId = useSyncStore.getState().clientId;
 
 			if (data.type === "create") {
-				const id = nanoid();
+				const id = crypto.randomUUID();
 				const now = new Date().toISOString();
 				const record = {
 					id,

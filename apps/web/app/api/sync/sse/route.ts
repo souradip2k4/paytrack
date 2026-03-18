@@ -10,7 +10,7 @@ const SYNCABLE_TABLES = [
 	"dashboard_views",
 ] as const;
 
-const PING_INTERVAL_MS = 25_000; // below Vercel's 30s timeout
+const PING_INTERVAL_MS = 8_000; // below Vercel's 10s timeout
 
 const MAX_CONNECTIONS_PER_USER = 5;
 const _connectionCounts = new Map<string, number>();
@@ -51,14 +51,17 @@ export async function GET(_req: NextRequest) {
 	const subscriber = new Redis(getRedisUrl());
 
 	let pingInterval: ReturnType<typeof setInterval> | null = null;
+	let cleaned = false;
 
 	const cleanup = () => {
+		if (cleaned) return;
+		cleaned = true;
 		if (pingInterval) {
 			clearInterval(pingInterval);
 			pingInterval = null;
 		}
-		subscriber.unsubscribe(...channels).catch(console.error);
-		subscriber.quit().catch(console.error);
+		subscriber.unsubscribe(...channels).catch(() => {});
+		subscriber.quit().catch(() => {});
 		const count = _connectionCounts.get(userId) ?? 1;
 		if (count <= 1) {
 			_connectionCounts.delete(userId);
@@ -72,16 +75,21 @@ export async function GET(_req: NextRequest) {
 			const encoder = new TextEncoder();
 
 			const send = (event: string, data: string) => {
-				controller.enqueue(
-					encoder.encode(`event: ${event}\ndata: ${data}\n\n`),
-				);
+				try {
+					controller.enqueue(
+						encoder.encode(`event: ${event}\ndata: ${data}\n\n`),
+					);
+				} catch {
+					// Controller already closed
+					cleanup();
+				}
 			};
 
 			subscriber.subscribe(...channels, err => {
 				if (err) {
 					console.error("[sync/sse] subscribe error:", err);
 					cleanup();
-					controller.close();
+					try { controller.close(); } catch {}
 				}
 			});
 

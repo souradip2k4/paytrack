@@ -16,7 +16,6 @@ import { authClient } from "@budgetbee/core/auth-client";
 import { getDb } from "@budgetbee/core/db";
 import { PostgrestFilterBuilder } from "@supabase/postgrest-js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { nanoid } from "nanoid";
 import React from "react";
 import { toast } from "sonner";
 import { triggerPull } from "./sync/pull";
@@ -131,7 +130,7 @@ export const useCategoryMutation = () => {
 			const orgId = authData.session?.activeOrganizationId ?? null;
 
 			if (data.type === "create") {
-				const id = nanoid();
+				const id = crypto.randomUUID();
 				const now = new Date().toISOString();
 				const record = {
 					id,
@@ -302,7 +301,7 @@ export const useTransactionMutation = () => {
 			const orgId = authData.session?.activeOrganizationId ?? null;
 
 			if (data.type === "create") {
-				const id = nanoid();
+				const id = crypto.randomUUID();
 				const now = new Date().toISOString();
 				const record = {
 					...data.payload,
