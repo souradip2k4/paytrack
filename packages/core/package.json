@@ -11,7 +11,7 @@
 		"@budgetbee/email": "workspace:*",
 		"@polar-sh/better-auth": "1.6.4",
 		"@supabase/postgrest-js": "^1.21.4",
-		"better-auth": "1.4.17",
+		"better-auth": "1.4.9",
 		"ioredis": "^5.8.2",
 		"zod": "^4.3.6"
 	},
