@@ -2,12 +2,12 @@ import { BlogToc } from "@/components/blog-toc";
 import {
 	getAllBlogPosts,
 	getBlogPostBySlug,
-	getSiteUrl,
 	resolveBlogImageUrl,
 } from "@/lib/blog";
-import { MDXRenderer } from "@budgetbee/ui/core/mdx-renderer";
 import { Button } from "@budgetbee/ui/core/button";
+import { MDXRenderer } from "@budgetbee/ui/core/mdx-renderer";
 import { Separator } from "@budgetbee/ui/core/separator";
+import { getSiteUrl } from "@budgetbee/ui/lib/utils";
 import { format } from "date-fns";
 import { Link2 } from "lucide-react";
 import type { Metadata } from "next";
@@ -108,7 +108,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 							variant="ghost"
 							size="icon"
 							className="text-muted-foreground hover:text-foreground mt-1">
-							<a href="#blog-post-title" aria-label="Link to post title">
+							<a
+								href="#blog-post-title"
+								aria-label="Link to post title">
 								<Link2 className="size-4" />
 							</a>
 						</Button>

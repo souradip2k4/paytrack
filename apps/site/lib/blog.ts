@@ -1,11 +1,11 @@
 import { readMDXFile, readMarkdownFile } from "@budgetbee/ui/lib/markdown";
+import { getSiteUrl } from "@budgetbee/ui/lib/utils";
 import fs from "node:fs";
 import path from "node:path";
 
 const BLOG_DIR_SEGMENTS = ["content", "blogs"] as const;
 const MARKDOWN_EXTENSIONS = [".md", ".mdx"] as const;
 const MARKDOWN_FILE_PATTERN = /\.mdx?$/i;
-const DEFAULT_SITE_URL = "https://www.budget-bee.app";
 
 export type BlogSeoMetadata = {
 	title?: string;
@@ -41,14 +41,6 @@ export type BlogPost = BlogPostSummary & {
 	content: string;
 	compiledSource: string;
 };
-
-function trimTrailingSlash(value: string): string {
-	return value.replace(/\/+$/, "");
-}
-
-export function getSiteUrl(): string {
-	return trimTrailingSlash(process.env.NEXT_PUBLIC_SITE_URL || DEFAULT_SITE_URL);
-}
 
 export function resolveBlogImageUrl(
 	image: string | undefined,
@@ -89,7 +81,8 @@ function walkMarkdownFiles(directory: string): string[] {
 	const files = entries.flatMap(entry => {
 		const fullPath = path.join(directory, entry.name);
 		if (entry.isDirectory()) return walkMarkdownFiles(fullPath);
-		if (entry.isFile() && MARKDOWN_FILE_PATTERN.test(entry.name)) return [fullPath];
+		if (entry.isFile() && MARKDOWN_FILE_PATTERN.test(entry.name))
+			return [fullPath];
 		return [];
 	});
 
@@ -154,7 +147,8 @@ function recordValue(value: unknown): Record<string, unknown> | undefined {
 function normalizeDate(value: unknown, fallback: Date): string {
 	const maybeDate = stringValue(value);
 	if (!maybeDate) return fallback.toISOString();
-	if (Number.isNaN(new Date(maybeDate).getTime())) return fallback.toISOString();
+	if (Number.isNaN(new Date(maybeDate).getTime()))
+		return fallback.toISOString();
 	return maybeDate;
 }
 
@@ -171,14 +165,15 @@ function normalizeFrontmatter(
 	lastModified: Date,
 ): BlogFrontmatter {
 	const metadataRecord = recordValue(rawFrontmatter.metadata);
-	const metadata = metadataRecord
-		? {
+	const metadata =
+		metadataRecord ?
+			{
 				title: stringValue(metadataRecord.title),
 				description: stringValue(metadataRecord.description),
 				keywords: stringArrayValue(metadataRecord.keywords),
 				image: stringValue(metadataRecord.image),
 			}
-		: undefined;
+		:	undefined;
 
 	const title = stringValue(rawFrontmatter.title) || toReadableTitle(slug);
 	const description =
@@ -208,7 +203,11 @@ function buildSummaryFromFile(
 	const slug = slugSegments.join("/");
 	const route = toRoute(slugSegments);
 	const lastModified = fs.statSync(filePath).mtime;
-	const frontmatter = normalizeFrontmatter(rawFrontmatter, slug, lastModified);
+	const frontmatter = normalizeFrontmatter(
+		rawFrontmatter,
+		slug,
+		lastModified,
+	);
 
 	return {
 		slug,
@@ -249,7 +248,11 @@ export async function getAllBlogPosts(options?: {
 		filePaths.map(async filePath => {
 			const { data, error } = await readMarkdownFile(filePath);
 			if (error || !data) return null;
-			return buildSummaryFromFile(filePath, data.frontmatter, data.readingTime);
+			return buildSummaryFromFile(
+				filePath,
+				data.frontmatter,
+				data.readingTime,
+			);
 		}),
 	);
 
@@ -257,14 +260,16 @@ export async function getAllBlogPosts(options?: {
 		.filter((post): post is BlogPostSummary => post !== null)
 		.filter(post => includeDrafts || !post.frontmatter.draft)
 		.sort(
-			(a, b) => publishedTime(b.frontmatter) - publishedTime(a.frontmatter),
+			(a, b) =>
+				publishedTime(b.frontmatter) - publishedTime(a.frontmatter),
 		);
 }
 
 export async function getBlogPostBySlug(
 	slugInput: string[] | string,
 ): Promise<BlogPost | null> {
-	const slugSegments = (Array.isArray(slugInput) ? slugInput : slugInput.split("/"))
+	const slugSegments = (
+		Array.isArray(slugInput) ? slugInput : slugInput.split("/"))
 		.map(segment => segment.trim())
 		.filter(Boolean);
 

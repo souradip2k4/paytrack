@@ -34,6 +34,7 @@
 		"./ui/*": "./ui/*.tsx",
 		"./db": "./db.ts",
 		"./db-pool": "./db-pool.ts",
+		"./redis": "./redis.ts",
 		"./feature-flags": "./feature-flags.ts",
 		"./error": "./error.ts"
 	}

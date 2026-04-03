@@ -1,0 +1,17 @@
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+	<sitemap>
+		<loc>https://www.budget-bee.app/sitemap/sitemap.xml</loc>
+	</sitemap>
+	<sitemap>
+		<loc>https://www.budget-bee.app/blog/sitemap.xml</loc>
+	</sitemap>
+	<sitemap>
+		<loc>https://www.budget-bee.app/legal/sitemap.xml</loc>
+	</sitemap>
+	<sitemap>
+		<loc>https://www.budget-bee.app/currency-converter/sitemap.xml</loc>
+	</sitemap>
+	<sitemap>
+		<loc>https://www.budget-bee.app/exchange-rates/sitemap.xml</loc>
+	</sitemap>
+</sitemapindex>

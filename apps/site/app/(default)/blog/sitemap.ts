@@ -1,19 +1,15 @@
-import { getAllBlogPosts, getSiteUrl } from "@/lib/blog";
+import { getAllBlogPosts } from "@/lib/blog";
+import { getSiteUrl } from "@budgetbee/ui/lib/utils";
 import { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	const siteUrl = getSiteUrl();
 
-	const staticPages = [
-		"/blog",
-		"/pricing",
-		"/legal/privacy-policy",
-		"/legal/terms-and-conditions",
-		"/legal/refund-policy",
-		"/legal/cookie-policy",
-	].map(slug => ({
+	const staticPages = ["/blog"].map(slug => ({
 		url: siteUrl + slug,
 		lastModified: new Date(),
+		priority: 1,
+		changeFrequency: "daily" as const,
 	}));
 
 	const blogPosts = await getAllBlogPosts();
@@ -23,14 +19,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		changeFrequency: "weekly" as const,
 	}));
 
-	return [
-		{
-			url: siteUrl,
-			priority: 1,
-			changeFrequency: "monthly",
-			lastModified: new Date(),
-		},
-		...staticPages,
-		...blogPages,
-	];
+	return [...staticPages, ...blogPages];
 }

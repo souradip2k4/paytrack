@@ -6,6 +6,7 @@ import { cn } from "@budgetbee/ui/lib/utils";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata } from "next";
 import { Instrument_Serif, Inter } from "next/font/google";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import React from "react";
 
 const instrumentSerif = Instrument_Serif({
@@ -98,13 +99,15 @@ export default function RootLayout({
 							gaId={process.env.GOOGLE_ANALYTICS_ID}
 						/>
 					)}
-				<div>
-					<div className="mx-auto flex max-w-5xl justify-center">
-						<Navbar />
+				<NuqsAdapter>
+					<div>
+						<div className="mx-auto flex max-w-5xl justify-center">
+							<Navbar />
+						</div>
+						{children}
+						<Footer />
 					</div>
-					{children}
-					<Footer />
-				</div>
+				</NuqsAdapter>
 				<Toaster />
 			</body>
 		</html>

@@ -27,6 +27,13 @@ const footerConfig = {
 			],
 		},
 		{
+			title: "Tools",
+			links: [
+				{ label: "Currency Converter", href: "/currency-converter" },
+				{ label: "Exchange Rates", href: "/exchange-rates" },
+			],
+		},
+		{
 			title: "Legal",
 			links: [
 				{ label: "Privacy Policy", href: "/legal/privacy-policy" },
@@ -58,7 +65,7 @@ export function Footer() {
 					</div>
 				</div>
 
-				<div className="grid grid-cols-2 gap-8 md:grid-cols-3">
+				<div className="grid grid-cols-2 gap-8 md:grid-cols-4">
 					{footerConfig.columns.map((col, idx) => (
 						<div key={idx}>
 							<h3 className="mb-3 text-sm font-medium">
