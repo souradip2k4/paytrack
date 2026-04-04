@@ -173,7 +173,7 @@ export function ExchangeRatesTable({ base = "USD" }: { base?: string }) {
 				: error ?
 					<p className="text-destructive px-6 pb-6">{error}</p>
 				: data ?
-					<div className="overflow-x-auto">
+					<div className="overflow-x-auto max-h-[70vh] overflow-y-auto">
 						<Table className="table-fixed">
 							<TableHeader className="bg-input/30">
 								<TableRow className="hover:bg-transparent">
