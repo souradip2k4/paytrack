@@ -29,6 +29,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@budgetbee/ui/core/table";
+import { format } from "date-fns";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -331,7 +332,7 @@ export function ExchangeRatesTable({ base = "USD" }: { base?: string }) {
 			{data && (
 				<CardFooter className="border-t p-6">
 					<p className="text-muted-foreground text-xs">
-						{`Rates last updated: {format(data.date, "MMM d, yyyy")}`}
+						Rates last updated: {format(data.date, "MMM d, yyyy")}
 					</p>
 				</CardFooter>
 			)}
