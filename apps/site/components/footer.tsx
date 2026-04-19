@@ -31,6 +31,10 @@ const footerConfig = {
 			links: [
 				{ label: "Currency Converter", href: "/currency-converter" },
 				{ label: "Exchange Rates", href: "/exchange-rates" },
+				{
+					label: "Income Tax Calculator",
+					href: "/income-tax-calculator",
+				},
 			],
 		},
 		{

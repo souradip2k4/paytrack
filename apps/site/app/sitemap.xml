@@ -13,5 +13,8 @@
 	</sitemap>
 	<sitemap>
 		<loc>https://www.budget-bee.app/exchange-rates/sitemap.xml</loc>
+    </sitemap>
+	<sitemap>
+		<loc>https://www.budget-bee.app/income-tax-calculator/sitemap.xml</loc>
 	</sitemap>
 </sitemapindex>
