@@ -10,7 +10,7 @@
 		"@budgetbee/ui": "workspace:*",
 		"@next/third-parties": "^15.5.4",
 		"@tanstack/react-query": "^5.90.2",
-		"axios": "^1.15.0",
+		"axios": "^1.15.2",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"date-fns": "^4.1.0",
