@@ -513,14 +513,21 @@ export const useTransactionDistributionByCategories = () => {
 	const start_date = useChartStore(s => s.tr_chart_date_start);
 	const end_date = useChartStore(s => s.tr_chart_date_end);
 	const filterStack = useFilterStore(s => s.filter_stack);
-	const { data: authData, error: authError } = authClient.useSession();
+	const { data: authData, error: authError, isPending: isSessionLoading } = authClient.useSession();
 	if (authError) throw authError;
 	const res = useQuery({
-		queryKey: ["tr", "dist", start_date, end_date, filterStack],
+		queryKey: ["tr", "dist", authData?.user?.id, start_date, end_date, filterStack],
 		queryFn: async () => {
-			if (authData === null) return [];
 			if (!navigator.onLine) return [];
 			const db = await getDb();
+			const filters = serializeFilterStack(filterStack);
+			if (start_date && end_date) {
+				filters.push({
+					field: "transaction_date",
+					operation: "between",
+					value: [start_date, end_date],
+				});
+			}
 			const res = await db.rpc(
 				"get_transaction_distribution_by_category",
 				{
@@ -528,13 +535,14 @@ export const useTransactionDistributionByCategories = () => {
 						user_id: authData?.user?.id,
 						organization_id:
 							authData?.session?.activeOrganizationId,
-						filters: serializeFilterStack(filterStack),
+						filters,
 					},
 				},
 			);
 			if (res.error) throw res.error;
 			return res.data as TransactionDistribution[];
 		},
+		enabled: !isSessionLoading && !!authData?.user?.id,
 	});
 
 	return res;
