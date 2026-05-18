@@ -46,7 +46,7 @@ export function getUrl(
 		args.pop();
 	}
 	args.forEach(slug => {
-		url.pathname += `/${encodeURIComponent(slug as string)}`;
+		url.pathname += `${encodeURIComponent(slug as string)}`;
 	});
 	return trimTailingSlashes(url.toString());
 }
