@@ -35,6 +35,7 @@ const footerConfig = {
 					label: "Income Tax Calculator",
 					href: "/income-tax-calculator",
 				},
+				{ label: "Invoice Generator", href: "/invoice-generator" },
 			],
 		},
 		{
