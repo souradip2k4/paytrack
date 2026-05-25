@@ -542,7 +542,7 @@ export const useTransactionDistributionByCategories = () => {
 			if (res.error) throw res.error;
 			return res.data as TransactionDistribution[];
 		},
-		enabled: !isSessionLoading && !!authData?.user?.id,
+		enabled: !isSessionLoading && authError === null && !!authData?.user?.id,
 	});
 
 	return res;
