@@ -4,7 +4,7 @@ export const runtime = "edge";
 
 export async function GET(request: Request) {
 	const { searchParams } = new URL(request.url);
-	const title = (searchParams.get("title") || "Budgetbee Blog").slice(0, 140);
+	const title = (searchParams.get("title") || "Paytrack Blog").slice(0, 140);
 
 	return new ImageResponse(
 		<div
@@ -25,7 +25,7 @@ export async function GET(request: Request) {
 					fontSize: 34,
 					letterSpacing: "-0.04em",
 				}}>
-				Budgetbee Blog
+				Paytrack Blog
 			</div>
 			<div
 				style={{

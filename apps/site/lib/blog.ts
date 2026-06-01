@@ -50,7 +50,7 @@ export function resolveBlogImageUrl(
 	const siteUrl = getSiteUrl();
 	if (!image) {
 		const query = new URLSearchParams({
-			title: title || "Budgetbee Blog",
+			title: title || "Paytrack Blog",
 			route,
 		});
 		return `${siteUrl}/blog-og?${query.toString()}`;
@@ -178,7 +178,7 @@ function normalizeFrontmatter(
 	const title = stringValue(rawFrontmatter.title) || toReadableTitle(slug);
 	const description =
 		stringValue(rawFrontmatter.description) ||
-		`Read "${title}" on the Budgetbee blog.`;
+		`Read "${title}" on the Paytrack blog.`;
 
 	return {
 		title,

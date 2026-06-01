@@ -49,7 +49,7 @@ export function Navbar() {
 								<BudgetbeeLogo />
 								<p className="text-xl font-semibold tracking-tighter">
 									{" "}
-									Budgetbee
+									Paytrack
 								</p>
 							</Link>
 

@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-	title: "Currency Converter - Convert Currencies with Live Rates | Budgetbee",
+	title: "Currency Converter - Convert Currencies with Live Rates | Paytrack",
 	description:
 		"Free currency converter with live exchange rates. Convert between 40+ currencies including USD, EUR, GBP, INR, JPY, CAD, and more.",
 	keywords: [
@@ -49,7 +49,7 @@ export default function CurrencyConverterPage() {
 
 			<CTACardOne
 				title="Track multi-currency spending without spreadsheets"
-				description="Budgetbee helps you capture expenses in multiple currencies and keep one clean view of your personal or business spending."
+				description="Paytrack helps you capture expenses in multiple currencies and keep one clean view of your personal or business spending."
 			/>
 		</div>
 	);

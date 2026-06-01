@@ -1,10 +1,10 @@
+import { CTACardOne } from "@/components/currency-converter/tool-page-shell";
 import { GeneratorShell } from "@/components/documents/generator-shell";
 import { RelatedDocumentTools } from "@/components/documents/related-tools";
-import { CTACardOne } from "@/components/currency-converter/tool-page-shell";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-	title: "Free Estimate Generator - Send Quotes Online | Budgetbee",
+	title: "Free Estimate Generator - Send Quotes Online | Paytrack",
 	description:
 		"Create quick, professional estimates and quotes. Multiple templates, custom fields, mobile-friendly. Download as PDF or share a link.",
 	keywords: [
@@ -54,7 +54,7 @@ export default function EstimateGeneratorPage() {
 
 			<CTACardOne
 				title="Stop chasing payments from a spreadsheet"
-				description="Budgetbee gives you one home for income, spend, and pending receivables."
+				description="Paytrack gives you one home for income, spend, and pending receivables."
 			/>
 		</div>
 	);

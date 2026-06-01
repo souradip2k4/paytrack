@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
 	return {
-		name: "Budgetbee",
-		short_name: "Budgetbee",
+		name: "Paytrack",
+		short_name: "Paytrack",
 		description:
-			"Budgetbee is a simple accounting tool to help you manage your income, expenses, subscriptions, inventory and more.",
+			"Paytrack is a simple accounting tool to help you manage your income, expenses, subscriptions, inventory and more.",
 		icons: [
 			{
 				src: "/web-app-manifest-192x192.png",

@@ -1,10 +1,10 @@
+import { CTACardOne } from "@/components/currency-converter/tool-page-shell";
 import { GeneratorShell } from "@/components/documents/generator-shell";
 import { RelatedDocumentTools } from "@/components/documents/related-tools";
-import { CTACardOne } from "@/components/currency-converter/tool-page-shell";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-	title: "Free Receipt Generator - Create & Share Receipts Online | Budgetbee",
+	title: "Free Receipt Generator - Create & Share Receipts Online | Paytrack",
 	description:
 		"Create payment receipts online for free. Choose a template, add items, download as PDF or share a link. No signup required.",
 	keywords: [
@@ -42,10 +42,11 @@ export default function ReceiptGeneratorPage() {
 				</h2>
 				<div className="text-muted-foreground space-y-4 text-base leading-7">
 					<p>
-						A receipt is proof that payment has been received. Unlike
-						an invoice, it usually omits due dates and payment terms.
-						This generator hides those fields automatically while
-						keeping line items, taxes and a running total.
+						A receipt is proof that payment has been received.
+						Unlike an invoice, it usually omits due dates and
+						payment terms. This generator hides those fields
+						automatically while keeping line items, taxes and a
+						running total.
 					</p>
 				</div>
 			</section>

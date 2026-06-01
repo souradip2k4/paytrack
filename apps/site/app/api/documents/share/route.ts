@@ -1,5 +1,3 @@
-import { NextResponse } from "next/server";
-import { nanoid } from "nanoid";
 import {
 	MAX_SHARE_BYTES,
 	SHARE_TTL_SECONDS,
@@ -10,6 +8,8 @@ import {
 	rateKey,
 	shareKey,
 } from "@/lib/documents/share-server";
+import { nanoid } from "nanoid";
+import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
@@ -27,7 +27,8 @@ function clientIp(request: Request): string {
 
 function siteUrl(): string {
 	const base =
-		process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.budget-bee.app";
+		process.env.NEXT_PUBLIC_SITE_URL ??
+		"https://paytrack-site-prod.vercel.app";
 	return base.replace(/\/+$/, "");
 }
 
@@ -132,10 +133,7 @@ export async function GET(request: Request) {
 	const { searchParams } = new URL(request.url);
 	const slug = searchParams.get("slug");
 	if (!slug || !SLUG_PATTERN.test(slug)) {
-		return NextResponse.json(
-			{ error: "Invalid slug." },
-			{ status: 400 },
-		);
+		return NextResponse.json({ error: "Invalid slug." }, { status: 400 });
 	}
 
 	let redis;

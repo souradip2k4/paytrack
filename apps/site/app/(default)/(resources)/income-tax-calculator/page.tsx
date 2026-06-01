@@ -8,7 +8,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-	title: "Income Tax Calculator India FY 2025-26 (AY 2026-27) | Budgetbee",
+	title: "Income Tax Calculator India FY 2025-26 (AY 2026-27) | Paytrack",
 	description:
 		"Free income tax calculator for India - compare new vs old regime for FY 2025-26 (AY 2026-27). Budget 2025 slabs, ₹75,000 standard deduction, 87A rebate, surcharge and 4% cess included.",
 	keywords: [
@@ -148,7 +148,7 @@ export default function IncomeTaxCalculatorPage() {
 
 			<CTACardOne
 				title="Plan salary, expenses and investments in one place"
-				description="Budgetbee helps you track your income and expenses in one place."
+				description="Paytrack helps you track your income and expenses in one place."
 			/>
 		</div>
 	);

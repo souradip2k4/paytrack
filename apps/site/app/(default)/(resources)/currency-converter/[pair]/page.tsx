@@ -4,11 +4,7 @@ import {
 	CurrencySelectWithRelatedTools,
 } from "@/components/currency-converter/currency-converter";
 import { CTACardOne } from "@/components/currency-converter/tool-page-shell";
-import {
-	getAllPairSlugs,
-	getCurrency,
-	parsePairSlug,
-} from "@/lib/currencies";
+import { getAllPairSlugs, getCurrency, parsePairSlug } from "@/lib/currencies";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -28,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	const from = getCurrency(parsed.from)!;
 	const to = getCurrency(parsed.to)!;
 
-	const title = `${from.code} to ${to.code} - Convert ${from.name} to ${to.name} | Budgetbee`;
+	const title = `${from.code} to ${to.code} - Convert ${from.name} to ${to.name} | Paytrack`;
 	const description = `Convert ${from.name} (${from.code}) to ${to.name} (${to.code}) with live exchange rates. Free ${from.code} to ${to.code} currency converter.`;
 
 	return {
@@ -113,7 +109,7 @@ export default async function CurrencyPairPage({ params }: Props) {
 
 			<CTACardOne
 				title="Track multi-currency spending without spreadsheets"
-				description="Budgetbee helps you capture expenses in multiple currencies and keep one clean view of your personal or business spending."
+				description="Paytrack helps you capture expenses in multiple currencies and keep one clean view of your personal or business spending."
 			/>
 		</div>
 	);

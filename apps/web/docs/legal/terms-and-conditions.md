@@ -4,10 +4,10 @@ Last updated: April 25, 2025
 
 ## AGREEMENT TO OUR LEGAL TERMS
 
-We are Budgetbee ("**Company**," "**we**," "**us**," "**our**"), a company registered in India at Ganapati Tower, Gorai Road, Gopalpur, West Bengal 713304.
-We operate the website [https://www.budgetbee.site](https://www.budgetbee.site) (the "**Site**"), as well as any other related products and services that refer or link to these legal terms (the "**Legal Terms**") (collectively, the "**Services**").
+We are Paytrack ("**Company**," "**we**," "**us**," "**our**"), a company registered in India at Ganapati Tower, Gorai Road, Gopalpur, West Bengal 713304.
+We operate the website [https://paytrack-web.vercel.app](https://paytrack-web.vercel.app) (the "**Site**"), as well as any other related products and services that refer or link to these legal terms (the "**Legal Terms**") (collectively, the "**Services**").
 You can contact us by phone at (+91)7719154350, email at budgetbee@gmail.com, or by mail to Ganapati Tower, Gorai Road, Gopalpur, West Bengal 713304, India.
-These Legal Terms constitute a legally binding agreement made between you, whether personally or on behalf of an entity ("**you**"), and Budgetbee, concerning your access to and use of the Services. You agree that by accessing the Services, you have read, understood, and agreed to be bound by all of these Legal Terms. IF YOU DO NOT AGREE WITH ALL OF THESE LEGAL TERMS, THEN YOU ARE EXPRESSLY PROHIBITED FROM USING THE SERVICES AND YOU MUST DISCONTINUE USE IMMEDIATELY.
+These Legal Terms constitute a legally binding agreement made between you, whether personally or on behalf of an entity ("**you**"), and Paytrack, concerning your access to and use of the Services. You agree that by accessing the Services, you have read, understood, and agreed to be bound by all of these Legal Terms. IF YOU DO NOT AGREE WITH ALL OF THESE LEGAL TERMS, THEN YOU ARE EXPRESSLY PROHIBITED FROM USING THE SERVICES AND YOU MUST DISCONTINUE USE IMMEDIATELY.
 Supplemental terms and conditions or documents that may be posted on the Services from time to time are hereby expressly incorporated herein by reference. We reserve the right, in our sole discretion, to make changes or modifications to these Legal Terms from time to time. We will alert you about any changes by updating the "Last updated" date of these Legal Terms, and you waive any right to receive specific notice of each such change. It is your responsibility to periodically review these Legal Terms to stay informed of updates. You will be subject to, and will be deemed to have been made aware of and to have accepted, the changes in any revised Legal Terms by your continued use of the Services after the date such revised Legal Terms are posted.
 The Services are intended for users who are at least 18 years old. Persons under the age of 18 are not permitted to use or register for the Services.
 We recommend that you print a copy of these Legal Terms for your records.
@@ -164,7 +164,7 @@ We reserve the right, but not the obligation, to: (1) monitor the Services for v
 
 ## 14\. PRIVACY POLICY
 
-We care about data privacy and security. Please review our Privacy Policy: [https://www.budgetbee.site/legal/privacy-policy](https://www.budgetbee.site/legal/privacy-policy). By using the Services, you agree to be bound by our Privacy Policy, which is incorporated into these Legal Terms. Please be advised the Services are hosted in India, United States, France and Japan. If you access the Services from any other region of the world with laws or other requirements governing personal data collection, use, or disclosure that differ from applicable laws in India, United States, France and Japan, then through your continued use of the Services, you are transferring your data to India, United States, France and Japan, and you expressly consent to have your data transferred to and processed in India, United States, France and Japan.
+We care about data privacy and security. Please review our Privacy Policy: [https://paytrack-web.vercel.app/legal/privacy-policy](https://paytrack-web.vercel.app/legal/privacy-policy). By using the Services, you agree to be bound by our Privacy Policy, which is incorporated into these Legal Terms. Please be advised the Services are hosted in India, United States, France and Japan. If you access the Services from any other region of the world with laws or other requirements governing personal data collection, use, or disclosure that differ from applicable laws in India, United States, France and Japan, then through your continued use of the Services, you are transferring your data to India, United States, France and Japan, and you expressly consent to have your data transferred to and processed in India, United States, France and Japan.
 
 ## 15\. TERM AND TERMINATION
 
@@ -178,7 +178,7 @@ We cannot guarantee the Services will be available at all times. We may experien
 
 ## 17\. GOVERNING LAW
 
-These Legal Terms shall be governed by and defined following the laws of India. Budgetbee and yourself irrevocably consent that the courts of India shall have exclusive jurisdiction to resolve any dispute which may arise in connection with these Legal Terms.
+These Legal Terms shall be governed by and defined following the laws of India. Paytrack and yourself irrevocably consent that the courts of India shall have exclusive jurisdiction to resolve any dispute which may arise in connection with these Legal Terms.
 
 ## 18\. DISPUTE RESOLUTION
 
@@ -233,7 +233,7 @@ These Legal Terms and any policies or operating rules posted by us on the Servic
 ## 27\. CONTACT US
 
 In order to resolve a complaint regarding the Services or to receive further information regarding use of the Services, please contact us at:
-Budgetbee
+Paytrack
 Ganapati Tower, Gorai Road
 Gopalpur, West Bengal 713304
 India

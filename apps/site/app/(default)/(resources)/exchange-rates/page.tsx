@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-	title: "Live Exchange Rates - Current Currency Exchange Rates | Budgetbee",
+	title: "Live Exchange Rates - Current Currency Exchange Rates | Paytrack",
 	description:
 		"View live exchange rates for 40+ currencies. Check current rates for USD, EUR, GBP, INR, JPY, CAD, and more — updated daily.",
 	keywords: [
@@ -45,7 +45,7 @@ export default function ExchangeRatesPage() {
 
 			<CTACardOne
 				title="Track multi-currency spending without spreadsheets"
-				description="Budgetbee helps you capture expenses in multiple currencies and keep one clean view of your personal or business spending."
+				description="Paytrack helps you capture expenses in multiple currencies and keep one clean view of your personal or business spending."
 			/>
 		</div>
 	);

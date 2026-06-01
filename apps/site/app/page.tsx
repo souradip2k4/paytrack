@@ -73,7 +73,7 @@ export default function LandingPage() {
 						<img
 							className="bg-background aspect-15/8 relative rounded-2xl"
 							src={"/images/budgetbee-dashboard-1.png"}
-							alt="Budgetbee dashboard"
+							alt="Paytrack dashboard"
 							width="2700"
 							height="1440"
 						/>

@@ -11,7 +11,8 @@ help:
 	@echo "Setup:"
 	@echo "  make install      - Install dependencies with pnpm"
 	@echo "  make setup-env    - Create .env file and symlink to all packages"
-	@echo "  make setup        - Run full initial setup (install + setup-env)"
+	@echo "  make setup        - Run full initial setup (install + setup-env + db-setup + backfill-jwks)"
+	@echo "                      NOTE: After running this, run 'make docker-up'!"
 	@echo ""
 	@echo "Database:"
 	@echo "  make docker-up    - Start PostgreSQL and PostgREST containers"
@@ -27,6 +28,7 @@ help:
 	@echo ""
 	@echo "Utility:"
 	@echo "  make clean        - Clean node_modules and build artifacts"
+	@echo "  make kill-processes PORT=3000 - Find and kill processes running on a specific port"
 
 # ============================================
 # Setup Commands
@@ -40,7 +42,12 @@ setup-env:
 	./scripts/post_install.sh
 
 setup: install setup-env db-setup backfill-jwks
-	@echo "Setup complete! Don't forget to update your .env file."
+	@echo "=================================================="
+	@echo "✅ Setup complete!"
+	@echo "Next steps:"
+	@echo "1. Run 'make docker-up' to start PostgREST and Adminer."
+	@echo "2. Run 'make dev' to start the application."
+	@echo "=================================================="
 
 # ============================================
 # Database Commands
@@ -64,16 +71,16 @@ migrate:
 
 db-setup:
 	@echo "Starting PostgreSQL..."
-	cd infra && PGRST_JWT_SECRET="ignore" docker compose up -d bu-postgres
+	cd infra && PGRST_JWT_SECRET="ignore" docker compose up -d paytrack-postgres
 	@echo "Waiting for PostgreSQL to be ready..."
 	@echo "Streaming container logs (press Ctrl+C to abort):"
 	@echo "=================================================="
-	@source ./.env && \
-	cd infra && docker compose logs -f bu-postgres & \
+	@. ./.env && \
+	cd infra && PGRST_JWT_SECRET="ignore" docker compose logs -f paytrack-postgres & \
 	LOG_PID=$$!; \
-	source ./.env && \
+	. ./.env && \
 	timeout=300; \
-	while ! docker exec bu-postgres pg_isready -U $$POSTGRES_USER > /dev/null 2>&1; do \
+	while ! docker exec paytrack-postgres pg_isready -U $$POSTGRES_USER > /dev/null 2>&1; do \
 		timeout=$$((timeout - 1)); \
 		if [ $$timeout -le 0 ]; then \
 			kill $$LOG_PID 2>/dev/null || true; \

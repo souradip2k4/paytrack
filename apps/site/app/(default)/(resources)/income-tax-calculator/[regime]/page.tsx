@@ -26,7 +26,7 @@ const REGIME_CONFIG: Record<
 > = {
 	"new-regime": {
 		regime: "new",
-		title: "New Regime Tax Calculator FY 2025-26 (AY 2026-27) | Budgetbee",
+		title: "New Regime Tax Calculator FY 2025-26 (AY 2026-27) | Paytrack",
 		h1: "New Regime Tax Calculator",
 		description:
 			"Calculate income tax under the new regime for FY 2025-26 (AY 2026-27). Budget 2025 slabs, ₹75,000 standard deduction, 87A rebate up to ₹12 lakh, surcharge and 4% cess.",
@@ -73,7 +73,7 @@ const REGIME_CONFIG: Record<
 	},
 	"old-regime": {
 		regime: "old",
-		title: "Old Regime Tax Calculator FY 2025-26 (AY 2026-27) | Budgetbee",
+		title: "Old Regime Tax Calculator FY 2025-26 (AY 2026-27) | Paytrack",
 		h1: "Old Regime Tax Calculator",
 		description:
 			"Calculate income tax under the old regime for FY 2025-26. Claim 80C, 80D, 80CCD(1B) NPS, Section 24(b) home loan interest and HRA. Standard deduction ₹50,000, 87A rebate up to ₹5 lakh.",
@@ -204,7 +204,7 @@ export default async function TaxRegimePage({ params }: Props) {
 
 			<CTACardOne
 				title="Plan salary, investments, and tax in one place"
-				description="Budgetbee helps you track take-home pay, deductions, and monthly tax outgo so there are no surprises in March."
+				description="Paytrack helps you track take-home pay, deductions, and monthly tax outgo so there are no surprises in March."
 			/>
 		</div>
 	);

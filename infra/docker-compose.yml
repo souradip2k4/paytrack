@@ -1,13 +1,13 @@
 include:
-  - bu-postgres.yml
-  - bu-postgrest.yml
-  - bu-adminer.yml
+    - paytrack-postgres.yml
+    - paytrack-postgrest.yml
+    # - paytrack-adminer.yml
 
 volumes:
-  bu-postgres-data:
-    name: bu-postgres-data
+    paytrack-postgres-data:
+        name: paytrack-postgres-data
 
 networks:
-  bu-net:
-    name: bu-net
-    driver: bridge
+    paytrack-net:
+        name: paytrack-net
+        driver: bridge

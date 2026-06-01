@@ -1,7 +1,7 @@
 "use client";
 
-import { cn } from "@budgetbee/ui/lib/utils";
 import { Button } from "@budgetbee/ui/core/button";
+import { cn } from "@budgetbee/ui/lib/utils";
 import { Equal, X } from "lucide-react";
 import Link from "next/link";
 import React from "react";
@@ -44,7 +44,7 @@ export function Navbar() {
 								<BudgetbeeLogo />
 								<p className="text-xl font-semibold tracking-tighter">
 									{" "}
-									Budgetbee
+									Paytrack
 								</p>
 							</Link>
 

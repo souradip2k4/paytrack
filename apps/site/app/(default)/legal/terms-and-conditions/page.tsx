@@ -7,7 +7,7 @@ export default function Page() {
 				AGREEMENT TO OUR LEGAL TERMS
 			</h2>
 			<p>
-				We are Budgetbee (&quot;
+				We are Paytrack (&quot;
 				<strong>Company</strong>
 				,&quot; &quot;
 				<strong>we</strong>
@@ -17,8 +17,8 @@ export default function Page() {
 				<strong>our</strong>
 				&quot;), a company registered in India at Ganapati Tower, Gorai
 				Road, Gopalpur, West Bengal 713304. We operate the website{" "}
-				<a href="https://www.budgetbee.site">
-					https://www.budgetbee.site
+				<a href="https://paytrack-web.vercel.app">
+					https://paytrack-web.vercel.app
 				</a>{" "}
 				(the &quot;
 				<strong>Site</strong>
@@ -33,7 +33,7 @@ export default function Page() {
 				Terms constitute a legally binding agreement made between you,
 				whether personally or on behalf of an entity (&quot;
 				<strong>you</strong>
-				&quot;), and Budgetbee, concerning your access to and use of the
+				&quot;), and Paytrack, concerning your access to and use of the
 				Services. You agree that by accessing the Services, you have
 				read, understood, and agreed to be bound by all of these Legal
 				Terms. IF YOU DO NOT AGREE WITH ALL OF THESE LEGAL TERMS, THEN
@@ -715,8 +715,8 @@ export default function Page() {
 			<p>
 				We care about data privacy and security. Please review our
 				Privacy Policy:{" "}
-				<a href="https://www.budgetbee.site/legal/privacy-policy">
-					https://www.budgetbee.site/legal/privacy-policy
+				<a href="https://paytrack-web.vercel.app/legal/privacy-policy">
+					https://paytrack-web.vercel.app/legal/privacy-policy
 				</a>
 				. By using the Services, you agree to be bound by our Privacy
 				Policy, which is incorporated into these Legal Terms. Please be
@@ -778,7 +778,7 @@ export default function Page() {
 			<h2 id="17-governing-law">17. GOVERNING LAW</h2>
 			<p>
 				These Legal Terms shall be governed by and defined following the
-				laws of India. Budgetbee and yourself irrevocably consent that
+				laws of India. Paytrack and yourself irrevocably consent that
 				the courts of India shall have exclusive jurisdiction to resolve
 				any dispute which may arise in connection with these Legal
 				Terms.
@@ -1000,7 +1000,7 @@ export default function Page() {
 				receive further information regarding use of the Services,
 				please contact us at:
 			</p>
-			<p>Budgetbee</p>
+			<p>Paytrack</p>
 			<p>Ganapati Tower, Gorai Road,</p>
 			<p>Gopalpur, West Bengal 713304,</p>
 			<p>India.</p>

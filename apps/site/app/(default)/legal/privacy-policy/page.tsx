@@ -52,7 +52,7 @@ export default function Page() {
 					<p>
 						<strong>Company</strong> (referred to as either "the
 						Company", "We", "Us" or "Our" in this Agreement) refers
-						to Budgetbee.
+						to Paytrack.
 					</p>
 				</li>
 				<li>
@@ -116,7 +116,7 @@ export default function Page() {
 				</li>
 				<li>
 					<p>
-						<strong>Website</strong> refers to Budgetbee, accessible
+						<strong>Website</strong> refers to Paytrack, accessible
 						from{" "}
 						<a
 							href="https://budgetbee.site"

@@ -1,5 +1,5 @@
-import { cn } from "@budgetbee/ui/lib/utils";
 import { Toaster } from "@budgetbee/ui/core/sonner";
+import { cn } from "@budgetbee/ui/lib/utils";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -13,34 +13,34 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-	title: "Budgetbee",
+	title: "Paytrack",
 	description: "Simple, user-freidly, minimal expense tracker.",
 	keywords:
 		"budgetbee, budget, expense, tracker, budgeting, accounting, personal finance",
 	openGraph: {
-		title: "Budgetbee",
+		title: "Paytrack",
 		description: "Simple, user-freidly, minimal expense tracker.",
-		url: "https://www.budgetbee.site",
-		siteName: "Budgetbee",
+		url: "https://paytrack-web.vercel.app",
+		siteName: "Paytrack",
 		images: [
 			{
-				url: "https://www.budgetbee.site/images/budgetbee-og.png",
+				url: "https://paytrack-web.vercel.app/images/budgetbee-og.png",
 				width: 1200,
 				height: 630,
-				alt: "Budgetbee",
+				alt: "Paytrack",
 			},
 		],
 	},
 	twitter: {
 		card: "summary_large_image",
-		title: "Budgetbee",
+		title: "Paytrack",
 		description: "Simple, user-freidly, minimal expense tracker.",
 		images: [
 			{
-				url: "https://www.budgetbee.site/images/budgetbee-og.png",
+				url: "https://paytrack-web.vercel.app/images/budgetbee-og.png",
 				width: 1200,
 				height: 630,
-				alt: "Budgetbee",
+				alt: "Paytrack",
 			},
 		],
 	},
@@ -67,7 +67,7 @@ export default function RootLayout({
 					sizes="180x180"
 					href="/apple-touch-icon.png"
 				/>
-				<meta name="apple-mobile-web-app-title" content="Budgetbee" />
+				<meta name="apple-mobile-web-app-title" content="Paytrack" />
 				<link rel="manifest" href="/manifest.webmanifest" />
 			</head>
 			<body className={cn(`${inter.className}`)}>

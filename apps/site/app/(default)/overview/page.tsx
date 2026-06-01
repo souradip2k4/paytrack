@@ -5,7 +5,7 @@ export default function Overview() {
 		<div className="legal__markdown mx-auto flex flex-col gap-2 px-4 py-16 lg:w-1/2 [&>ul]:flex [&>ul]:list-disc [&>ul]:flex-col [&>ul]:gap-2">
 			<h1>Overview</h1>
 			<p>
-				Budgetbee is a free budgeting tool that lets you track your
+				Paytrack is a free budgeting tool that lets you track your
 				expenses and monitor your budget. It&apos;s easy to use and
 				customizable, so you can tailor it to your needs.
 			</p>

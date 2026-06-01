@@ -48,7 +48,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 									src="/images/budgetbee.svg"
 									className="flex aspect-square size-6 items-center justify-center rounded"
 								/>
-								<p className="truncate">Budgetbee</p>
+								<p className="truncate">Paytrack</p>
 							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>

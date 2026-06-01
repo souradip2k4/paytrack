@@ -4,7 +4,7 @@ export default function Page() {
 			<h1 id="cookie-policy">Cookie Policy</h1>
 			<p>
 				Last updated April 20, 2025 This Cookie Policy explains how
-				Budgetbee (&quot;
+				Paytrack (&quot;
 				<strong>Company</strong>
 				,&quot; &quot;
 				<strong>we</strong>
@@ -14,8 +14,8 @@ export default function Page() {
 				<strong>our</strong>
 				&quot;) uses cookies and similar technologies to recognize you
 				when you visit our website at{" "}
-				<a href="https://www.budgetbee.site">
-					https://www.budgetbee.site
+				<a href="https://paytrack-web.vercel.app">
+					https://paytrack-web.vercel.app
 				</a>{" "}
 				(&quot;
 				<strong>Website</strong>
@@ -32,7 +32,7 @@ export default function Page() {
 				by website owners in order to make their websites work, or to
 				work more efficiently, as well as to provide reporting
 				information. Cookies set by the website owner (in this case,
-				Budgetbee ) are called &quot;first-party cookies.&quot; Cookies
+				Paytrack ) are called &quot;first-party cookies.&quot; Cookies
 				set by parties other than the website owner are called
 				&quot;third-party cookies.&quot; Third-party cookies enable
 				third-party features or functionality to be provided on or
@@ -301,7 +301,7 @@ export default function Page() {
 				</a>{" "}
 				or by post to:
 			</p>
-			<p>Budgetbee</p>
+			<p>Paytrack</p>
 			<p>Ganapati Tower, Gopalpur,</p>
 			<p>West Bengal 713304,</p>
 			<p>India.</p>

@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	const to = getCurrency(parsed.to)!;
 
 	return {
-		title: `${from.code}/${to.code} Exchange Rate - ${from.name} to ${to.name} History | Budgetbee`,
+		title: `${from.code}/${to.code} Exchange Rate - ${from.name} to ${to.name} History | Paytrack`,
 		description: `Track the ${from.code} to ${to.code} exchange rate. View historical ${from.name} to ${to.name} rates with charts covering 7 days to 5 years.`,
 		keywords: [
 			`${from.code} to ${to.code} exchange rate`,
@@ -106,7 +106,7 @@ export default async function ExchangeRateDetailPage({ params }: Props) {
 
 			<CTACardOne
 				title="Track multi-currency spending without spreadsheets"
-				description="Budgetbee helps you capture expenses in multiple currencies and keep one clean view of your personal or business spending."
+				description="Paytrack helps you capture expenses in multiple currencies and keep one clean view of your personal or business spending."
 			/>
 		</div>
 	);

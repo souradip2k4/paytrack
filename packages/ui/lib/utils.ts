@@ -73,7 +73,7 @@ export function getSiteUrl(
 ) {
 	let baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
 	if (!baseUrl) {
-		baseUrl = "https://www.budget-bee.app";
+		baseUrl = "https://paytrack-site-prod.vercel.app";
 		console.warn("NEXT_PUBLIC_APP_URL is not set");
 	}
 	return getUrl(baseUrl, ...args);

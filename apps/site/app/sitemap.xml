@@ -1,29 +1,29 @@
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<sitemap>
-		<loc>https://www.budget-bee.app/sitemap/sitemap.xml</loc>
+		<loc>https://paytrack-site-prod.vercel.app/sitemap/sitemap.xml</loc>
 	</sitemap>
 	<sitemap>
-		<loc>https://www.budget-bee.app/blog/sitemap.xml</loc>
+		<loc>https://paytrack-site-prod.vercel.app/blog/sitemap.xml</loc>
 	</sitemap>
 	<sitemap>
-		<loc>https://www.budget-bee.app/legal/sitemap.xml</loc>
+		<loc>https://paytrack-site-prod.vercel.app/legal/sitemap.xml</loc>
 	</sitemap>
 	<sitemap>
-		<loc>https://www.budget-bee.app/currency-converter/sitemap.xml</loc>
+		<loc>https://paytrack-site-prod.vercel.app/currency-converter/sitemap.xml</loc>
 	</sitemap>
 	<sitemap>
-		<loc>https://www.budget-bee.app/exchange-rates/sitemap.xml</loc>
+		<loc>https://paytrack-site-prod.vercel.app/exchange-rates/sitemap.xml</loc>
     </sitemap>
 	<sitemap>
-		<loc>https://www.budget-bee.app/income-tax-calculator/sitemap.xml</loc>
+		<loc>https://paytrack-site-prod.vercel.app/income-tax-calculator/sitemap.xml</loc>
 	</sitemap>
 	<sitemap>
-		<loc>https://www.budget-bee.app/invoice-generator/sitemap.xml</loc>
+		<loc>https://paytrack-site-prod.vercel.app/invoice-generator/sitemap.xml</loc>
 	</sitemap>
 	<sitemap>
-		<loc>https://www.budget-bee.app/receipt-generator/sitemap.xml</loc>
+		<loc>https://paytrack-site-prod.vercel.app/receipt-generator/sitemap.xml</loc>
 	</sitemap>
 	<sitemap>
-		<loc>https://www.budget-bee.app/estimate-generator/sitemap.xml</loc>
+		<loc>https://paytrack-site-prod.vercel.app/estimate-generator/sitemap.xml</loc>
 	</sitemap>
 </sitemapindex>

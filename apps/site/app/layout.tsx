@@ -21,9 +21,9 @@ const inter = Inter({
 	weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
-const title = "Budgetbee";
+const title = "Paytrack";
 const description = "Simple, user-friendly, minimal expense tracker.";
-const url = "https://www.budget-bee.app";
+const url = "https://paytrack-site-prod.vercel.app";
 
 export const metadata: Metadata = {
 	title,
@@ -38,13 +38,13 @@ export const metadata: Metadata = {
 		title,
 		description,
 		url,
-		siteName: "Budgetbee",
+		siteName: "Paytrack",
 		images: [
 			{
-				url: "https://www.budget-bee.app/images/budgetbee-og.png",
+				url: "https://paytrack-site-prod.vercel.app/images/budgetbee-og.png",
 				width: 1200,
 				height: 630,
-				alt: "Budgetbee",
+				alt: "Paytrack",
 			},
 		],
 	},
@@ -54,10 +54,10 @@ export const metadata: Metadata = {
 		description,
 		images: [
 			{
-				url: "https://www.budget-bee.app/images/budgetbee-og.png",
+				url: "https://paytrack-site-prod.vercel.app/images/budgetbee-og.png",
 				width: 1200,
 				height: 630,
-				alt: "Budgetbee",
+				alt: "Paytrack",
 			},
 		],
 	},
@@ -84,7 +84,7 @@ export default function RootLayout({
 					sizes="180x180"
 					href="/apple-touch-icon.png"
 				/>
-				<meta name="apple-mobile-web-app-title" content="Budgetbee" />
+				<meta name="apple-mobile-web-app-title" content="Paytrack" />
 				<link rel="manifest" href="/manifest.webmanifest" />
 			</head>
 			<body

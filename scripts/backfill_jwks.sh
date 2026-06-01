@@ -63,12 +63,19 @@ PGRST_JWT_SECRET="$JWKS_RESPONSE"
 echo "INFO: Updating PGRST_JWT_SECRET in $ENV_FILE..."
 
 awk -v key="PGRST_JWT_SECRET" -v value="$PGRST_JWT_SECRET" '
+BEGIN { found=0 }
 {
     if ($0 ~ ("^" key "=")) {
         print key "=" value;
+        found=1;
         next;
     }
     print $0;
+}
+END {
+    if (!found) {
+        print key "=" value;
+    }
 }
 ' "$ENV_FILE" > "$TEMP_ENV_FILE"
 

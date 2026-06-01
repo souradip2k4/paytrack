@@ -10,6 +10,6 @@ export default function robots() {
 				allow: "/",
 			},
 		],
-		sitemap: "https://www.budgetbee.site/sitemap.xml",
+		sitemap: "https://paytrack-web.vercel.app/sitemap.xml",
 	};
 }

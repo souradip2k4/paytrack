@@ -11,7 +11,7 @@ import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 import { bearer, customSession, jwt, organization } from "better-auth/plugins";
 import { getAuthAdminClient, getSubscriptionAdminClient } from "./db-pool";
-import { accessControl, owner, admin, editor, viewer } from "./permissions";
+import { accessControl, admin, editor, owner, viewer } from "./permissions";
 
 const authAdminClient = getAuthAdminClient();
 const subscriptionAdminClient = getSubscriptionAdminClient();
@@ -26,7 +26,7 @@ if (!subscriptionAdminClient) {
 
 export const auth = betterAuth({
 	database: authAdminClient,
-	appName: "Budgetbee",
+	appName: "Paytrack",
 	trustedOrigins: [
 		process.env.NEXT_PUBLIC_SITE_URL!,
 		process.env.NEXT_PUBLIC_APP_URL!,
@@ -139,10 +139,18 @@ export const auth = betterAuth({
 		}),
 
 		organization({
-			allowUserToCreateOrganization: async (user) => {
+			allowUserToCreateOrganization: async user => {
 				if (!user.emailVerified) return false;
-				const subscriptionRes = await subscriptionAdminClient.query(`SELECT product_id FROM app_subscriptions where user_id = $1 and period_start <= now() and period_end >= now()`, [user.id]);
-				return subscriptionRes.rows.length > 0 && (subscriptionRes.rows.filter(x => isTeamsOrHigher(x.product_id)).length > 0);
+				const subscriptionRes = await subscriptionAdminClient.query(
+					`SELECT product_id FROM app_subscriptions where user_id = $1 and period_start <= now() and period_end >= now()`,
+					[user.id],
+				);
+				return (
+					subscriptionRes.rows.length > 0 &&
+					subscriptionRes.rows.filter(x =>
+						isTeamsOrHigher(x.product_id),
+					).length > 0
+				);
 			},
 			organizationLimit: 5,
 			membershipLimit: 50, // Maximum 50 members per organization
@@ -166,7 +174,7 @@ export const auth = betterAuth({
 					html: `
 						<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
 							<h2>You've been invited!</h2>
-							<p>${data.inviter.user.name} has invited you to join <strong>${data.organization.name}</strong> on Budgetbee.</p>
+							<p>${data.inviter.user.name} has invited you to join <strong>${data.organization.name}</strong> on Paytrack.</p>
 							<p>You'll be joining as a <strong>${data.role}</strong>.</p>
 							<p style="margin: 24px 0;">
 								<a href="${inviteLink}" style="background-color: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
@@ -179,7 +187,8 @@ export const auth = betterAuth({
 						</div>
 					`,
 				});
-				if (error) console.error("Failed to send invitation email:", error);
+				if (error)
+					console.error("Failed to send invitation email:", error);
 				if (success) console.log("Invitation email sent:", success.id);
 			},
 			schema: {
@@ -235,7 +244,7 @@ export const auth = betterAuth({
 						{
 							productId: process.env.POLAR_PRODUCT_TEAMS_YEARLY!,
 							slug: "teams-yearly",
-						}
+						},
 					],
 					successUrl: "/welcome?id={CHECKOUT_ID}",
 					authenticatedUsersOnly: true,
@@ -344,7 +353,7 @@ export const auth = betterAuth({
 					if (session.activeOrganizationId) {
 						const result = await authAdminClient.query(
 							`SELECT role FROM members WHERE user_id = $1 AND organization_id = $2 LIMIT 1`,
-							[user.id, session.activeOrganizationId]
+							[user.id, session.activeOrganizationId],
 						);
 						if (result.rows.length > 0) {
 							organizationRole = result.rows[0].role;

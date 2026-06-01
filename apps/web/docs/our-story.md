@@ -1,6 +1,6 @@
 # Our story
 
-Budgetbee wasn't supposed to exist.
+Paytrack wasn't supposed to exist.
 
 I have this obession with tracking everything. I felt excel was a bit too much. Plus, we lose our data all the time.
 
@@ -12,7 +12,7 @@ So I did.
 
 ## Is it for me?
 
-Budgetbee is probably not for you. Really. Use excel. Or google sheets. Or any other spreadsheet software.
+Paytrack is probably not for you. Really. Use excel. Or google sheets. Or any other spreadsheet software.
 
 It's for a very niche audience - those who want to track their finances and don't mind their financial data being stored in someone else's server.
 

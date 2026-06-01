@@ -63,7 +63,7 @@ export function Footer() {
 					</div>
 
 					<div className="grow space-y-2">
-						<h1>Budgetbee</h1>
+						<h1>Paytrack</h1>
 						<p className="text-muted-foreground leading-relaxed">
 							Simple, intuitive, powerful expense tracker :)
 						</p>
@@ -92,7 +92,7 @@ export function Footer() {
 				</div>
 
 				<div className="col-span-3 mt-12 flex flex-col items-center justify-between gap-4 pt-6 text-xs text-gray-500 md:flex-row dark:text-gray-400">
-					<p>© 2025 Budgetbee. All rights reserved.</p>
+					<p>© 2025 Paytrack. All rights reserved.</p>
 					<div className="flex gap-6">
 						<Link href="https://budgetbee.openstatus.dev">
 							Status

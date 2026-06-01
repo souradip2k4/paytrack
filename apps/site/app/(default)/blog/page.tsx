@@ -4,8 +4,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-	title: "Blog | Budgetbee",
-	description: "Articles, updates, and guides from the Budgetbee team.",
+	title: "Blog | Paytrack",
+	description: "Articles, updates, and guides from the Paytrack team.",
 };
 
 export default async function BlogPage() {
@@ -18,7 +18,7 @@ export default async function BlogPage() {
 					Blog
 				</h1>
 				<p className="text-muted-foreground">
-					Articles, updates, and guides from Budgetbee.
+					Articles, updates, and guides from Paytrack.
 				</p>
 			</div>
 
@@ -28,12 +28,17 @@ export default async function BlogPage() {
 						key={post.slug}
 						className="border-border/70 space-y-2 rounded-xl border p-5 transition hover:bg-white/5">
 						<Link href={post.route} className="block space-y-2">
-							<h2 className="text-xl font-semibold">{post.frontmatter.title}</h2>
+							<h2 className="text-xl font-semibold">
+								{post.frontmatter.title}
+							</h2>
 							<p className="text-muted-foreground text-sm leading-relaxed">
 								{post.frontmatter.description}
 							</p>
 							<div className="text-muted-foreground text-xs">
-								{format(new Date(post.frontmatter.published_at), "MMMM d, yyyy")}
+								{format(
+									new Date(post.frontmatter.published_at),
+									"MMMM d, yyyy",
+								)}
 							</div>
 						</Link>
 					</article>

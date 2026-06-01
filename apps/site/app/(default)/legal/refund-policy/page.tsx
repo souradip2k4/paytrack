@@ -10,7 +10,7 @@ export default function Page() {
 				If you have any questions concerning our refund policy, please
 				contact us at:
 			</p>
-			<p>Budgetbee</p>
+			<p>Paytrack</p>
 			<p>Ganapati Tower, Gorai Road,</p>
 			<p>Gopalpur, West Bengal,</p>
 			<p>India.</p>
